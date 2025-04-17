@@ -14,10 +14,13 @@
   ],
   "devDependencies": {
     "@astrojs/check": "^0.4.1",
-    "astro": "^4.2.4",
+    "astro": "^5.7.3",
     "concurrently": "^8.2.2",
     "dotenv": "^16.4.1",
     "glob": "^10.4.1",
     "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@creit.tech/stellar-wallets-kit": "^1.5.0"
   }
 }
