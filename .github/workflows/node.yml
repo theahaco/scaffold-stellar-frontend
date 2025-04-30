@@ -7,6 +7,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  PKG_CONFIG_PATH: /usr/lib/pkgconfig
 
 jobs:
   build:
@@ -27,14 +28,8 @@ jobs:
     - run: rustup target add wasm32-unknown-unknown
     # - run: sudo apt install libdbus-1-dev pkg-config # required for stellar-scaffold to build
     - run: sudo apt-get update && sudo apt-get install -y libudev-dev
-    - name: Set PKG_CONFIG_PATH
-      run: echo "PKG_CONFIG_PATH=/usr/lib/pkgconfig" >> $GITHUB_ENV
-    - name: Install stellar-scaffold from git
-      uses: baptiste0928/cargo-install@v3
-      with:
-          crate: stellar-scaffold-cli
-          git: https://github.com/ahalabs/scaffold-stellar
-          branch: main
+    - name: Install stellar-scaffold-cli
+      run: cargo install --git https://github.com/ahalabs/scaffold-stellar stellar-scaffold-cli
     - name: Build clients before building the project
       run: STELLAR_SCAFFOLD_ENV=development stellar-scaffold build --build-clients
     - run: npm run build
