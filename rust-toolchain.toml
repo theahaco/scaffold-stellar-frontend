@@ -1,0 +1,5 @@
+# Stellar VM issue with smart contracts
+# See https://discord.com/channels/897514728459468821/1314331742097772565/1316256311691841548
+[toolchain]
+channel = "1.81.0"
+targets = ["wasm32-unknown-unknown"]
