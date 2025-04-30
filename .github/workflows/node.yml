@@ -34,7 +34,7 @@ jobs:
           git: https://github.com/ahalabs/scaffold-stellar
           branch: main
     - name: Build clients before building the project
-      run: STELLAR_SCAFFOLD_ENV=testing stellar-scaffold build --build-clients
+      run: STELLAR_SCAFFOLD_ENV=development stellar-scaffold build --build-clients
     - run: npm run build
     - name: Run tests
       run: npm test --if-present
