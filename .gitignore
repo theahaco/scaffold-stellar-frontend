@@ -1,6 +1,7 @@
-# soroban/Rust output
+# stellar/soroban/Rust output
 target
 .soroban
+.stellar
 
 # build output
 dist/
