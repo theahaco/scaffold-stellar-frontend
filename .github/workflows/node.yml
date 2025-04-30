@@ -26,7 +26,7 @@ jobs:
     - run: rustup target add wasm32-unknown-unknown
     - name: Install stellar-scaffold-cli
       run: cargo install --git https://github.com/ahalabs/scaffold-stellar stellar-scaffold-cli
-    - name: Build & build clients with Loam
+    - name: Build clients before building the project
       run: STELLAR_SCAFFOLD_ENV=testing stellar-scaffold build --build-clients
     - run: npm run build
     - name: Run tests
