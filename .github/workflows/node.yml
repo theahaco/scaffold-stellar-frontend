@@ -24,8 +24,12 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
     - run: rustup target add wasm32-unknown-unknown
     - run: sudo apt install libdbus-1-dev pkg-config # required for stellar-scaffold to build
-    - name: Install stellar-scaffold-cli
-      run: cargo install --git https://github.com/ahalabs/scaffold-stellar stellar-scaffold-cli
+    - name: Install stellar-scaffold from git
+      uses: baptiste0928/cargo-install@v3
+      with:
+          crate: stellar-scaffold-cli
+          git: https://github.com/ahalabs/scaffold-stellar
+          branch: main
     - name: Build clients before building the project
       run: STELLAR_SCAFFOLD_ENV=testing stellar-scaffold build --build-clients
     - run: npm run build
