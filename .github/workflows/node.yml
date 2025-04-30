@@ -20,6 +20,7 @@ jobs:
       with:
           path: |
             ~/.cargo/bin/
+            ~/runner/.cargo/bin/
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
