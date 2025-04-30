@@ -23,7 +23,10 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
     - run: rustup target add wasm32-unknown-unknown
-    - run: sudo apt install libdbus-1-dev pkg-config # required for stellar-scaffold to build
+    # - run: sudo apt install libdbus-1-dev pkg-config # required for stellar-scaffold to build
+    - run: sudo apt-get update && sudo apt-get install -y libudev-dev
+    - name: Set PKG_CONFIG_PATH
+      run: echo "PKG_CONFIG_PATH=/usr/lib/pkgconfig" >> $GITHUB_ENV
     - name: Install stellar-scaffold from git
       uses: baptiste0928/cargo-install@v3
       with:
