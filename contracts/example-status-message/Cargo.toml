@@ -1,0 +1,17 @@
+[package]
+name = "example-status-message"
+version = "0.0.0"
+authors = ["Stellar Development Foundation <info@stellar.org>"]
+license = "Apache-2.0"
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+doctest = false
+
+[dependencies]
+soroban-sdk = { version = "22.0.7" }
+
+[dev-dependencies]
+soroban-sdk = { version = "22.0.7", features = ["testutils"] }
