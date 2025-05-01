@@ -4,23 +4,27 @@ target
 .stellar
 
 # build output
-dist/
-
-# generated types
-.astro/
+dist
+dist-ssr
 
 # dependencies
 node_modules/
 
 # logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+lerna-debug.log*
 
 # environment variables
 .env
 .env.production
+
+# easy way to create temporary local-only files and folders
+*.local.*
 
 # macOS-specific files
 .DS_Store
