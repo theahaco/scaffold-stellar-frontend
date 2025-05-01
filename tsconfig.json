@@ -1,6 +1,8 @@
 {
-  "extends": "astro/tsconfigs/strictest",
-  "exclude": [
-    "packages"
+  "files": [],
+  "exclude": ["packages"],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
   ]
 }

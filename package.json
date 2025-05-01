@@ -2,22 +2,37 @@
   "name": "lol",
   "type": "module",
   "version": "0.0.1",
+  "private": true,
   "scripts": {
-    "dev": "concurrently \"loam dev --build-clients\" \"astro dev\"",
-    "start": "concurrently \"loam dev --build-clients\" \"astro dev\"",
-    "build": "astro check && astro build",
-    "preview": "astro preview",
-    "astro": "astro"
+    "dev": "concurrently \"loam dev --build-clients\" \"vite\"",
+    "start": "concurrently \"loam dev --build-clients\" \"vite\"",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "lint": "eslint ."
   },
   "workspaces": [
     "packages/*"
   ],
+  "dependencies": {
+    "eslint-plugin-react-dom": "^1.48.5",
+    "eslint-plugin-react-x": "^1.48.5",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
   "devDependencies": {
-    "@astrojs/check": "^0.4.1",
-    "astro": "^4.2.4",
+    "@eslint/js": "^9.22.0",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
     "concurrently": "^8.2.2",
     "dotenv": "^16.4.1",
+    "eslint": "^9.22.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
     "glob": "^10.4.1",
-    "typescript": "^5.3.3"
+    "globals": "^16.0.0",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.26.1",
+    "vite": "^6.3.1"
   }
 }
