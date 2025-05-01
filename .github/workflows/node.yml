@@ -31,8 +31,14 @@ jobs:
       with:
         tag: testing
     - run: sudo apt-get update && sudo apt-get install -y libudev-dev libdbus-1-dev pkg-config
-    - name: Install stellar-scaffold-cli
-      run: cargo install --git https://github.com/ahalabs/scaffold-stellar stellar-scaffold-cli
+    - name: Check for stellar-scaffold binary
+      run: |
+        if ! command -v stellar-scaffold &> /dev/null; then
+          echo "stellar-scaffold not found, installing..."
+          cargo install --git https://github.com/ahalabs/scaffold-stellar --branch main stellar-scaffold-cli
+        else
+          echo "stellar-scaffold already installed. Clear cache to force reinstall."
+        fi
     - name: Build clients before building the project
       run: STELLAR_SCAFFOLD_ENV=development stellar-scaffold build --build-clients
     - run: npm ci
