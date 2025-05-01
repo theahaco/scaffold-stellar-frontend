@@ -1,28 +1,21 @@
-import { Layout, ThemeSwitch } from "@stellar/design-system";
-import { Button, Input } from "@stellar/design-system";
+import { Layout } from "@stellar/design-system";
+import "./App.module.css"
 
 function App() {
   return (
-    <>
-    <Layout.Header 
-      disableSetThemeOnLoad
-      projectId="Design System"
-      projectTitle="Design System"
-    />
-    <Layout.Content>
-      Hi
-    </Layout.Content>
-      <ThemeSwitch />
-
-
-      <Button
-        size="sm"
-        variant="primary"
-      >
-        Button
-      </Button>
+    <main>
+      <Layout.Header
+        projectId="My App"
+        projectTitle="My App"
+        contentRight={<>Connect wallet component</>}
+      />
+      <Layout.Content>
+        <Layout.Inset>
+          <h1>Welcome to your app!</h1>
+        </Layout.Inset>
+      </Layout.Content>
       <Layout.Footer />
-    </>
+    </main>
   );
 }
 
