@@ -24,17 +24,6 @@ default = true
 example_core = { client = true }
 example_status_message = { client = true }
 
-[testing]
-accounts = ["me"]
-
-[testing.network]
-rpc-url = "http://localhost:8000/rpc"
-network-passphrase = "Standalone Network ; February 2017"
-
-[testing.contracts]
-example_core = { client = true }
-example_status_message = { client = true }
-
 # List each contract individually.
 # `workspace = true` indicates that this project is part of the local cargo workspace.
 # In dev & test environments, workspace contracts will be automatically built, deployed, initialized, bound, and imported.
