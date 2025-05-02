@@ -2,42 +2,58 @@
 [development.network]
 rpc-url = "http://localhost:8000/rpc"
 network-passphrase = "Standalone Network ; February 2017"
-
-# The rpc-url and network-passphrase are required for all environments.
-# Coming soon: If given `run-locally = true`, the `network` will be launched with:
-# `stellar network container start local`
+run-locally = true # automatically start the local network container, if not already running
 
 [[development.accounts]]
-name = "me"
-default = true
-
-# You can provide an expanded definition for each account:
-#   - `name`: the only required field, an identity with this name will be created
-#      with `stellar keys`.
-#   - `default`: whether to use this account as the `--source` for commands
-#     that need one. Only one default is allowed. The keypair will be generated
-#      and saved in the `.soroban/identity` directory.
-# Coming Soon: # If you provide just a string, an identity with this name will be created with
-# `soroban keys`, which saves the mnemonic in `.soroban/identity`. E.g.: "alice"
+name = "me" # Required. Keys for this account will be saved to `./.stellar/identity`
+default = true # Optional. Whether to use this account as the `--source` for commands that need one.
 
 [development.contracts]
-example_core = { client = true }
-example_status_message = { client = true }
+# Generate a contract client (NPM package) for this contract. This means:
+#   - compile (build) the contract source to Wasm
+#   - deploy the contract to the `network` specified above
+#   - run any `init` script specified below
+#   - generate an NPM client (also called the "TS Bindings") for the deployed
+#     contract to the NPM workspace in `packages/*`
+#   - import the contract for easy access in the frontend in `src/contracts`
+#
+# You can only use `client = true` when:
+#   - the contract source must be part of the local Cargo workspace (in the
+#     PROJECT_ROOT/contracts folder)
+#   - The specified name here ("soroban_hello_world_contract") must match the
+#     underscored-version of the `name` in the contract's Cargo.toml.
+#   - The environment is `development` or `test`
+soroban_hello_world_contract = { client = true }
 
-# List each contract individually.
-# `workspace = true` indicates that this project is part of the local cargo workspace.
-# In dev & test environments, workspace contracts will be automatically built, deployed, initialized, bound, and imported.
-# Coming Soon: Auto-build, -deploy, -bind, and -import all contracts in Cargo workspace
-# Only supported in development & test environments
-# cargo-workspace = true
+# Rather than in one list, TOML allows specifying contracts in their own "sections"
+[development.contracts.soroban_token_contract]
+client = true
 
-# Coming Soon: Initialization steps for the contract, to be run after deployment.
+# If your contract has a `__constructor`, specify your arguments to it here.
+# These are the same arguments you could pass after the `--` in a call to
+# `stellar contract deploy`
+# Only available in `development` and `test` environments
+constructor_args = """
+--symbol SCAST --decimal 7 --name "Scaffold Stellar Token" --admin me
+"""
+
+# Calls to the contract to make after it's deployed and initialized with
+# `constructor_args`. Commands here will be appended to:
+#
+#     stellar contract invoke \
+#         --id [this contract's id] \
+#         --source [first (or `default`) account, specified above] \
+#         --network [specified above] \
+#         --
+#
+# That is, each line in this `init` script is *only* the part after the `--` in
+# a `stellar contract invoke` command.
+#
+# To use another account as the `--source`, prefix the line with
+# `STELLAR_ACCOUNT=other-account`.
+#
 # Only supported in `development` and `test` environments.
-# You only need to specify the slop (everything after the `--`) for calls to
-# `soroban contract invoke` for the given contract. Uses `default-account`
-# by default; to use another, prefix with `SOROBAN_ACCOUNT=other-account`.
-# init = """
-# initialize --symbol ABND --decimal 7 --name abundance --admin me
+# after_deploy = """
 # mint --amount 2000000 --to me"
 # """
 

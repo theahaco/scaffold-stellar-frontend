@@ -27,7 +27,7 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-    - run: rustup target add wasm32-unknown-unknown
+    - run: rustup target add wasm32v1-none
     - uses: stellar/quickstart@main
       with:
         tag: testing

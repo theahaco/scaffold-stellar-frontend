@@ -514,20 +514,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b90ca2580b73ab6a1f724b76ca11ab632df820fd6040c336200d2c1df7b3c82c"
 
 [[package]]
-name = "example-core"
-version = "0.0.0"
-dependencies = [
- "soroban-sdk",
-]
-
-[[package]]
-name = "example-status-message"
-version = "0.0.0"
-dependencies = [
- "soroban-sdk",
-]
-
-[[package]]
 name = "ff"
 version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1137,6 +1123,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "soroban-hello-world-contract"
+version = "0.0.0"
+dependencies = [
+ "soroban-sdk",
+]
+
+[[package]]
 name = "soroban-ledger-snapshot"
 version = "22.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1218,6 +1211,23 @@ dependencies = [
  "stellar-xdr",
  "syn 2.0.101",
  "thiserror",
+]
+
+[[package]]
+name = "soroban-token-contract"
+version = "0.0.6"
+dependencies = [
+ "soroban-sdk",
+ "soroban-token-sdk",
+]
+
+[[package]]
+name = "soroban-token-sdk"
+version = "22.0.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "858a3c2d7fce27bd105c4747850dfb2b0d945eb8880aeaa963d5c8ac659ca105"
+dependencies = [
+ "soroban-sdk",
 ]
 
 [[package]]
