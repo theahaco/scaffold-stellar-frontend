@@ -1,0 +1,48 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+  PKG_CONFIG_PATH: /usr/lib/pkgconfig
+
+jobs:
+  build:
+    strategy:
+        fail-fast: true
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/cache@v3
+      with:
+          path: |
+            ~/.cargo/bin/
+            runner/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+    - run: rustup target add wasm32-unknown-unknown
+    - uses: stellar/quickstart@main
+      with:
+        tag: testing
+    - run: sudo apt-get update && sudo apt-get install -y libudev-dev libdbus-1-dev pkg-config
+    - name: Check for stellar-scaffold binary
+      run: |
+        if ! command -v stellar-scaffold &> /dev/null; then
+          echo "stellar-scaffold not found, installing..."
+          cargo install --git https://github.com/ahalabs/scaffold-stellar --branch main stellar-scaffold-cli
+        else
+          echo "stellar-scaffold already installed. Clear cache to force reinstall."
+        fi
+    - name: Build clients before building the project
+      run: STELLAR_SCAFFOLD_ENV=development stellar-scaffold build --build-clients
+    - run: npm ci
+    - run: npm run install:contracts
+    - run: npm run build
+    - name: Run tests
+      run: npm test --if-present
