@@ -3,6 +3,8 @@ import { useNotification } from '../providers/NotificationProvider';
 
 const FundAccountButton: React.FC = () => {
   const { addNotification } = useNotification();
+  // TODO: replace with account from wallet
+  const account = "GDY6IB4FWMPXGZ4MOLREIQFVQPQ76V7HFZGD7OC7B2SSCQDQXDEP5R3W"
 
   const handleFundAccount = async (account: string) => {
     try {
@@ -24,7 +26,7 @@ const FundAccountButton: React.FC = () => {
 
   return (
     <div>
-      <button onClick={handleFundAccount.bind(this, "GCJBKAXMDTU5ETJIZGSNFZN7ND5VOLEWOJCZJTIMB2AT6CBLLYLJCPFE")}>Fund Account</button>
+      <button onClick={handleFundAccount.bind(this, account)}>Fund Account</button>
     </div>
   );
 };

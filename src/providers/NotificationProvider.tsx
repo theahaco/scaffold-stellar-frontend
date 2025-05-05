@@ -1,10 +1,10 @@
-import { Notification } from '@stellar/design-system';
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { Notification as StellarNotification } from '@stellar/design-system';
 
 interface Notification {
-  id: string;
   message: string;
   type: 'success' | 'error';
+  isVisible: boolean;
 }
 
 interface NotificationContextType {
@@ -17,23 +17,40 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const addNotification = (message: string, type: 'success' | 'error') => {
-    const id = Math.random().toString(36).substr(2, 9);
-    setNotifications((prev) => [...prev, { id, message, type }]);
+    const newNotification = { message, type, isVisible: true };
+    setNotifications((prev) => [...prev, newNotification]);
 
     setTimeout(() => {
-      setNotifications((prev) => prev.filter((notification) => notification.id !== id));
-    }, 3000); // Auto-remove after 3 seconds
+      setNotifications((prev) =>
+        prev.map((notification) =>
+          notification === newNotification ? { ...notification, isVisible: false } : notification
+        )
+      );
+    }, 2500); // Start fade-out after 2.5 seconds
+
+    setTimeout(() => {
+      setNotifications((prev) => prev.filter((notification) => 
+        !(notification.message === newNotification.message && 
+          notification.type === newNotification.type)
+      ));
+    }, 3000); // Remove after 3 seconds
   };
 
   return (
     <NotificationContext.Provider value={{ addNotification }}>
       {children}
       <div style={{ position: 'fixed', top: '10px', left: '50%', transform: 'translateX(-50%)', zIndex: 1000 }}>
-        {notifications.map((notification) => (
-          <Notification
-            title={notification.message}
-            variant={notification.type}
-          />
+        {notifications.map((notification, index) => (
+          <div
+            key={index}
+            style={{
+              opacity: notification.isVisible ? 1 : 0,
+              transition: 'opacity 0.5s ease',
+              marginBottom: '10px',
+            }}
+          >
+            <StellarNotification title={notification.message} variant={notification.type} />
+          </div>
         ))}
       </div>
     </NotificationContext.Provider>
