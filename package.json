@@ -7,10 +7,7 @@
     "dev": "concurrently \"loam dev --build-clients\" \"vite\"",
     "start": "concurrently \"loam dev --build-clients\" \"vite\"",
     "build": "tsc -b && vite build",
-    "install:contracts": "npm run install:all-contracts && npm run build:all-contracts",
-    "install:all-contracts": "npm run foreach-contract -- npm install",
-    "build:all-contracts": "npm run foreach-contract -- npm run build",
-    "foreach-contract": "node scripts/foreach-contract.js",
+    "install:contracts": "npm install --workspace=packages && npm run build --workspace=packages",
     "preview": "vite preview",
     "lint": "eslint ."
   },
