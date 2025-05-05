@@ -8,6 +8,7 @@ export default defineConfig({
     proxy: {
       '/friendbot': {
         // Use the local faucet http://localhost:8000/friendbot
+        // See https://developers.stellar.org/docs/tools/quickstart/faucet for more information
         target: 'http://localhost:8000',
         changeOrigin: true,
       },
