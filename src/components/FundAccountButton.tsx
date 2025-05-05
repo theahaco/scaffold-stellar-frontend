@@ -1,9 +1,8 @@
-import { Notification } from '@stellar/design-system';
-import React, { useState } from 'react';
+import React from 'react';
+import { useNotification } from '../providers/NotificationProvider';
 
 const FundAccountButton: React.FC = () => {
-  const [status, setStatus] = useState<string | null>(null);
-  const [fundingError, setFundingError] = useState<string | null>(null);
+  const { addNotification } = useNotification();
 
   const handleFundAccount = async (account: string) => {
     try {
@@ -12,23 +11,20 @@ const FundAccountButton: React.FC = () => {
       });
 
       if (response.ok) {
-        setStatus('success');
+        addNotification('Account funded successfully!', 'success');
       } else {
         const body = await response.json();
-        setFundingError(body?.detail || 'Unknown error');
-        setStatus('failure');
+        addNotification(`Error funding account: ${body?.detail || 'Unknown error'}`, 'error');
       }
     } catch (error) {
       console.error('Error funding account:', error);
-      setStatus('failure');
+      addNotification('Error funding account. Please try again.', 'error');
     }
   };
 
   return (
     <div>
       <button onClick={handleFundAccount.bind(this, "GCJBKAXMDTU5ETJIZGSNFZN7ND5VOLEWOJCZJTIMB2AT6CBLLYLJCPFE")}>Fund Account</button>
-      {status === 'success' && <Notification title="Account funded successfully!" variant="success"/>}
-      {status === 'failure' && <Notification title={`Error funding account: ${fundingError}`} variant="error"/>}
     </div>
   );
 };
