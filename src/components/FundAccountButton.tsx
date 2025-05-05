@@ -1,12 +1,18 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useNotification } from '../providers/NotificationProvider';
 
 const FundAccountButton: React.FC = () => {
   const { addNotification } = useNotification();
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
   // TODO: replace with account from wallet
-  const account = "GBE3HA2ZCHF2GHX6QVGSN5V3EC6URGYVUHUUEJGBJK4QYP2NGIOLAVUO"
+  const account = "GDVWY6R4RP37DQPAWBNQKQIZAGDVHUAYMYXKUDSY2O7PJWZNSIZIJNHQ";
 
   const handleFundAccount = async (account: string) => {
+    // Disable the button to prevent multiple clicks
+    if (buttonRef.current) {
+      buttonRef.current.disabled = true;
+    }
+
     addNotification('Funding account, please wait…', 'primary');
     try {
       const response = await fetch(`/friendbot?addr=${account}`, {
@@ -22,12 +28,16 @@ const FundAccountButton: React.FC = () => {
     } catch (error) {
       console.error('Error funding account:', error);
       addNotification('Error funding account. Please try again.', 'error');
+    } finally {
+      if (buttonRef.current) {
+        buttonRef.current.disabled = false;
+      }
     }
   };
 
   return (
     <div>
-      <button onClick={handleFundAccount.bind(this, account)}>Fund Account</button>
+      <button ref={buttonRef} onClick={handleFundAccount.bind(this, account)}>Fund Account</button>
     </div>
   );
 };
