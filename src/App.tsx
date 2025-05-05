@@ -1,5 +1,6 @@
 import { Layout } from "@stellar/design-system";
 import "./App.module.css"
+import FundAccountButton from "./components/FundAccountButton.tsx";
 
 function App() {
   return (
@@ -7,7 +8,7 @@ function App() {
       <Layout.Header
         projectId="My App"
         projectTitle="My App"
-        contentRight={<>Connect wallet component</>}
+        contentRight={<>Connect wallet component <FundAccountButton /></>}
       />
       <Layout.Content>
         <Layout.Inset>
