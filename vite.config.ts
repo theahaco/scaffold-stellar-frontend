@@ -7,9 +7,9 @@ export default defineConfig({
   server: {
     proxy: {
       '/friendbot': {
-        target: 'https://friendbot.stellar.org/',
+        // Use the local faucet http://localhost:8000/friendbot
+        target: 'http://localhost:8000',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/friendbot/, ''),
       },
     }
   }
