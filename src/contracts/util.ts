@@ -5,5 +5,5 @@ export const rpcUrl =
 
 const envNetworkPassphrase = import.meta.env.PUBLIC_NETWORK_PASSPHRASE;
 export const networkPassphrase =
-  envNetworkPassphrase && envNetworkPassphrase === "string"
+  envNetworkPassphrase && typeof envNetworkPassphrase === "string"
     ? envRPC : "Standalone Network ; February 2017";
