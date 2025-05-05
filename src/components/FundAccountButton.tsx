@@ -4,9 +4,10 @@ import { useNotification } from '../providers/NotificationProvider';
 const FundAccountButton: React.FC = () => {
   const { addNotification } = useNotification();
   // TODO: replace with account from wallet
-  const account = "GDY6IB4FWMPXGZ4MOLREIQFVQPQ76V7HFZGD7OC7B2SSCQDQXDEP5R3W"
+  const account = "GBE3HA2ZCHF2GHX6QVGSN5V3EC6URGYVUHUUEJGBJK4QYP2NGIOLAVUO"
 
   const handleFundAccount = async (account: string) => {
+    addNotification('Funding account, please wait…', 'primary');
     try {
       const response = await fetch(`/friendbot?addr=${account}`, {
         method: 'GET',

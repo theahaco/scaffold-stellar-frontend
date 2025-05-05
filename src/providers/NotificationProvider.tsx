@@ -1,14 +1,15 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { Notification as StellarNotification } from '@stellar/design-system';
 
+type NotificationType = 'primary' | 'secondary' | 'success' | 'error' | 'warning';
 interface Notification {
   message: string;
-  type: 'success' | 'error';
+  type: NotificationType;
   isVisible: boolean;
 }
 
 interface NotificationContextType {
-  addNotification: (message: string, type: 'success' | 'error') => void;
+  addNotification: (message: string, type: NotificationType) => void;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
@@ -16,7 +17,7 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  const addNotification = (message: string, type: 'success' | 'error') => {
+  const addNotification = (message: string, type: NotificationType) => {
     const newNotification = { message, type, isVisible: true };
     setNotifications((prev) => [...prev, newNotification]);
 
