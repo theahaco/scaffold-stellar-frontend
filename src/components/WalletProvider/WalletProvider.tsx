@@ -6,6 +6,7 @@ import {
   } from '@creit.tech/stellar-wallets-kit';
 import { Layout } from '@stellar/design-system';
 import { useEffect, useMemo, useState } from 'react';
+import storage from '../../util/storage'
 
 export const WalletProvider = () => {
     const [address, setAddress] = useState<string | null>(null);
@@ -29,8 +30,8 @@ export const WalletProvider = () => {
       if (hasInitialized) return;
       hasInitialized = true;
 
-      const savedWalletId = localStorage.getItem('walletId');
-      const currentSelected = localStorage.getItem('selectedModuleId');
+      const savedWalletId = storage.getItem('walletId');
+      const currentSelected = storage.getItem('selectedModuleId');
 
       if (savedWalletId && !address && currentSelected !== savedWalletId) {
         console.log("SAVED WALLET");
@@ -41,8 +42,8 @@ export const WalletProvider = () => {
           console.log("Connected to:", address);
         } catch (e) {
           console.warn("Failed to reconnect:", e);
-          localStorage.removeItem("walletId");
-          localStorage.removeItem("walletAddress");
+          storage.removeItem("walletId");
+          storage.removeItem("walletAddress");
         }
       }
 
@@ -52,17 +53,17 @@ export const WalletProvider = () => {
       await kit.createButton({
         container: walletContainer,
         onConnect: ({ address }) => {
-          const selectedWalletId = localStorage.getItem('selectedModuleId');
+          const selectedWalletId = storage.getItem('selectedModuleId');
           if (selectedWalletId) {
-            localStorage.setItem('walletId', selectedWalletId);
+            storage.setItem('walletId', selectedWalletId);
           }
-          localStorage.setItem('walletAddress', address);
+          storage.setItem('walletAddress', address);
           setAddress(address);
         },
         onDisconnect: () => {
           console.log("Wallet disconnected");
-          localStorage.removeItem("walletId");
-          localStorage.removeItem("walletAddress");
+          storage.removeItem("walletId");
+          storage.removeItem("walletAddress");
           setAddress("");
         }
       });
