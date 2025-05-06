@@ -18,6 +18,7 @@
     "packages/*"
   ],
   "dependencies": {
+    "@creit.tech/stellar-wallets-kit": "^1.7.3",
     "@stellar/design-system": "^3.1.1",
     "eslint-plugin-react-dom": "^1.48.5",
     "eslint-plugin-react-x": "^1.48.5",

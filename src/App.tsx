@@ -1,5 +1,6 @@
 import { Layout } from "@stellar/design-system";
 import "./App.module.css"
+import { WalletProvider } from "./components/WalletProvider/WalletProvider";
 
 function App() {
   return (
@@ -7,7 +8,7 @@ function App() {
       <Layout.Header
         projectId="My App"
         projectTitle="My App"
-        contentRight={<>Connect wallet component</>}
+        contentRight={<WalletProvider />}
       />
       <Layout.Content>
         <Layout.Inset>
