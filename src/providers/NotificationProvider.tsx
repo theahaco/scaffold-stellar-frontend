@@ -39,7 +39,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
   };
 
   return (
-    <NotificationContext.Provider value={{ addNotification }}>
+    <NotificationContext value={{ addNotification }}>
       {children}
       <div className="notification-container">
         {notifications.map((notification, index) => (
@@ -51,7 +51,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
           </div>
         ))}
       </div>
-    </NotificationContext.Provider>
+    </NotificationContext>
   );
 };
 
