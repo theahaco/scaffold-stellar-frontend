@@ -1,6 +1,14 @@
 import React, { useState, useTransition } from 'react';
 import { useNotification } from '../providers/NotificationProvider';
 import { Button, Tooltip } from '@stellar/design-system';
+import { z } from 'zod';
+
+const FriendbotResponseSchema = z.object({
+  status: z.number(),
+  type: z.string(),
+  title: z.string(),
+  detail: z.string(),
+});
 
 const FundAccountButton: React.FC = () => {
   const { addNotification } = useNotification();
@@ -20,9 +28,9 @@ const FundAccountButton: React.FC = () => {
         if (response.ok) {
           addNotification('Account funded successfully!', 'success');
           setIsFunded(true);
-
         } else {
-          const body = await response.json();
+          const body = FriendbotResponseSchema.parse(await response.json());
+
           if (body.detail === "account already funded to starting balance") {
             setIsFunded(true);
           }
