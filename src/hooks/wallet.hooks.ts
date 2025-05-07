@@ -8,16 +8,16 @@ export const useWallet = () => {
 
     const connectWallet = async () => {
         await kit.openModal({
-        modalTitle: "Connect to your wallet",
-        onWalletSelected: async (option: ISupportedWallet) => {
-            const selectedId = option.id;
-            kit.setWallet(selectedId);
-            const { address } = await kit.getAddress();
-            setAddress(address);
-            storage.setItem("walletId", selectedId);
+            modalTitle: "Connect to your wallet",
+            onWalletSelected: async (option: ISupportedWallet) => {
+                const selectedId = option.id;
+                kit.setWallet(selectedId);
+                const { address } = await kit.getAddress();
+                setAddress(address);
+                storage.setItem("walletId", selectedId);
 
-            console.log("Connected to:", address);
-        },
+                console.log("Connected to:", address);
+            },
         });
     };
 
@@ -31,16 +31,16 @@ export const useWallet = () => {
         const savedWalletId = storage.getItem("walletId");
 
         if (savedWalletId) {
-        try {
-            kit.setWallet(savedWalletId);
-            const { address } = await kit.getAddress();
-            setAddress(address);
-            console.log("Reconnected to:", address);
-        } catch (e) {
-            console.warn("Failed to reconnect:", e);
-            setAddress("");
-            storage.removeItem("walletId");
-        }
+            try {
+                kit.setWallet(savedWalletId);
+                const { address } = await kit.getAddress();
+                setAddress(address);
+                console.log("Reconnected to:", address);
+            } catch (e) {
+                console.warn("Failed to reconnect:", e);
+                setAddress("");
+                storage.removeItem("walletId");
+            }
         }
         else {
             await connectWallet();
