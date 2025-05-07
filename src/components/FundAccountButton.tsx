@@ -6,6 +6,7 @@ const FundAccountButton: React.FC = () => {
   const { addNotification } = useNotification();
   const [isPending, startTransition] = useTransition();
   const [isFunded, setIsFunded] = useState(false);
+  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
   // TODO: replace with account from wallet
   const account = "GDVWY6R4RP37DQPAWBNQKQIZAGDVHUAYMYXKUDSY2O7PJWZNSIZIJNHQ";
 
@@ -37,15 +38,29 @@ const FundAccountButton: React.FC = () => {
   };
 
   return (
-    <Tooltip
-      isVisible
-      isContrast
-      title="Fund Account"
-      placement="bottom"
-      triggerEl={<Button disabled={isPending || isFunded} onClick={handleFundAccount.bind(this, account)} variant="primary" size="md">Fund Account</Button>}
+    <div
+      onMouseEnter={() => setIsTooltipVisible(true)}
+      onMouseLeave={() => setIsTooltipVisible(false)}
     >
-      {isFunded ? "Account is already funded" : "Fund your account using the Stellar Friendbot"}
-    </Tooltip>
+      <Tooltip
+        isVisible={isTooltipVisible}
+        isContrast
+        title="Fund Account"
+        placement="bottom"
+        triggerEl={
+          <Button
+            disabled={isPending || isFunded}
+            onClick={handleFundAccount.bind(this, account)}
+            variant="primary"
+            size="md"
+          >
+            Fund Account
+          </Button>
+        }
+      >
+        {isFunded ? "Account is already funded" : "Fund your account using the Stellar Friendbot"}
+      </Tooltip>
+    </div>
   );
 };
 
