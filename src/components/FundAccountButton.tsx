@@ -12,8 +12,6 @@ const FundAccountButton: React.FC = () => {
 
   const handleFundAccount = (account: string) => {
     startTransition(async () => {
-
-      addNotification('Funding account, please wait…', 'primary');
       try {
         const response = await fetch(`/friendbot?addr=${account}`, {
           method: 'GET',
@@ -58,7 +56,9 @@ const FundAccountButton: React.FC = () => {
           </Button>
         }
       >
-        {isFunded ? "Account is already funded" : "Fund your account using the Stellar Friendbot"}
+        <div style={{ width: '13em' }} >
+          {isFunded ? "Account is already funded" : "Fund your account using the Stellar Friendbot"}
+        </div>
       </Tooltip>
     </div>
   );
