@@ -10,8 +10,9 @@ function getFriendbotUrl(mode: string) {
       return "http://localhost:8000";
     case "testnet":
     case "futurenet":
-    // friendbot is not available on mainnet, this is a fallback that should not need to be called
+      return "https://friendbot.stellar.org";
     case "mainnet":
+      // friendbot is not available on mainnet, this is a fallback that should not need to be called
       return "https://friendbot.stellar.org";
     default:
       throw new Error(`Unknown PUBLIC_STELLAR_NETWORK: ${env.PUBLIC_STELLAR_NETWORK}`);
