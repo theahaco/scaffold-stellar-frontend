@@ -4,8 +4,8 @@ import FundAccountButton from './FundAccountButton';
 
 const ConnectAccount: React.FC = () => {
   return (
-    <div>
-        <p>Wallet Button here</p>
+    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px', verticalAlign: 'middle' }}>
+        <div>Wallet Button here</div>
         {stellarNetwork !== "mainnet" && <FundAccountButton />}
     </div>
   );
