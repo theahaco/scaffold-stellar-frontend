@@ -1,6 +1,6 @@
 import React, { useState, useTransition } from 'react';
 import { useNotification } from '../providers/NotificationProvider';
-import { Button } from '@stellar/design-system';
+import { Button, Tooltip } from '@stellar/design-system';
 
 const FundAccountButton: React.FC = () => {
   const { addNotification } = useNotification();
@@ -37,9 +37,15 @@ const FundAccountButton: React.FC = () => {
   };
 
   return (
-    <div>
-      <Button disabled={isPending || isFunded} onClick={handleFundAccount.bind(this, account)} variant="primary" size="md">Fund Account</Button>
-    </div>
+    <Tooltip
+      isVisible
+      isContrast
+      title="Fund Account"
+      placement="bottom"
+      triggerEl={<Button disabled={isPending || isFunded} onClick={handleFundAccount.bind(this, account)} variant="primary" size="md">Fund Account</Button>}
+    >
+      {isFunded ? "Account is already funded" : "Fund your account using the Stellar Friendbot"}
+    </Tooltip>
   );
 };
 
