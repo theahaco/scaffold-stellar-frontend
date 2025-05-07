@@ -1,5 +1,5 @@
 import React, { useState, useTransition } from 'react';
-import { useNotification } from '../providers/NotificationProvider';
+import { useNotification } from '../hooks/useNotification.hook.tsx';
 import { Button, Tooltip } from '@stellar/design-system';
 import { z } from 'zod';
 
