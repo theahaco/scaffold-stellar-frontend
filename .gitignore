@@ -37,6 +37,3 @@ packages/*
 # generated contract client imports
 src/contracts/*
 !src/contracts/util.ts
-
-# Astro files
-.astro/*
