@@ -14,7 +14,7 @@ export const useWallet = () => {
             kit.setWallet(selectedId);
             const { address } = await kit.getAddress();
             setAddress(address);
-            storage.setItem("walletId", JSON.stringify([selectedId]));
+            storage.setItem("walletId", selectedId);
 
             console.log("Connected to:", address);
         },
@@ -28,9 +28,7 @@ export const useWallet = () => {
     }
 
     const runWalletInit = async () => {
-        const saved = storage.getItem("walletId");
-        const parsed = saved ? JSON.parse(saved) : [];
-        const savedWalletId = parsed?.[0];
+        const savedWalletId = storage.getItem("walletId");
 
         if (savedWalletId) {
         try {
