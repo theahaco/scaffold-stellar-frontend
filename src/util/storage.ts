@@ -13,8 +13,6 @@
  */
 const keys = {
   walletId: 'a',
-  walletAddress: 'a',
-  selectedModuleId: 'a',
 };
 
 /**
