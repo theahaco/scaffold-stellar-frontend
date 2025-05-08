@@ -8,8 +8,9 @@ function getFriendbotUrl(mode: string) {
   switch (env.PUBLIC_STELLAR_NETWORK) {
     case "local":
       return "http://localhost:8000";
-    case "testnet":
     case "futurenet":
+      return "https://friendbot-futurenet.stellar.org";
+    case "testnet":
       return "https://friendbot.stellar.org";
     case "mainnet":
       // friendbot is not available on mainnet, this is a fallback that should not need to be called
