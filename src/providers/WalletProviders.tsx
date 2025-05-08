@@ -42,7 +42,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
           console.error(e)
         }
       }
-    })()}, 5000)
+    })()}, 1000)
 
     // return function to call when component dismounts
     return () => { clearTimeout(timer) }
