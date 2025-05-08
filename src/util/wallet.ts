@@ -33,17 +33,15 @@ const kit: StellarWalletsKit = new StellarWalletsKit({
 export const connectWallet = async () => {
   await kit.openModal({
     modalTitle: "Connect to your wallet",
-    onWalletSelected: (option: ISupportedWallet) => {
-      void (async () => {
-        const selectedId = option.id;
-        kit.setWallet(selectedId);
+    onWalletSelected: async (option: ISupportedWallet) => {
+      const selectedId = option.id;
+      kit.setWallet(selectedId);
 
-        // now open selected wallet's login flow by calling `getAddress` (!)
-        await kit.getAddress();
+      // now open selected wallet's login flow by calling `getAddress` (!)
+      await kit.getAddress();
 
-        // once the `await` returns successfully, we know they actually connected that wallet
-        storage.setItem("walletId", selectedId);
-      })();
+      // once the `await` returns successfully, we know they actually connected that wallet
+      storage.setItem("walletId", selectedId);
     },
   });
 };
