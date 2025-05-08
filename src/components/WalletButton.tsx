@@ -10,8 +10,6 @@ export const WalletButton = () => {
   const { address, setAddress } = useWallet()
   const buttonLabel = address ? `${address.slice(0, 10)}...` : "Connect"
 
-  // TODO: figure out why `useWallet` is getting mounted/used twice
-
   const handleClick = () => {
     void (async () => {
       if (address) {

@@ -23,9 +23,14 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       const didUserInteractWithWalletSelectorYet = !!storage.getItem("walletId")
       if (didUserInteractWithWalletSelectorYet) {
         try {
-          setNetwork(await wallet.getNetwork())
-          const { address } = await wallet.getAddress()
-          setAddress(address)
+          const networkObject = await wallet.getNetwork()
+          if (networkObject !== network) {
+            setNetwork(networkObject)
+          }
+          const addressObject = await wallet.getAddress()
+          if (addressObject.address !== address) {
+            setAddress(addressObject.address)
+          }
         } catch (e) {
           // If `getNetwork` or `getAddress` throw errors... sign the user out???
           setAddress(undefined)
@@ -37,7 +42,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
           console.error(e)
         }
       }
-    })()}, 1000)
+    })()}, 5000)
 
     // return function to call when component dismounts
     return () => { clearTimeout(timer) }
