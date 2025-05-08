@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useMemo, useState } from "react";
 import { wallet } from "../util/wallet";
 import storage from "../util/storage";
 
@@ -43,9 +43,15 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     return () => { clearTimeout(timer) }
   }, [])
 
+const contextValue = useMemo(() => ({
+    address,
+    network,
+    setAddress,
+  }), [address, network, setAddress]);
+
   return (
-    <WalletContext.Provider value={{ address, network, setAddress }}>
+    <WalletContext value={contextValue}>
       {children}
-    </WalletContext.Provider>
+    </WalletContext>
   );
 };
