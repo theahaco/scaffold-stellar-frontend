@@ -1,7 +1,7 @@
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 
-function getFriendbotUrl(mode: string) {
+function getFriendbotHost(mode: string) {
   // See https://developers.stellar.org/docs/tools/quickstart/faucet for more information
   // on friendbot and the local faucet
   const env = loadEnv(mode, process.cwd(), '')
@@ -28,7 +28,7 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         '/friendbot': {
-          target: getFriendbotUrl(mode),
+          target: getFriendbotHost(mode),
           changeOrigin: true,
         },
       }
