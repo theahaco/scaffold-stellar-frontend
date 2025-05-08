@@ -1,13 +1,22 @@
-import storage from "../util/storage"
+import { createContext, useContext, useEffect, useState } from "react";
 import { wallet } from "../util/wallet";
-import { useEffect, useState } from "react";
+import storage from "../util/storage";
 
-export const useWallet = () => {
+type WalletContextType = {
+  address?: string;
+  network?: Awaited<ReturnType<typeof wallet.getNetwork>>;
+};
+
+const WalletContext = createContext<WalletContextType | undefined>(undefined);
+
+export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   const [address, setAddress] = useState<string>();
   const [network, setNetwork] = useState<Awaited<ReturnType<typeof wallet.getNetwork>>>();
 
   useEffect(() => {
+
     const timer = setInterval(async () => {
+      console.log('[useEffect] initialized');
       // There is no way, with StellarWalletsKit, to check if the wallet is
       // installed/connected/authorized! You just have to try to get the
       // address and then parse an error that is not even an Error class.
@@ -34,5 +43,17 @@ export const useWallet = () => {
     return () => { clearTimeout(timer) }
   }, [])
 
-  return { address, network };
+  return (
+    <WalletContext.Provider value={{ address, network }}>
+      {children}
+    </WalletContext.Provider>
+  );
+};
+
+export const useWallet = () => {
+  const ctx = useContext(WalletContext);
+  if (!ctx) {
+    throw new Error("useWallet must be used within a WalletProvider");
+  }
+  return ctx;
 };

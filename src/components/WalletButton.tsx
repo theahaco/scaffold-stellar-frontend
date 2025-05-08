@@ -1,6 +1,6 @@
 
 import { Button, Layout, Modal } from '@stellar/design-system';
-import { useWallet } from '../hooks/useWallet';
+import { useWallet } from '../providers/WalletProviders';
 import { connectWallet, disconnectWallet } from '../util/wallet';
 import { useState } from 'react';
 
@@ -13,12 +13,12 @@ export const WalletButton = () => {
   // TODO: figure out why `useWallet` is getting mounted/used twice
   console.log({ component: 'WalletButton', address })
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (address) {
       setShowModal(true)
     }
     else {
-      connectWallet()
+      await connectWallet()
     }
   }
 
@@ -31,8 +31,8 @@ export const WalletButton = () => {
           <Button
             size="md"
             variant="primary"
-            onClick={() => {
-              disconnectWallet();
+            onClick={async () => {
+              await disconnectWallet();
               setShowModal(false);
             }}
           >
