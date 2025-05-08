@@ -7,35 +7,33 @@ import { useState } from 'react';
 
 export const WalletButton = () => {
   const [showModal, setShowModal] = useState(false);
-  const { address, setAddress } = useWallet()
+  const { address } = useWallet()
   const buttonLabel = address ? `${address.slice(0, 10)}...` : "Connect"
 
-  const handleClick = () => {
-    void (async () => {
-      if (address) {
-        setShowModal(true);
-      } else {
-        await connectWallet();
-      }
-    })();
+  const toggleConnection = async () => {
+    if (address) {
+      setShowModal(true);
+    } else {
+      await connectWallet();
+    }
   };
 
 
   return <Layout.Content>
     <div id="modalContainer">
       <Modal visible={showModal} onClose={() => setShowModal(false)} parentId="modalContainer">
-        <Modal.Heading>Do you want to disconnect ?</Modal.Heading>
+        <Modal.Heading>
+          Connected as <code style={{ lineBreak: 'anywhere' }}>{address}</code>.
+          Do you want to disconnect?
+        </Modal.Heading>
         <Modal.Footer itemAlignment='stack'>
           <Button
             size="md"
             variant="primary"
-            onClick={ () => {
-              void(async () => {
-                await disconnectWallet();
-                setShowModal(false);
-                if (setAddress) setAddress(undefined)
-              })()}
-            }
+            onClick={async () => {
+              await disconnectWallet();
+              setShowModal(false);
+            }}
           >
             Disconnect
           </Button>
@@ -51,6 +49,8 @@ export const WalletButton = () => {
         </Modal.Footer>
       </Modal>
     </div>
-    <Button variant="primary" size="lg" onClick={handleClick}>{buttonLabel}</Button>
+    <Button variant="primary" size="lg" onClick={toggleConnection}>
+      {buttonLabel}
+    </Button>
   </Layout.Content>
 }

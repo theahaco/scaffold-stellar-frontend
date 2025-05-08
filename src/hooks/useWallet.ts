@@ -1,5 +1,5 @@
 import { use } from "react";
-import { WalletContext } from "../providers/WalletProviders";
+import { WalletContext } from "../providers/WalletProvider";
 
 
 export const useWallet = () => {
