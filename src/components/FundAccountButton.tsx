@@ -1,14 +1,7 @@
 import React, { useState, useTransition } from 'react';
 import { useNotification } from '../hooks/useNotification.ts';
 import { Button, Tooltip } from '@stellar/design-system';
-import { z } from 'zod';
 
-const FriendbotResponseSchema = z.object({
-  status: z.number(),
-  type: z.string(),
-  title: z.string(),
-  detail: z.string(),
-});
 
 const FundAccountButton: React.FC = () => {
   const { addNotification } = useNotification();
@@ -29,15 +22,22 @@ const FundAccountButton: React.FC = () => {
           addNotification('Account funded successfully!', 'success');
           setIsFunded(true);
         } else {
-          const body = FriendbotResponseSchema.parse(await response.json());
-
-          if (body.detail === "account already funded to starting balance") {
-            setIsFunded(true);
+          const body: unknown = await response.json();
+          if (
+            body !== null &&
+            typeof body === 'object' &&
+            'detail' in body &&
+            typeof body.detail === 'string'
+          ) {
+            if (body.detail === "account already funded to starting balance") {
+              setIsFunded(true);
+            }
+            addNotification(`Error funding account: ${body.detail}`, 'error');
+          } else {
+            addNotification('Error funding account: Unknown error', 'error');
           }
-          addNotification(`Error funding account: ${body.detail || 'Unknown error'}`, 'error');
         }
       } catch (error) {
-        console.error('Error funding account:', error);
         addNotification('Error funding account. Please try again.', 'error');
       }
     });
