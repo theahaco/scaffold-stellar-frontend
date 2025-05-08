@@ -5,6 +5,7 @@ import storage from "../util/storage";
 type WalletContextType = {
   address?: string;
   network?: Awaited<ReturnType<typeof wallet.getNetwork>>;
+  setAddress?: React.Dispatch<React.SetStateAction<string | undefined>>
 };
 
 export const WalletContext = createContext<WalletContextType | undefined>(undefined);
@@ -43,7 +44,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   }, [])
 
   return (
-    <WalletContext.Provider value={{ address, network }}>
+    <WalletContext.Provider value={{ address, network, setAddress }}>
       {children}
     </WalletContext.Provider>
   );

@@ -7,7 +7,7 @@ import { useState } from 'react';
 
 export const WalletButton = () => {
   const [showModal, setShowModal] = useState(false);
-  const { address } = useWallet()
+  const { address, setAddress } = useWallet()
   const buttonLabel = address ? `${address.slice(0, 10)}...` : "Connect"
 
   // TODO: figure out why `useWallet` is getting mounted/used twice
@@ -35,6 +35,7 @@ export const WalletButton = () => {
               void(async () => {
                 await disconnectWallet();
                 setShowModal(false);
+                if (setAddress) setAddress(undefined)
               })()}
             }
           >
