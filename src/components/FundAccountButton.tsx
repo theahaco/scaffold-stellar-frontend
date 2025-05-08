@@ -37,7 +37,7 @@ const FundAccountButton: React.FC = () => {
             addNotification('Error funding account: Unknown error', 'error');
           }
         }
-      } catch (error) {
+      } catch {
         addNotification('Error funding account. Please try again.', 'error');
       }
     });
