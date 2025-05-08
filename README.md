@@ -1,16 +1,8 @@
-# Loam's Frontend Template for Soroban, using Astro
+# Scaffold Stellar Frontend
 
-Under active development.
+_Under active development._
 
-Goals:
-
-- [x] For all contracts in `contracts/*`, automatically deploy to testnet, generate bindings, and import in `src/contracts/*`.
-- [ ] Make it just as easy to rely on 3rd-party, already-deployed contracts
-- [ ] Support multiple contract environments
-  - [x] development/local ("standalone")
-  - [ ] testing/local
-  - [ ] staging/testnet
-  - [ ] production/mainnet
+Frontend template for projects created with `stellar scaffold …`.
 
 # Getting Started
 

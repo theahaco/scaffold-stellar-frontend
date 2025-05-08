@@ -1,5 +1,9 @@
+const envRPC = import.meta.env.PUBLIC_STELLAR_RPC_URL;
 export const rpcUrl =
-  import.meta.env.PUBLIC_SOROBAN_RPC_URL as string ?? "http://localhost:8000/rpc";
+  envRPC && typeof envRPC === "string"
+    ? envRPC : "http://localhost:8000/rpc";
+
+const envNetworkPassphrase = import.meta.env.PUBLIC_STELLAR_NETWORK_PASSPHRASE;
 export const networkPassphrase =
-  import.meta.env.PUBLIC_SOROBAN_NETWORK_PASSPHRASE as string ??
-  "Standalone Network ; February 2017";
+  envNetworkPassphrase && typeof envNetworkPassphrase === "string"
+    ? envRPC : "Standalone Network ; February 2017";

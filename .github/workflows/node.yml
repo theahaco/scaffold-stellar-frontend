@@ -44,5 +44,6 @@ jobs:
     - run: npm ci
     - run: npm run install:contracts
     - run: npm run build
+    - run: npm run lint
     - name: Run tests
       run: npm test --if-present
