@@ -56,8 +56,12 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     let timer: NodeJS.Timeout
     (async () => {
-      // then start waiting between updates
-      // (using `while (true)` to allow awaits to complete between loops)
+      // Poll the wallet extension for updates every second. This allows the
+      // app to stay aware of which address & network the user selected in
+      // their wallet extension.
+      //
+      // Using `while (true)` (as opposed to `setInterval`) allows awaits to
+      // complete between iterations.
       while (true) {
         await new Promise((res) => {
           timer = setTimeout(res, 1000)
@@ -65,6 +69,9 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
         await updateCurrentWalletState()
       }
     })()
+
+    // Clear the timeout when the component unmounts
+    // (unmounting removes the `while (true)` loop)
     return () => {
       if (timer) clearTimeout(timer)
     }
