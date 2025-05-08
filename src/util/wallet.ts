@@ -12,12 +12,11 @@ import {
   xBullModule,
   HotWalletModule,
   HanaModule,
-  WalletNetwork,
 } from '@creit.tech/stellar-wallets-kit';
 import { networkPassphrase } from '../contracts/util'
 
 const kit: StellarWalletsKit = new StellarWalletsKit({
-  network: networkPassphrase as WalletNetwork,
+  network: networkPassphrase,
   modules: [
     new AlbedoModule(),
     new FreighterModule(),

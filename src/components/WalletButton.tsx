@@ -1,6 +1,6 @@
 
 import { Button, Layout, Modal } from '@stellar/design-system';
-import { useWallet } from '../providers/WalletProviders';
+import { useWallet } from '../hooks/useWallet';
 import { connectWallet, disconnectWallet } from '../util/wallet';
 import { useState } from 'react';
 
