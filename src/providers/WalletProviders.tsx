@@ -14,9 +14,8 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   const [network, setNetwork] = useState<Awaited<ReturnType<typeof wallet.getNetwork>>>();
 
   useEffect(() => {
-
-    const timer = setInterval(async () => {
-      console.log('[useEffect] initialized');
+    const timer = setInterval(() => {
+      void (async () => {
       // There is no way, with StellarWalletsKit, to check if the wallet is
       // installed/connected/authorized! You just have to try to get the
       // address and then parse an error that is not even an Error class.
@@ -37,7 +36,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
           console.error(e)
         }
       }
-    }, 1000)
+    })()}, 1000)
 
     // return function to call when component dismounts
     return () => { clearTimeout(timer) }

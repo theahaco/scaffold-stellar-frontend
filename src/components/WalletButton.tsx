@@ -11,16 +11,16 @@ export const WalletButton = () => {
   const buttonLabel = address ? `${address.slice(0, 10)}...` : "Connect"
 
   // TODO: figure out why `useWallet` is getting mounted/used twice
-  console.log({ component: 'WalletButton', address })
 
-  const handleClick = async () => {
-    if (address) {
-      setShowModal(true)
-    }
-    else {
-      await connectWallet()
-    }
-  }
+  const handleClick = () => {
+    void (async () => {
+      if (address) {
+        setShowModal(true);
+      } else {
+        await connectWallet();
+      }
+    })();
+  };
 
 
   return <Layout.Content>
@@ -31,10 +31,12 @@ export const WalletButton = () => {
           <Button
             size="md"
             variant="primary"
-            onClick={async () => {
-              await disconnectWallet();
-              setShowModal(false);
-            }}
+            onClick={ () => {
+              void(async () => {
+                await disconnectWallet();
+                setShowModal(false);
+              })()}
+            }
           >
             Disconnect
           </Button>

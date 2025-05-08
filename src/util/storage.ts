@@ -11,17 +11,9 @@
  * type. Used to provide both good typing AND good type-ahead, so that you can
  * see a list of valid storage keys while using this module elsewhere.
  */
-const keys = {
-  walletId: 'a',
-};
-
-/**
- * A mapped TypeScript type created from the run-time `keys` const above.
- */
 type Schema = {
-  [K in keyof typeof keys]: typeof keys[K]
+  walletId: string;
 };
-
 
 /**
  * Typed interface that follows the Web Storage API: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
