@@ -1,27 +1,17 @@
 
-import { Button, Layout, Modal } from '@stellar/design-system';
+import { Button, Layout, Modal, Profile } from '@stellar/design-system';
 import { useWallet } from '../hooks/useWallet';
 import { connectWallet, disconnectWallet } from '../util/wallet';
 import { useState } from 'react';
 
 
 export const WalletButton = () => {
-  const [showModal, setShowModal] = useState(false);
+  const [showDisconnectModal, setShowDisconnectModal] = useState(false);
   const { address } = useWallet()
-  const buttonLabel = address ? `${address.slice(0, 10)}...` : "Connect"
-
-  const toggleConnection = async () => {
-    if (address) {
-      setShowModal(true);
-    } else {
-      await connectWallet();
-    }
-  };
-
 
   return <Layout.Content>
     <div id="modalContainer">
-      <Modal visible={showModal} onClose={() => setShowModal(false)} parentId="modalContainer">
+      <Modal visible={showDisconnectModal} onClose={() => setShowDisconnectModal(false)} parentId="modalContainer">
         <Modal.Heading>
           Connected as <code style={{ lineBreak: 'anywhere' }}>{address}</code>.
           Do you want to disconnect?
@@ -32,7 +22,7 @@ export const WalletButton = () => {
             variant="primary"
             onClick={async () => {
               await disconnectWallet();
-              setShowModal(false);
+              setShowDisconnectModal(false);
             }}
           >
             Disconnect
@@ -41,7 +31,7 @@ export const WalletButton = () => {
             size="md"
             variant="tertiary"
             onClick={() => {
-              setShowModal(false);
+              setShowDisconnectModal(false);
             }}
           >
             Cancel
@@ -49,8 +39,12 @@ export const WalletButton = () => {
         </Modal.Footer>
       </Modal>
     </div>
-    <Button variant="primary" size="lg" onClick={toggleConnection}>
-      {buttonLabel}
-    </Button>
+    {address
+      ? <Profile publicAddress={address} size="lg" isShort onClick={() => setShowDisconnectModal(true)} />
+      :
+      <Button variant="primary" size="lg" onClick={connectWallet}>
+        Connect
+      </Button>
+    }
   </Layout.Content>
 }
