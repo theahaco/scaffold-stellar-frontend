@@ -24,6 +24,7 @@ const kit: StellarWalletsKit = new StellarWalletsKit({
     new RabetModule(),
     new xBullModule(),
     new HanaModule(),
+    // new LobstrModule(), omitted bc does not support `getNetwork`
     new HotWalletModule(),
   ],
   selectedWalletId: storage.getItem("walletId") || FREIGHTER_ID, // should be able to keep it unset!!!
