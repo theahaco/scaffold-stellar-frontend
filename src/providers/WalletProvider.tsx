@@ -2,13 +2,14 @@ import { createContext, useEffect, useMemo, useState } from "react";
 import { wallet } from "../util/wallet";
 import storage from "../util/storage";
 
-interface WalletContextType {
+export interface WalletContextType {
   address?: string;
   network?: string;
   networkPassphrase?: string;
 };
 
-const WalletContext = createContext<WalletContextType | undefined>(undefined);
+export const WalletContext = // eslint-disable-line react-refresh/only-export-components
+  createContext<WalletContextType>({});
 
 export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   const [address, setAddress] = useState<string>();
@@ -89,6 +90,3 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     </WalletContext>
   );
 };
-
-export { WalletContext }
-export type { WalletContextType }

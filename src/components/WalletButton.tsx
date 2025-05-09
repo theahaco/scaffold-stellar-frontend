@@ -48,6 +48,11 @@ export const WalletButton = () => {
         </Modal.Footer>
       </Modal>
     </div>
-    <Profile publicAddress={address} size="lg" isShort onClick={() => setShowDisconnectModal(true)} />
+    <Profile
+      publicAddress={address}
+      size="md"
+      isShort
+      onClick={() => setShowDisconnectModal(true)}
+    />
   </Layout.Content>
 }
