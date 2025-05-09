@@ -33,15 +33,17 @@ const kit: StellarWalletsKit = new StellarWalletsKit({
 export const connectWallet = async () => {
   await kit.openModal({
     modalTitle: "Connect to your wallet",
-    onWalletSelected: async (option: ISupportedWallet) => {
+    onWalletSelected: (option: ISupportedWallet) => {
       const selectedId = option.id;
       kit.setWallet(selectedId);
 
-      // now open selected wallet's login flow by calling `getAddress` (!)
-      await kit.getAddress();
-
-      // once the `await` returns successfully, we know they actually connected that wallet
-      storage.setItem("walletId", selectedId);
+      // Now open selected wallet's login flow by calling `getAddress` --
+      // Yes, it's strange that a getter has a side effect of opening a modal
+      void kit.getAddress().then(() => {
+        // Once `getAddress` returns successfully, we know they actually
+        // connected the selected wallet, and we set our localStorage
+        storage.setItem("walletId", selectedId);
+      })
     },
   });
 };

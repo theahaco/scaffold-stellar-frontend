@@ -2,13 +2,13 @@ import { createContext, useEffect, useMemo, useState } from "react";
 import { wallet } from "../util/wallet";
 import storage from "../util/storage";
 
-export interface WalletContextType {
+interface WalletContextType {
   address?: string;
   network?: string;
   networkPassphrase?: string;
 };
 
-export const WalletContext = createContext<WalletContextType | undefined>(undefined);
+const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
 export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   const [address, setAddress] = useState<string>();
@@ -55,7 +55,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     let timer: NodeJS.Timeout
-    (async () => {
+    void (async () => {
       // Poll the wallet extension for updates every second. This allows the
       // app to stay aware of which address & network the user selected in
       // their wallet extension.
@@ -75,7 +75,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     return () => {
       if (timer) clearTimeout(timer)
     }
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps -- it SHOULD only run once per component mount
 
   const contextValue = useMemo(() => ({
     address,
@@ -89,3 +89,6 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     </WalletContext>
   );
 };
+
+export { WalletContext }
+export type { WalletContextType }

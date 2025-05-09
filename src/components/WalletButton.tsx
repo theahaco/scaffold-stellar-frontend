@@ -9,6 +9,14 @@ export const WalletButton = () => {
   const [showDisconnectModal, setShowDisconnectModal] = useState(false);
   const { address } = useWallet()
 
+  if (!address) {
+    return  (
+      <Button variant="primary" size="lg" onClick={() => void connectWallet()}>
+        Connect
+      </Button>
+    )
+  }
+
   return <Layout.Content>
     <div id="modalContainer">
       <Modal visible={showDisconnectModal} onClose={() => setShowDisconnectModal(false)} parentId="modalContainer">
@@ -20,9 +28,10 @@ export const WalletButton = () => {
           <Button
             size="md"
             variant="primary"
-            onClick={async () => {
-              await disconnectWallet();
-              setShowDisconnectModal(false);
+            onClick={() => {
+              void disconnectWallet().then(() =>
+                setShowDisconnectModal(false)
+              )
             }}
           >
             Disconnect
@@ -39,12 +48,6 @@ export const WalletButton = () => {
         </Modal.Footer>
       </Modal>
     </div>
-    {address
-      ? <Profile publicAddress={address} size="lg" isShort onClick={() => setShowDisconnectModal(true)} />
-      :
-      <Button variant="primary" size="lg" onClick={connectWallet}>
-        Connect
-      </Button>
-    }
+    <Profile publicAddress={address} size="lg" isShort onClick={() => setShowDisconnectModal(true)} />
   </Layout.Content>
 }
