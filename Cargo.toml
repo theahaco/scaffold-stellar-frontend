@@ -4,10 +4,6 @@ members = [
   "contracts/*",
 ]
 
-[workspace.dependencies]
-loam-sdk = "0.6.16"
-loam-subcontract-core = "0.7.9"
-
 [profile.release]
 opt-level = "z"
 overflow-checks = true

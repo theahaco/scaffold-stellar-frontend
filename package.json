@@ -4,8 +4,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"loam dev --build-clients\" \"vite\"",
-    "start": "concurrently \"loam dev --build-clients\" \"vite\"",
+    "dev": "concurrently \"stellar-scaffold dev --build-clients\" \"vite\"",
+    "start": "concurrently \"stellar-scaffold dev --build-clients\" \"vite\"",
     "build": "tsc -b && vite build",
     "install:contracts": "npm install --workspace=packages && npm run build --workspace=packages",
     "preview": "vite preview",
