@@ -24,6 +24,9 @@ function getFriendbotHost(mode: string) {
 export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
+    define: {
+      global: 'window',
+    },
     envPrefix: "PUBLIC_",
     server: {
       proxy: {

@@ -1,5 +1,6 @@
 import React, { useState, useTransition } from 'react';
 import { useNotification } from '../hooks/useNotification.ts';
+import { useWallet } from '../hooks/useWallet.ts';
 import { Button, Tooltip } from '@stellar/design-system';
 
 
@@ -8,8 +9,7 @@ const FundAccountButton: React.FC = () => {
   const [isPending, startTransition] = useTransition();
   const [isFunded, setIsFunded] = useState(false);
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
-  // TODO: replace with account from wallet
-  const account = "GDVWY6R4RP37DQPAWBNQKQIZAGDVHUAYMYXKUDSY2O7PJWZNSIZIJNHQ";
+  const { address } = useWallet();
 
   const handleFundAccount = (account: string) => {
     startTransition(async () => {
@@ -43,6 +43,8 @@ const FundAccountButton: React.FC = () => {
     });
   };
 
+  if (!address) return null;
+
   return (
     <div
       onMouseEnter={() => setIsTooltipVisible(true)}
@@ -56,7 +58,7 @@ const FundAccountButton: React.FC = () => {
         triggerEl={
           <Button
             disabled={isPending || isFunded}
-            onClick={handleFundAccount.bind(this, account)}
+            onClick={handleFundAccount.bind(this, address)}
             variant="primary"
             size="md"
           >
