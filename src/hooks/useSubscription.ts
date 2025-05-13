@@ -40,11 +40,11 @@ export function useSubscription(
     async function pollEvents(): Promise<void> {
       try {
         if (!paging[id].lastLedgerStart) {
-          let latestLedgerState = await server.getLatestLedger();
+          const latestLedgerState = await server.getLatestLedger();
           paging[id].lastLedgerStart = latestLedgerState.sequence
         } 
        
-        let response = await server.getEvents({
+        const response = await server.getEvents({
           startLedger: !paging[id].pagingToken
             ? paging[id].lastLedgerStart
             : undefined,
@@ -60,34 +60,36 @@ export function useSubscription(
           ],
           limit: 10
         });
-     
+
         paging[id].pagingToken = undefined;
         if (response.latestLedger) {
           paging[id].lastLedgerStart = response.latestLedger;
         }
-        response.events && response.events.forEach(event => {
-          try {
-            onEvent(event)
-          } catch (error) {
-            console.error("Poll Events: subscription callback had error: ", error);
-          } finally {
-            paging[id].pagingToken = event.pagingToken
-          }
-        }) 
+        if (response.events) {
+          response.events.forEach(event => {
+            try {
+              onEvent(event)
+            } catch (error) {
+              console.error("Poll Events: subscription callback had error: ", error);
+            } finally {
+              paging[id].pagingToken = event.pagingToken
+            }
+          }) 
+        }
       } catch (error) {
         console.error("Poll Events: error: ", error);
       } finally {
         if (!stop) {
-          timeoutId = setTimeout(pollEvents, pollInterval);
+          timeoutId = setTimeout(() => void pollEvents(), pollInterval);
         }
       }
     }
 
-    pollEvents();
+    void pollEvents();
 
     return () => {
       if (timeoutId != null) clearTimeout(timeoutId)
       stop = true
     }
-  }, [contractId, topic, onEvent, id, pollInterval])
+  }, [contractId, topic, onEvent, id, pollInterval, server])
 }
