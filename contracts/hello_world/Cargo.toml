@@ -1,0 +1,16 @@
+[package]
+name = "soroban-hello-world-contract"
+version = "0.0.0"
+edition = "2021"
+publish = false
+repository = "https://github.com/stellar/soroban-examples/tree/65d25d24028f71b2c2acb93e09791fcbe4b97142/hello_world"
+
+[lib]
+crate-type = ["cdylib"]
+doctest = false
+
+[dependencies]
+soroban-sdk = { workspace = true }
+
+[dev-dependencies]
+soroban-sdk = { workspace = true, features = ["testutils"] }

@@ -1,0 +1,16 @@
+[package]
+name = "soroban-token-contract"
+description = "Soroban standard token contract"
+version = "0.0.6"
+edition = "2021"
+repository = "https://github.com/stellar/soroban-examples/tree/65d25d24028f71b2c2acb93e09791fcbe4b97142/token"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+soroban-sdk = { workspace = true }
+soroban-token-sdk = { workspace = true }
+
+[dev-dependencies]
+soroban-sdk = { workspace = true, features = ["testutils"] }
