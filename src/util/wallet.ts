@@ -6,12 +6,7 @@ import {
 
   // StellarWalletsKit makes us import and then initialize all of these
   // classes, rather than just specify some strings
-  AlbedoModule,
   FreighterModule,
-  RabetModule,
-  xBullModule,
-  HotWalletModule,
-  HanaModule,
   WalletNetwork,
 } from '@creit.tech/stellar-wallets-kit';
 import { networkPassphrase } from '../contracts/util'
@@ -19,13 +14,13 @@ import { networkPassphrase } from '../contracts/util'
 const kit: StellarWalletsKit = new StellarWalletsKit({
   network: networkPassphrase as WalletNetwork,
   modules: [
-    new AlbedoModule(),
+    // new AlbedoModule(),
     new FreighterModule(),
-    new RabetModule(),
-    new xBullModule(),
-    new HanaModule(),
+    // new RabetModule(),
+    // new xBullModule(),
+    // new HanaModule(),
     // new LobstrModule(), omitted bc does not support `getNetwork`
-    new HotWalletModule(),
+    // new HotWalletModule(),
   ],
   selectedWalletId: storage.getItem("walletId") || FREIGHTER_ID, // should be able to keep it unset!!!
 });
