@@ -16,12 +16,16 @@
   ],
   "dependencies": {
     "@creit.tech/stellar-wallets-kit": "^1.7.3",
+    "@soroban-react/chains": "^9.1.13",
+    "@soroban-react/contracts": "^9.3.0",
+    "@soroban-react/core": "^9.3.0",
     "@stellar/design-system": "^3.1.1",
     "@stellar/stellar-sdk": "^13.3.0",
     "eslint-plugin-react-dom": "^1.48.5",
     "eslint-plugin-react-x": "^1.48.5",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "soroban-react": "^0.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
