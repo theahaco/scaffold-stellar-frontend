@@ -1,9 +1,9 @@
-import { Button, Card, Input } from '@stellar/design-system'
+import { Button, Card, Input, Link } from '@stellar/design-system'
 import { useState } from 'react'
-import * as Client from '../../packages/soroban_hello_world_contract';
+import * as Client from 'soroban_hello_world_contract';
 
 
-export const ContractInteraction = () => {
+export const ContractInteractionHello = () => {
   const [helloTo, setHelloTo] = useState("");
   const [greetings, setGreetings] = useState("");
 
@@ -32,7 +32,7 @@ export const ContractInteraction = () => {
       <Input   
         fieldSize="md"
         id="input" 
-        label="Update contract"
+        label="Say Hello to"
         value={helloTo}
         onChange={(e) => setHelloTo(e.target.value)}
       />
@@ -43,8 +43,14 @@ export const ContractInteraction = () => {
         style={{marginTop: "20px"}}
         onClick={callContractHello}
       >
-        Update
+        Submit
       </Button>
+      <div style={{fontSize: "0.7em", marginTop: "10px"}}>
+          To test other contracts, go to {" "}
+          <Link href="https://lab.stellar.org/smart-contracts/contract-explorer">
+            Stellar lab
+          </Link>
+      </div>
     </Card>
   </div>
 }
