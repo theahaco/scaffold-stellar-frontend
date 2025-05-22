@@ -23,7 +23,6 @@
     "@stellar/stellar-sdk": "^13.3.0",
     "eslint-plugin-react-dom": "^1.48.5",
     "eslint-plugin-react-x": "^1.48.5",
-    "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "soroban-react": "^0.0.1"
   },
