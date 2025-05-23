@@ -1,24 +1,27 @@
 import { Button, Card, Input, Link } from '@stellar/design-system'
 import { useState } from 'react'
 import * as Client from 'soroban_hello_world_contract';
+import { rpcUrl } from '../contracts/util';
 
 
 export const ContractInteractionHello = () => {
   const [helloTo, setHelloTo] = useState("");
-  const [greetings, setGreetings] = useState("");
+  const [greetings, setGreetings] = useState("Hello !");
 
   const contract = new Client.Client({
     ...Client.networks.standalone,
-    rpcUrl: 'http://localhost:8000/rpc',
+    rpcUrl: rpcUrl,
     allowHttp : true
   });
 
-  const callContractHello = () => {
-    contract.hello({to: helloTo}).then((res) => {
-      setGreetings(res.result.join(" "))
-    }).catch((err) => {
+  const callContractHello = async () => {
+    try {
+      const helloRes = await contract.hello({to: helloTo})
+      setGreetings(helloRes.result.join(" "))
+    }
+    catch (err) {
       console.log(err)
-    })
+    }
   }
 
   return <div style={{width: "30%"}}>
@@ -26,9 +29,9 @@ export const ContractInteractionHello = () => {
       borderRadiusSize="md"
       variant="primary"
     >
-      <h1>
+      <h2 style={{height: "20%"}}>
         {greetings}
-      </h1>
+      </h2>
       <Input   
         fieldSize="md"
         id="input" 
@@ -41,7 +44,7 @@ export const ContractInteractionHello = () => {
         variant="primary"
         isFullWidth
         style={{marginTop: "20px"}}
-        onClick={callContractHello}
+        onClick={() => void callContractHello()}
       >
         Submit
       </Button>
