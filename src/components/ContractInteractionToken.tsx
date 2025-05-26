@@ -1,10 +1,9 @@
-import { Button, Card, Input, Link } from '@stellar/design-system'
 import { useEffect, useState } from 'react'
 import * as Client from 'soroban_token_contract';
 import { useWallet } from '../hooks/useWallet';
 import { networkPassphrase, rpcUrl } from '../contracts/util';
 import { wallet } from "../util/wallet";
-
+import { ContractInteraction } from './ContractInteraction';
 
 export const ContractInteractionToken = () => {
   const { address } = useWallet()
@@ -13,6 +12,7 @@ export const ContractInteractionToken = () => {
   const [amountToMint, setAmountToMint] = useState("");
 
   const inputLabel = !balance ? "Set an admin" : "How much tokens do you want to mint ?"
+  const titleLabel = !balance ? "Set an admin to use the contract !" : `Your balance is : ${balance}`
 
   const contract = new Client.Client({
     ...Client.networks.standalone,
@@ -62,7 +62,7 @@ export const ContractInteractionToken = () => {
     }
   }
 
-  const onChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!balance) {
       setAdminAccount(e.target.value)
     }
@@ -79,38 +79,5 @@ export const ContractInteractionToken = () => {
     }
   })
 
-
-
-  return <div style={{width: "30%"}}>
-    <Card
-      borderRadiusSize="md"
-      variant="primary"
-    >
-      <h2 style={{height: "20%"}}>
-        {!balance ? "Set an admin to use the contract !" : `Your balance is : ${balance}`}
-      </h2>
-      <Input   
-        fieldSize="md"
-        id="input" 
-        label={inputLabel}
-        value={!balance ? adminAccount : amountToMint}
-        onChange={onChangeInput}
-      />
-      <Button
-        size="md"
-        variant="primary"
-        isFullWidth
-        style={{marginTop: "20px"}}
-        onClick={() => void callContractToken()}
-      >
-        Submit
-      </Button>
-      <div style={{fontSize: "0.7em", marginTop: "10px"}}>
-          To test other contracts, go to {" "}
-          <Link href="https://lab.stellar.org/smart-contracts/contract-explorer">
-            Stellar lab
-          </Link>
-      </div>
-    </Card>
-  </div>
+  return <ContractInteraction onInputChange={onInputChange} onSubmit={() => void callContractToken()} inputLabel={inputLabel} inputValue={!balance ? adminAccount : amountToMint} titleLabel={titleLabel} />
 }
