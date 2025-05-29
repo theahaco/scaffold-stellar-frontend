@@ -15,7 +15,15 @@ function App() {
           <h1>Welcome to your app!</h1>
         </Layout.Inset>
       </Layout.Content>
-      <Layout.Footer />
+      <Layout.Footer>
+        <span>
+          © {new Date().getFullYear()} My App. Licensed under the{" "}
+          <a href="http://www.apache.org/licenses/LICENSE-2.0" target="_blank" rel="noopener noreferrer">
+            Apache License, Version 2.0
+          </a>
+          .
+        </span>
+      </Layout.Footer>
     </main>
   );
 }
