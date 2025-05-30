@@ -56,7 +56,6 @@ function App() {
 
           <p>
             To deploy your app, use the <Code size="md">stellar contract deploy</Code> command (<a href="https://developers.stellar.org/docs/build/guides/cli/install-deploy">docs</a>).
-            This will build your contracts, upload them to the network, and update your dapp with the latest changes.
           </p>
         </Layout.Inset>
       </Layout.Content>
