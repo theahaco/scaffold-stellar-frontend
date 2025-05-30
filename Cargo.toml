@@ -4,9 +4,19 @@ members = [
   "contracts/*",
 ]
 
+[workspace.package]
+authors = ["AhaLabs"]
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/AhaLabs/scaffold-stellar"
+version = "0.0.1"
+
 [workspace.dependencies]
 soroban-sdk = { version = "22.0.7" }
 soroban-token-sdk = { version = "22.0.1" }
+stellar-pausable = { git = "https://github.com/OpenZeppelin/stellar-contracts", tag = "v0.2.0" }
+stellar-pausable-macros = { git = "https://github.com/OpenZeppelin/stellar-contracts", tag = "v0.2.0" }
+stellar-fungible = { git = "https://github.com/OpenZeppelin/stellar-contracts", tag = "v0.2.0" }
 
 [profile.release]
 opt-level = "z"

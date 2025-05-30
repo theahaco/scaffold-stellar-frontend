@@ -26,7 +26,7 @@ default = true # Optional. Whether to use this account as the `--source` for com
 soroban_hello_world_contract = { client = true }
 
 # Rather than in one list, TOML allows specifying contracts in their own "sections"
-[development.contracts.soroban_token_contract]
+[development.contracts.fungible_token_interface_example]
 client = true
 
 # If your contract has a `__constructor`, specify your arguments to it here.
@@ -34,7 +34,7 @@ client = true
 # `stellar contract deploy`
 # Only available in `development` and `test` environments
 constructor_args = """
---symbol SCAST --decimal 7 --name "Scaffold Stellar Token" --admin me
+--owner me --initial_supply "1000000000000000000000000"
 """
 
 # Calls to the contract to make after it's deployed and initialized with

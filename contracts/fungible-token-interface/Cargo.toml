@@ -1,9 +1,8 @@
 [package]
-name = "soroban-hello-world-contract"
-description = "A simple hello world contract"
+name = "fungible-token-interface-example"
 edition.workspace = true
 license.workspace = true
-repository.workspace = true
+repository = "https://github.com/OpenZeppelin/stellar-contracts"
 publish = false
 version.workspace = true
 
@@ -13,6 +12,9 @@ doctest = false
 
 [dependencies]
 soroban-sdk = { workspace = true }
+stellar-pausable = { workspace = true }
+stellar-pausable-macros = { workspace = true }
+stellar-fungible = { workspace = true }
 
 [dev-dependencies]
 soroban-sdk = { workspace = true, features = ["testutils"] }
