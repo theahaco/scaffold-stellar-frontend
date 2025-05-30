@@ -6,9 +6,6 @@ import { stellarNetwork } from '../contracts/util';
 const NetworkPill: React.FC = () => {
   const { network, address } = useWallet();
   
-  // Determine network display name
-  const networkName = stellarNetwork || 'local';
-  
   // Check if there's a network mismatch
   const isNetworkMismatch = address && network && network.toUpperCase() !== stellarNetwork.toUpperCase();
   
@@ -44,7 +41,7 @@ const NetworkPill: React.FC = () => {
       title={mismatchMessage}
     >
       <Icon.Circle color={circleColor} />
-      {formatNetworkName(networkName)}
+      {formatNetworkName(stellarNetwork)}
     </div>
   );
 };
