@@ -7,7 +7,7 @@ function getFriendbotHost(mode: string) {
   const env = loadEnv(mode, process.cwd(), '')
   switch (env.PUBLIC_STELLAR_NETWORK) {
     case "local":
-      return "http://localhost:8000";
+      return "http://localhost:8000/friendbot";
     case "futurenet":
       return "https://friendbot-futurenet.stellar.org";
     case "testnet":
@@ -33,6 +33,7 @@ export default defineConfig(({ mode }) => {
         '/friendbot': {
           target: getFriendbotHost(mode),
           changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/friendbot/, ''),
         },
       }
     }
