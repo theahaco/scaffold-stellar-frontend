@@ -11,10 +11,10 @@ import { connectWallet, disconnectWallet } from "../util/wallet";
 import { useState } from "react";
 
 export const WalletButton = () => {
-  const [showTooltip, setShowTooltip] = useState(false);
+  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
   const [showDisconnectModal, setShowDisconnectModal] = useState(false);
   const { address, isPending } = useWallet();
-  const { xlm } = useWalletBalance();
+  const { xlm, ...balance } = useWalletBalance();
   const buttonLabel = isPending ? "Loading..." : "Connect";
 
   if (!address) {
@@ -24,6 +24,11 @@ export const WalletButton = () => {
       </Button>
     );
   }
+
+  const showTooltip = () => {
+    balance.updateBalance();
+    setIsTooltipVisible(true);
+  };
 
   return (
     <Layout.Content>
@@ -64,11 +69,11 @@ export const WalletButton = () => {
       </div>
 
       <div
-        onMouseEnter={() => setShowTooltip(true)}
-        onMouseLeave={() => setShowTooltip(false)}
+        onMouseEnter={showTooltip}
+        onMouseLeave={() => setIsTooltipVisible(false)}
       >
         <Tooltip
-          isVisible={showTooltip}
+          isVisible={isTooltipVisible}
           isContrast
           title="Wallet Balance"
           placement="bottom"
@@ -81,7 +86,9 @@ export const WalletButton = () => {
             />
           }
         >
-          {xlm} XLM
+          <span style={{ opacity: balance.isPending ? 0.6 : 1 }}>
+            {xlm} XLM
+          </span>
         </Tooltip>
       </div>
     </Layout.Content>

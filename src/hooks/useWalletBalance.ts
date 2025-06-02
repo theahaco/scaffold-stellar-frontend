@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useWallet } from "./useWallet";
 import { fetchBalance } from "../util/wallet";
 
@@ -11,15 +11,17 @@ export const useWalletBalance = () => {
     Awaited<ReturnType<typeof fetchBalance>>
   >([]);
 
-  useEffect(() => {
+  const updateBalance = useCallback(async () => {
     if (!address) return;
-    (async () => {
-      setIsPending(true);
-      const result = await fetchBalance(address, network === "TESTNET");
-      setBalances(result);
-      setIsPending(false);
-    })();
+    setIsPending(true);
+    const result = await fetchBalance(address, network === "TESTNET");
+    setBalances(result);
+    setIsPending(false);
   }, [address, network]);
+
+  useEffect(() => {
+    updateBalance();
+  }, [updateBalance]);
 
   const native = balances.find(({ asset_type }) => asset_type === "native");
 
@@ -27,5 +29,6 @@ export const useWalletBalance = () => {
     balances,
     xlm: formatter.format(Number(native?.balance ?? "0")),
     isPending: wallet.isPending || isPending,
+    updateBalance,
   };
 };
