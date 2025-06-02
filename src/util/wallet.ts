@@ -1,4 +1,4 @@
-import storage from './storage'
+import storage from "./storage";
 import {
   ISupportedWallet,
   StellarWalletsKit,
@@ -8,8 +8,9 @@ import {
   // classes, rather than just specify some strings
   FreighterModule,
   WalletNetwork,
-} from '@creit.tech/stellar-wallets-kit';
-import { networkPassphrase } from '../contracts/util'
+} from "@creit.tech/stellar-wallets-kit";
+import { Horizon, rpc } from "@stellar/stellar-sdk";
+import { networkPassphrase, rpcUrl } from "../contracts/util";
 
 const kit: StellarWalletsKit = new StellarWalletsKit({
   network: networkPassphrase as WalletNetwork,
@@ -38,7 +39,7 @@ export const connectWallet = async () => {
         // Once `getAddress` returns successfully, we know they actually
         // connected the selected wallet, and we set our localStorage
         storage.setItem("walletId", selectedId);
-      })
+      });
     },
   });
 };
@@ -46,6 +47,16 @@ export const connectWallet = async () => {
 export const disconnectWallet = async () => {
   await kit.disconnect();
   storage.removeItem("walletId");
-}
+};
+
+export const fetchBalance = async (address: string, testnet = false) => {
+  const horizonUrl = testnet
+    ? "https://horizon-testnet.stellar.org"
+    : "https://horizon.stellar.org";
+  const horizon = new Horizon.Server(horizonUrl);
+
+  const { balances } = await horizon.accounts().accountId(address).call();
+  return balances;
+};
 
 export const wallet = kit;
