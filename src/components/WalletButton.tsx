@@ -26,7 +26,7 @@ export const WalletButton = () => {
   }
 
   const showTooltip = () => {
-    balance.updateBalance();
+    void balance.updateBalance();
     setIsTooltipVisible(true);
   };
 

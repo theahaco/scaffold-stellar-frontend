@@ -20,7 +20,7 @@ export const useWalletBalance = () => {
   }, [address, network]);
 
   useEffect(() => {
-    updateBalance();
+    void updateBalance();
   }, [updateBalance]);
 
   const native = balances.find(({ asset_type }) => asset_type === "native");
