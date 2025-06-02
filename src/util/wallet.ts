@@ -9,8 +9,8 @@ import {
   FreighterModule,
   WalletNetwork,
 } from "@creit.tech/stellar-wallets-kit";
-import { Horizon, rpc } from "@stellar/stellar-sdk";
-import { networkPassphrase, rpcUrl } from "../contracts/util";
+import { Horizon } from "@stellar/stellar-sdk";
+import { networkPassphrase } from "../contracts/util";
 
 const kit: StellarWalletsKit = new StellarWalletsKit({
   network: networkPassphrase as WalletNetwork,
