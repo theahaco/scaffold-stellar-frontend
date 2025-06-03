@@ -5,7 +5,6 @@
  * Provides a fully-typed interface to localStorage, and is easy to modify for other storage strategies (i.e. sessionStorage)
  */
 
-
 /**
  * Valid localStorage key names mapped to an arbitrary value of the correct
  * type. Used to provide both good typing AND good type-ahead, so that you can
@@ -24,7 +23,7 @@ class TypedStorage<T> {
   private readonly storage: Storage;
 
   constructor() {
-    this.storage = localStorage
+    this.storage = localStorage;
   }
 
   public get length(): number {
@@ -35,7 +34,10 @@ class TypedStorage<T> {
     return this.storage?.key(index) as U;
   }
 
-  public getItem<U extends keyof T>(key: U, retrievalMode: 'fail' | 'raw' | 'safe' = 'fail'): T[U] | null {
+  public getItem<U extends keyof T>(
+    key: U,
+    retrievalMode: "fail" | "raw" | "safe" = "fail",
+  ): T[U] | null {
     const item = this.storage?.getItem(key.toString());
 
     if (item == null) {
@@ -46,10 +48,10 @@ class TypedStorage<T> {
       return JSON.parse(item) as T[U];
     } catch (error) {
       switch (retrievalMode) {
-        case 'safe':
+        case "safe":
           return null;
-        case 'raw':
-          return (item as unknown) as T[U];
+        case "raw":
+          return item as unknown as T[U];
         default:
           throw error;
       }
@@ -72,5 +74,4 @@ class TypedStorage<T> {
 /**
  * Fully-typed wrapper around localStorage
  */
-export default new TypedStorage<Schema>;
-
+export default new TypedStorage<Schema>();

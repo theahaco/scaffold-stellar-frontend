@@ -4,7 +4,7 @@ import react from "@vitejs/plugin-react";
 function getFriendbotHost(mode: string) {
   // See https://developers.stellar.org/docs/tools/quickstart/faucet for more information
   // on friendbot and the local faucet
-  const env = loadEnv(mode, process.cwd(), '')
+  const env = loadEnv(mode, process.cwd(), "");
   switch (env.PUBLIC_STELLAR_NETWORK) {
     case "local":
       return "http://localhost:8000/friendbot";
@@ -16,7 +16,9 @@ function getFriendbotHost(mode: string) {
       // friendbot is not available on mainnet, this is a fallback that should not need to be called
       return "https://friendbot.stellar.org";
     default:
-      throw new Error(`Unknown PUBLIC_STELLAR_NETWORK: ${env.PUBLIC_STELLAR_NETWORK}`);
+      throw new Error(
+        `Unknown PUBLIC_STELLAR_NETWORK: ${env.PUBLIC_STELLAR_NETWORK}`,
+      );
   }
 }
 
@@ -25,17 +27,17 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     define: {
-      global: 'window',
+      global: "window",
     },
     envPrefix: "PUBLIC_",
     server: {
       proxy: {
-        '/friendbot': {
+        "/friendbot": {
           target: getFriendbotHost(mode),
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/friendbot/, ''),
+          rewrite: (path) => path.replace(/^\/friendbot/, ""),
         },
-      }
-    }
-  }
+      },
+    },
+  };
 });
