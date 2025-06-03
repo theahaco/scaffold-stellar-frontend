@@ -46,5 +46,6 @@ jobs:
       - run: npm run install:contracts
       - run: npm run build
       - run: npm run lint
+      - run: npx prettier . --check
       - name: Run tests
         run: npm test --if-present
