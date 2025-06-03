@@ -3,8 +3,6 @@ import "./App.module.css"
 import ConnectAccount from "./components/ConnectAccount.tsx";
 
 function App() {
-  // const statusMessage =  soroban_hello_world_contract.hello({"to": "world"});
-  // console.log("Status message from contract:", statusMessage);
   return (
     <main>
       <Layout.Header
@@ -55,8 +53,10 @@ function App() {
           <h2>Deploying your app</h2>
 
           <p>
-            To deploy your app, use the <Code size="md">stellar contract deploy</Code> command (<a href="https://developers.stellar.org/docs/build/guides/cli/install-deploy">docs</a>).
+            To deploy your contracts, use the <Code size="md">stellar contract deploy</Code> command (<a href="https://developers.stellar.org/docs/build/guides/cli/install-deploy">docs</a>) to deploy to the appropriate Stellar network.
           </p>
+
+          <p>Build your frontend application code with <Code size="md">npm run build</Code> and deploying the output in the <Code size="md">dist/</Code> directory.</p>
         </Layout.Inset>
       </Layout.Content>
       <Layout.Footer>
