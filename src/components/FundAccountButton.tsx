@@ -2,6 +2,7 @@ import React, { useState, useTransition } from 'react';
 import { useNotification } from '../hooks/useNotification.ts';
 import { useWallet } from '../hooks/useWallet.ts';
 import { Button, Tooltip } from '@stellar/design-system';
+import { getFriendbotUrl } from '../util/friendbot';
 
 
 const FundAccountButton: React.FC = () => {
@@ -14,7 +15,7 @@ const FundAccountButton: React.FC = () => {
   const handleFundAccount = (account: string) => {
     startTransition(async () => {
       try {
-        const response = await fetch(`/friendbot?addr=${account}`, {
+        const response = await fetch(getFriendbotUrl(account), {
           method: 'GET',
         });
 
