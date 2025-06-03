@@ -10,7 +10,7 @@ import {
   WalletNetwork,
 } from "@creit.tech/stellar-wallets-kit";
 import { Horizon } from "@stellar/stellar-sdk";
-import { networkPassphrase } from "../contracts/util";
+import { networkPassphrase, stellarNetwork } from "../contracts/util";
 
 const kit: StellarWalletsKit = new StellarWalletsKit({
   network: networkPassphrase as WalletNetwork,
@@ -49,11 +49,25 @@ export const disconnectWallet = async () => {
   storage.removeItem("walletId");
 };
 
-export const fetchBalance = async (address: string, testnet = false) => {
-  const horizonUrl = testnet
-    ? "https://horizon-testnet.stellar.org"
-    : "https://horizon.stellar.org";
-  const horizon = new Horizon.Server(horizonUrl);
+function getHorizonHost(mode: string) {
+  switch (mode) {
+    case "local":
+      return "http://localhost:8000";
+    case "futurenet":
+      return "https://horizon-futurenet.stellar.org";
+    case "testnet":
+      return "https://horizon-testnet.stellar.org";
+    case "mainnet":
+      return "https://horizon.stellar.org";
+    default:
+      throw new Error(`Unknown Stellar network: ${mode}`);
+  }
+}
+
+export const fetchBalance = async (address: string) => {
+  const horizon = new Horizon.Server(getHorizonHost(stellarNetwork), {
+    allowHttp: stellarNetwork === "local",
+  });
 
   const { balances } = await horizon.accounts().accountId(address).call();
   return balances;
