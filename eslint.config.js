@@ -5,13 +5,20 @@ import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import reactX from "eslint-plugin-react-x";
 import tseslint from "typescript-eslint";
+import prettier from "eslint-config-prettier";
+import { globalIgnores } from "eslint/config";
 
 export default tseslint.config(
-  { ignores: ["dist", "packages", "src/contracts"] },
+  globalIgnores(["dist", "packages", "src/contracts"]),
   {
     extends: [
       js.configs.recommended,
-      ...tseslint.configs.recommendedTypeChecked,
+      tseslint.configs.recommendedTypeChecked,
+      reactDOM.configs.recommended,
+      reactHooks.configs["recommended-latest"],
+      reactRefresh.configs.vite,
+      reactX.configs["recommended-typescript"],
+      prettier,
     ],
     files: ["**/*.{ts,tsx}"],
     languageOptions: {
@@ -22,20 +29,11 @@ export default tseslint.config(
         tsconfigRoot: import.meta.dirname,
       },
     },
-    plugins: {
-      "react-dom": reactDOM,
-      "react-hooks": reactHooks,
-      "react-refresh": reactRefresh,
-      "react-x": reactX,
-    },
     rules: {
-      ...reactDOM.configs.recommended.rules,
-      ...reactHooks.configs.recommended.rules,
-      ...reactX.configs["recommended-typescript"].rules,
       "react-refresh/only-export-components": [
         "warn",
         { allowConstantExport: true },
       ],
     },
-  }
+  },
 );
