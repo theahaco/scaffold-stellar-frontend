@@ -9,6 +9,11 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+env:
+  PUBLIC_STELLAR_NETWORK: ${{ vars.PUBLIC_STELLAR_NETWORK }}
+  PUBLIC_STELLAR_NETWORK_PASSPHRASE: ${{ vars.PUBLIC_STELLAR_NETWORK_PASSPHRASE }}
+  PUBLIC_STELLAR_RPC_URL: ${{ vars.PUBLIC_STELLAR_RPC_URL }}
+
 # Sets the GITHUB_TOKEN permissions to allow deployment to GitHub Pages
 permissions:
   contents: read
