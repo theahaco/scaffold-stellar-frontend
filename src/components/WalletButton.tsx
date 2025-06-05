@@ -26,8 +26,8 @@ export const WalletButton = () => {
   }
 
   const showTooltip = () => {
-    if (balance.error) return;
     void balance.updateBalance();
+    if (balance.error) return;
     setIsTooltipVisible(true);
   };
 
