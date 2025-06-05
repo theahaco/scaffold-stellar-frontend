@@ -27,6 +27,7 @@ export const WalletButton = () => {
   }
 
   const showTooltip = () => {
+    if (balance.error) return;
     void balance.updateBalance();
     setIsTooltipVisible(true);
   };
@@ -87,15 +88,9 @@ export const WalletButton = () => {
             />
           }
         >
-          {!balance.error ? (
-            <span style={{ opacity: balance.isLoading ? 0.6 : 1 }}>
-              {xlm} XLM
-            </span>
-          ) : (
-            <Alert variant="error" placement="inline">
-              {balance.error?.message}
-            </Alert>
-          )}
+          <span style={{ opacity: balance.isLoading ? 0.6 : 1 }}>
+            {xlm} XLM
+          </span>
         </Tooltip>
       </div>
     </Layout.Content>
