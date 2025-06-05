@@ -1,6 +1,5 @@
 import { useState } from "react";
 import {
-  Alert,
   Button,
   Layout,
   Modal,
@@ -28,6 +27,7 @@ export const WalletButton = () => {
 
   const showTooltip = () => {
     void balance.updateBalance();
+    if (balance.error) return;
     setIsTooltipVisible(true);
   };
 
@@ -87,15 +87,9 @@ export const WalletButton = () => {
             />
           }
         >
-          {!balance.error ? (
-            <span style={{ opacity: balance.isLoading ? 0.6 : 1 }}>
-              {xlm} XLM
-            </span>
-          ) : (
-            <Alert variant="error" placement="inline">
-              {balance.error?.message}
-            </Alert>
-          )}
+          <span style={{ opacity: balance.isLoading ? 0.6 : 1 }}>
+            {xlm} XLM
+          </span>
         </Tooltip>
       </div>
     </Layout.Content>
