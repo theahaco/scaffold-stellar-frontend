@@ -24,7 +24,7 @@ export const WalletButton = () => {
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        gap: "10px",
+        gap: "5px",
         opacity: balance.isLoading ? 0.6 : 1,
       }}
     >
