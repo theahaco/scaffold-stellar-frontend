@@ -1,18 +1,21 @@
-import * as React from 'react'
-import { Server, Api } from '@stellar/stellar-sdk/rpc'
-import { xdr } from '@stellar/stellar-sdk'
-import { rpcUrl } from '../contracts/util'
+import * as React from "react";
+import { Server, Api } from "@stellar/stellar-sdk/rpc";
+import { xdr } from "@stellar/stellar-sdk";
+import { rpcUrl } from "../contracts/util";
 
 /**
  * Concatenated `${contractId}:${topic}`
  */
-type PagingKey = string
+type PagingKey = string;
 
 /**
  * Paging tokens for each contract/topic pair. These can be mutated directly,
  * rather than being stored as state within the React hook.
  */
-const paging: Record<PagingKey, { lastLedgerStart?: number, pagingToken?: string }> = {}
+const paging: Record<
+  PagingKey,
+  { lastLedgerStart?: number; pagingToken?: string }
+> = {};
 
 /**
  * Subscribe to events for a given topic from a given contract, using a library
@@ -27,23 +30,23 @@ export function useSubscription(
   contractId: string,
   topic: string,
   onEvent: (event: Api.EventResponse) => void,
-  pollInterval = 5000
+  pollInterval = 5000,
 ) {
-  const id = `${contractId}:${topic}`
-  paging[id] = paging[id] || {}
-  const server = new Server(rpcUrl, { allowHttp: true })
+  const id = `${contractId}:${topic}`;
+  paging[id] = paging[id] || {};
+  const server = new Server(rpcUrl, { allowHttp: true });
 
   React.useEffect(() => {
-    let timeoutId: NodeJS.Timeout | null = null
-    let stop = false
+    let timeoutId: NodeJS.Timeout | null = null;
+    let stop = false;
 
     async function pollEvents(): Promise<void> {
       try {
         if (!paging[id].lastLedgerStart) {
           const latestLedgerState = await server.getLatestLedger();
-          paging[id].lastLedgerStart = latestLedgerState.sequence
-        } 
-       
+          paging[id].lastLedgerStart = latestLedgerState.sequence;
+        }
+
         const response = await server.getEvents({
           startLedger: !paging[id].pagingToken
             ? paging[id].lastLedgerStart
@@ -52,13 +55,11 @@ export function useSubscription(
           filters: [
             {
               contractIds: [contractId],
-              topics: [[
-                xdr.ScVal.scvSymbol(topic).toXDR("base64")
-              ]],
-              type: "contract"
-            }  
+              topics: [[xdr.ScVal.scvSymbol(topic).toXDR("base64")]],
+              type: "contract",
+            },
           ],
-          limit: 10
+          limit: 10,
         });
 
         paging[id].pagingToken = undefined;
@@ -66,15 +67,18 @@ export function useSubscription(
           paging[id].lastLedgerStart = response.latestLedger;
         }
         if (response.events) {
-          response.events.forEach(event => {
+          response.events.forEach((event) => {
             try {
-              onEvent(event)
+              onEvent(event);
             } catch (error) {
-              console.error("Poll Events: subscription callback had error: ", error);
+              console.error(
+                "Poll Events: subscription callback had error: ",
+                error,
+              );
             } finally {
-              paging[id].pagingToken = event.pagingToken
+              paging[id].pagingToken = event.pagingToken;
             }
-          }) 
+          });
         }
       } catch (error) {
         console.error("Poll Events: error: ", error);
@@ -88,8 +92,8 @@ export function useSubscription(
     void pollEvents();
 
     return () => {
-      if (timeoutId != null) clearTimeout(timeoutId)
-      stop = true
-    }
-  }, [contractId, topic, onEvent, id, pollInterval, server])
+      if (timeoutId != null) clearTimeout(timeoutId);
+      stop = true;
+    };
+  }, [contractId, topic, onEvent, id, pollInterval, server]);
 }

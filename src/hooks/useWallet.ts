@@ -1,7 +1,6 @@
 import { use } from "react";
 import { WalletContext } from "../providers/WalletProvider";
 
-
 export const useWallet = () => {
   const ctx = use(WalletContext);
   if (!ctx) {
