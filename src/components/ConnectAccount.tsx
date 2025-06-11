@@ -15,9 +15,9 @@ const ConnectAccount: React.FC = () => {
         verticalAlign: "middle",
       }}
     >
-      <NetworkPill />
       <WalletButton />
       {stellarNetwork !== "mainnet" && <FundAccountButton />}
+      <NetworkPill />
     </div>
   );
 };
