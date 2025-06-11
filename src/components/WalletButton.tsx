@@ -24,10 +24,8 @@ export const WalletButton = () => {
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        verticalAlign: "middle",
         gap: "10px",
         opacity: balance.isLoading ? 0.6 : 1,
-        float: "left",
       }}
     >
       <Text as="div" size="sm">
