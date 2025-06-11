@@ -1,9 +1,8 @@
-import React, { useState, useTransition } from 'react';
-import { useNotification } from '../hooks/useNotification.ts';
-import { useWallet } from '../hooks/useWallet.ts';
-import { Button, Tooltip } from '@stellar/design-system';
-import { getFriendbotUrl } from '../util/friendbot';
-
+import React, { useState, useTransition } from "react";
+import { useNotification } from "../hooks/useNotification.ts";
+import { useWallet } from "../hooks/useWallet.ts";
+import { Button, Tooltip } from "@stellar/design-system";
+import { getFriendbotUrl } from "../util/friendbot";
 
 const FundAccountButton: React.FC = () => {
   const { addNotification } = useNotification();
@@ -16,30 +15,30 @@ const FundAccountButton: React.FC = () => {
     startTransition(async () => {
       try {
         const response = await fetch(getFriendbotUrl(account), {
-          method: 'GET',
+          method: "GET",
         });
 
         if (response.ok) {
-          addNotification('Account funded successfully!', 'success');
+          addNotification("Account funded successfully!", "success");
           setIsFunded(true);
         } else {
           const body: unknown = await response.json();
           if (
             body !== null &&
-            typeof body === 'object' &&
-            'detail' in body &&
-            typeof body.detail === 'string'
+            typeof body === "object" &&
+            "detail" in body &&
+            typeof body.detail === "string"
           ) {
             if (body.detail === "account already funded to starting balance") {
               setIsFunded(true);
             }
-            addNotification(`Error funding account: ${body.detail}`, 'error');
+            addNotification(`Error funding account: ${body.detail}`, "error");
           } else {
-            addNotification('Error funding account: Unknown error', 'error');
+            addNotification("Error funding account: Unknown error", "error");
           }
         }
       } catch {
-        addNotification('Error funding account. Please try again.', 'error');
+        addNotification("Error funding account. Please try again.", "error");
       }
     });
   };
@@ -67,8 +66,10 @@ const FundAccountButton: React.FC = () => {
           </Button>
         }
       >
-        <div style={{ width: '13em' }} >
-          {isFunded ? "Account is already funded" : "Fund your account using the Stellar Friendbot"}
+        <div style={{ width: "13em" }}>
+          {isFunded
+            ? "Account is already funded"
+            : "Fund your account using the Stellar Friendbot"}
         </div>
       </Tooltip>
     </div>

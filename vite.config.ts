@@ -6,16 +6,16 @@ export default defineConfig(() => {
   return {
     plugins: [react()],
     define: {
-      global: 'window',
+      global: "window",
     },
     envPrefix: "PUBLIC_",
     server: {
       proxy: {
-        '/friendbot': {
-          target: 'http://localhost:8000/friendbot',
+        "/friendbot": {
+          target: "http://localhost:8000/friendbot",
           changeOrigin: true,
         },
-      }
-    }
-  }
+      },
+    },
+  };
 });

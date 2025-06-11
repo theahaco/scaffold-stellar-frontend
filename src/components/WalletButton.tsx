@@ -50,7 +50,7 @@ export const WalletButton = () => {
               variant="primary"
               onClick={() => {
                 void disconnectWallet().then(() =>
-                  setShowDisconnectModal(false)
+                  setShowDisconnectModal(false),
                 );
               }}
             >
