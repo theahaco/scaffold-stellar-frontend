@@ -16,7 +16,7 @@ const ConnectAccount: React.FC = () => {
       }}
     >
       <WalletButton />
-      {stellarNetwork !== "mainnet" && <FundAccountButton />}
+      {stellarNetwork !== "PUBLIC" && <FundAccountButton />}
       <NetworkPill />
     </div>
   );

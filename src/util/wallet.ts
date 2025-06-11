@@ -51,13 +51,13 @@ export const disconnectWallet = async () => {
 
 function getHorizonHost(mode: string) {
   switch (mode) {
-    case "local":
+    case "STANDALONE":
       return "http://localhost:8000";
-    case "futurenet":
+    case "FUTURENET":
       return "https://horizon-futurenet.stellar.org";
-    case "testnet":
+    case "TESTNET":
       return "https://horizon-testnet.stellar.org";
-    case "mainnet":
+    case "PUBLIC":
       return "https://horizon.stellar.org";
     default:
       throw new Error(`Unknown Stellar network: ${mode}`);
@@ -66,7 +66,7 @@ function getHorizonHost(mode: string) {
 
 export const fetchBalance = async (address: string) => {
   const horizon = new Horizon.Server(getHorizonHost(stellarNetwork), {
-    allowHttp: stellarNetwork === "local",
+    allowHttp: stellarNetwork === "STANDALONE",
   });
 
   const { balances } = await horizon.accounts().accountId(address).call();

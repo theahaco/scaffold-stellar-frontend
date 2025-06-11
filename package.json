@@ -21,7 +21,8 @@
     "@stellar/design-system": "^3.1.1",
     "@stellar/stellar-sdk": "^13.3.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "zod": "^3.25.62"
   },
   "devDependencies": {
     "@eslint/js": "^9.27.0",
