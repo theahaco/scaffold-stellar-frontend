@@ -2,7 +2,7 @@
 name = "nft-enumerable-example"
 edition.workspace = true
 license.workspace = true
-repository.workspace = true
+repository = "https://github.com/OpenZeppelin/stellar-contracts"
 publish = false
 version.workspace = true
 
