@@ -24,6 +24,7 @@ default = true # Optional. Whether to use this account as the `--source` for com
 #     underscored-version of the `name` in the contract's Cargo.toml.
 #   - The environment is `development` or `test`
 soroban_hello_world_contract = { client = true }
+nft_enumerable_example = { client = true }
 
 # Rather than in one list, TOML allows specifying contracts in their own "sections"
 [development.contracts.fungible_token_interface_example]
