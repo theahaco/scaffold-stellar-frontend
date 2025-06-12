@@ -1,13 +1,30 @@
-const envNetwork = import.meta.env.PUBLIC_STELLAR_NETWORK;
-export const stellarNetwork =
-  envNetwork && typeof envNetwork === "string" ? envNetwork : "local";
+import { z } from "zod";
+import { WalletNetwork } from "@creit.tech/stellar-wallets-kit";
 
-const envRPC = import.meta.env.PUBLIC_STELLAR_RPC_URL;
-export const rpcUrl =
-  envRPC && typeof envRPC === "string" ? envRPC : "http://localhost:8000/rpc";
+const envSchema = z.object({
+  PUBLIC_STELLAR_NETWORK: z.enum([
+    "PUBLIC",
+    "FUTURENET",
+    "TESTNET",
+    "LOCAL",
+    "STANDALONE", // deprecated in favor of LOCAL
+  ] as const),
+  PUBLIC_STELLAR_NETWORK_PASSPHRASE: z.nativeEnum(WalletNetwork),
+  PUBLIC_STELLAR_RPC_URL: z.string(),
+});
 
-const envPassphrase = import.meta.env.PUBLIC_STELLAR_NETWORK_PASSPHRASE;
-export const networkPassphrase =
-  envPassphrase && typeof envPassphrase === "string"
-    ? envPassphrase
-    : "Standalone Network ; February 2017";
+const parsed = envSchema.safeParse(import.meta.env);
+
+const env: z.infer<typeof envSchema> = parsed.success
+  ? parsed.data
+  : {
+      PUBLIC_STELLAR_NETWORK: "LOCAL",
+      PUBLIC_STELLAR_NETWORK_PASSPHRASE: WalletNetwork.STANDALONE,
+      PUBLIC_STELLAR_RPC_URL: "http://localhost:8000/rpc",
+    };
+
+export const stellarNetwork = env.PUBLIC_STELLAR_NETWORK;
+export const networkPassphrase = env.PUBLIC_STELLAR_NETWORK_PASSPHRASE;
+
+// NOTE: needs to be exported for contract files in this directory
+export const rpcUrl = env.PUBLIC_STELLAR_RPC_URL;

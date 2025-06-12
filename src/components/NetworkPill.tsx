@@ -3,33 +3,34 @@ import { Icon } from "@stellar/design-system";
 import { useWallet } from "../hooks/useWallet";
 import { stellarNetwork } from "../contracts/util";
 
+// Format network name with first letter capitalized
+const formatNetworkName = (name: string) =>
+  // TODO: This is a workaround until @creit-tech/stellar-wallets-kit uses the new name for a local network.
+  name === "STANDALONE"
+    ? "Local"
+    : name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+
+const appNetwork = formatNetworkName(stellarNetwork);
+
+const bgColor = "#F0F2F5";
+const textColor = "#4A5362";
+
 const NetworkPill: React.FC = () => {
   const { network, address } = useWallet();
 
   // Check if there's a network mismatch
-  const isNetworkMismatch =
-    address &&
-    network &&
-    network.toUpperCase() !== stellarNetwork.toUpperCase();
+  const walletNetwork = formatNetworkName(network ?? "");
+  const isNetworkMismatch = walletNetwork !== appNetwork;
 
-  const bgColor = "#F0F2F5";
-  const textColor = "#4A5362";
-
-  // Green when connected (and networks match), red when mismatch, gray when not connected
-  const circleColor = !address
-    ? "#C1C7D0"
-    : isNetworkMismatch
-      ? "#FF3B30"
-      : "#2ED06E";
-
-  // Format network name with first letter capitalized
-  const formatNetworkName = (name: string) =>
-    name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-
-  // Create mismatch message for hover tooltip with proper capitalization
-  const mismatchMessage = isNetworkMismatch
-    ? `Network mismatch: App is on ${formatNetworkName(stellarNetwork)}, wallet is on ${formatNetworkName(network)}`
-    : "";
+  let title = "";
+  let color = "#2ED06E";
+  if (!address) {
+    title = "Connect your wallet using this network.";
+    color = "#C1C7D0";
+  } else if (isNetworkMismatch) {
+    title = `Wallet is on ${walletNetwork}, connect to ${appNetwork} instead.`;
+    color = "#FF3B30";
+  }
 
   return (
     <div
@@ -45,10 +46,10 @@ const NetworkPill: React.FC = () => {
         gap: "4px",
         cursor: isNetworkMismatch ? "help" : "default",
       }}
-      title={mismatchMessage}
+      title={title}
     >
-      <Icon.Circle color={circleColor} />
-      {formatNetworkName(stellarNetwork)}
+      <Icon.Circle color={color} />
+      {appNetwork}
     </div>
   );
 };
