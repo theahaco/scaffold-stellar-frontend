@@ -2,6 +2,7 @@ import {
   createContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   useTransition,
 } from "react";
@@ -23,28 +24,36 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   const [network, setNetwork] = useState<string>();
   const [networkPassphrase, setNetworkPassphrase] = useState<string>();
   const [isPending, startTransition] = useTransition();
+  const popupLock = useRef(false);
 
   const nullify = () => {
     setNetwork(undefined);
     setNetworkPassphrase(undefined);
     setAddress(undefined);
+    storage.setItem("walletId", "");
   };
 
   const updateCurrentWalletState = async () => {
     // There is no way, with StellarWalletsKit, to check if the wallet is
     // installed/connected/authorized. We need to manage that on our side by
     // checking our storage item.
-    if (!storage.getItem("walletId")) {
+    const walletId = storage.getItem("walletId");
+    if (!walletId) {
       nullify();
     } else {
+      if (popupLock.current) return;
       // If our storage item is there, then we try to get the user's address &
       // network from their wallet. Note: `getAddress` MAY open their wallet
       // extension, depending on which wallet they select!
       try {
+        popupLock.current = true;
+        wallet.setWallet(walletId);
+
         const [a, n] = await Promise.all([
           wallet.getAddress(),
           wallet.getNetwork(),
         ]);
+
         if (a.address !== address) setAddress(a.address);
         if (n.network !== network) setNetwork(n.network);
         if (n.networkPassphrase !== networkPassphrase)
@@ -57,6 +66,8 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
         // into the error while working on Scaffold Stellar but we do not
         // crash the app process
         console.error(e);
+      } finally {
+        popupLock.current = false;
       }
     }
   };
