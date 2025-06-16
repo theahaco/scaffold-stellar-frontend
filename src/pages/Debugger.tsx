@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Layout, Code, Card, Button, Input } from "@stellar/design-system";
 
 import * as soroban_hello_world_contract from "../contracts/soroban_hello_world_contract.ts";
@@ -13,11 +13,82 @@ const contractMap = {
 type ContractKey = keyof typeof contractMap;
 const contractKeys = Object.keys(contractMap) as ContractKey[];
 
+interface ContractMethod {
+  name: string;
+  args: {
+    name: string;
+    type: string;
+  }[];
+}
+
+const toIgnore = [
+  "Address",
+  "AllowanceData",
+  "AllowanceKey",
+  "DataUrl",
+  "I32",
+  "I64",
+  "I128",
+  "I256",
+  "Metadata",
+  "ScString",
+  "ScSymbol",
+  "StorageKey",
+  "U32",
+  "U64",
+  "U128",
+  "U256",
+];
+
 const Debugger: React.FC = () => {
   // State holding the selected contract key
   const [selectedContract, setSelectedContract] = useState<ContractKey>(
     contractKeys[0],
   );
+  const [contractMethods, setContractMethods] = useState<ContractMethod[]>([]);
+  console.log(contractMethods);
+
+  const getContractMethods = () => {
+    const jsonSchema = contractMap[selectedContract].default.spec.jsonSchema();
+    if (jsonSchema.definitions) {
+      const methods: ContractMethod[] = [];
+      for (const [key, value] of Object.entries(jsonSchema.definitions)) {
+        if (!toIgnore.includes(key)) {
+          if (typeof value === "boolean") continue;
+          const args = value?.properties?.args;
+          if (typeof args === "boolean") continue;
+          if (
+            args &&
+            "properties" in args &&
+            typeof args.properties === "object"
+          ) {
+            const functionArgs = [];
+            for (const [argName, argSchema] of Object.entries(
+              args.properties ?? {},
+            )) {
+              if (typeof argSchema === "boolean") continue;
+              if ("$ref" in argSchema && typeof argSchema.$ref === "string") {
+                const match = argSchema.$ref.match(/^#\/definitions\/(.+)$/);
+                if (match) {
+                  const defName = match[1];
+                  const definition = jsonSchema.definitions?.[defName];
+                  if (definition) {
+                    functionArgs.push({ name: argName, type: defName });
+                  }
+                }
+              }
+            }
+            methods.push({ name: key, args: functionArgs });
+          }
+        }
+      }
+      setContractMethods(methods);
+    }
+  };
+
+  useEffect(() => {
+    getContractMethods();
+  });
 
   return (
     <Layout.Content>
