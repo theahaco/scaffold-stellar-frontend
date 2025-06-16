@@ -43,7 +43,7 @@ const toIgnore = [
 const Debugger: React.FC = () => {
   // State holding the selected contract key
   const [selectedContract, setSelectedContract] = useState<ContractKey>(
-    contractKeys[0],
+    contractKeys[0]
   );
   const [contractMethods, setContractMethods] = useState<ContractMethod[]>([]);
   console.log(contractMethods);
@@ -64,7 +64,7 @@ const Debugger: React.FC = () => {
           ) {
             const functionArgs = [];
             for (const [argName, argSchema] of Object.entries(
-              args.properties ?? {},
+              args.properties ?? {}
             )) {
               if (typeof argSchema === "boolean") continue;
               if ("$ref" in argSchema && typeof argSchema.$ref === "string") {
