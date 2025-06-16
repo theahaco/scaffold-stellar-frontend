@@ -22,10 +22,11 @@ export const connectWallet = async () => {
 
       // Now open selected wallet's login flow by calling `getAddress` --
       // Yes, it's strange that a getter has a side effect of opening a modal
-      void kit.getAddress().then(() => {
+      void kit.getAddress().then((address) => {
         // Once `getAddress` returns successfully, we know they actually
         // connected the selected wallet, and we set our localStorage
-        storage.setItem("walletId", selectedId);
+        if (address.address) storage.setItem("walletId", selectedId);
+        else storage.setItem("walletId", "");
       });
     },
   });

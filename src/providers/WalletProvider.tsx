@@ -48,12 +48,11 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         popupLock.current = true;
         wallet.setWallet(walletId);
-
         const [a, n] = await Promise.all([
           wallet.getAddress(),
           wallet.getNetwork(),
         ]);
-
+        if (!a.address) storage.setItem("walletId", "");
         if (a.address !== address) setAddress(a.address);
         if (n.network !== network) setNetwork(n.network);
         if (n.networkPassphrase !== networkPassphrase)
@@ -61,7 +60,6 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       } catch (e) {
         // If `getNetwork` or `getAddress` throw errors... sign the user out???
         nullify();
-
         // then log the error (instead of throwing) so we have visibility
         // into the error while working on Scaffold Stellar but we do not
         // crash the app process
