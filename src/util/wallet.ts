@@ -2,11 +2,7 @@ import storage from "./storage";
 import {
   ISupportedWallet,
   StellarWalletsKit,
-  FREIGHTER_ID,
-
-  // StellarWalletsKit makes us import and then initialize all of these
-  // classes, rather than just specify some strings
-  FreighterModule,
+  sep43Modules,
   WalletNetwork,
 } from "@creit.tech/stellar-wallets-kit";
 import { Horizon } from "@stellar/stellar-sdk";
@@ -14,16 +10,7 @@ import { networkPassphrase, stellarNetwork } from "../contracts/util";
 
 const kit: StellarWalletsKit = new StellarWalletsKit({
   network: networkPassphrase as WalletNetwork,
-  modules: [
-    // new AlbedoModule(), omitted bc does not support `getNetwork`
-    new FreighterModule(),
-    // new RabetModule(), omitted bc it is not detected even if you have it
-    // new xBullModule(), omitted bc does not support `getNetwork`
-    // new HanaModule(), omitted bc does not support `getNetwork`
-    // new LobstrModule(), omitted bc does not support `getNetwork`
-    // new HotWalletModule(), omitted bc it keeps opening popups
-  ],
-  selectedWalletId: storage.getItem("walletId") || FREIGHTER_ID, // should be able to keep it unset!!!
+  modules: sep43Modules(),
 });
 
 export const connectWallet = async () => {
@@ -35,10 +22,11 @@ export const connectWallet = async () => {
 
       // Now open selected wallet's login flow by calling `getAddress` --
       // Yes, it's strange that a getter has a side effect of opening a modal
-      void kit.getAddress().then(() => {
+      void kit.getAddress().then((address) => {
         // Once `getAddress` returns successfully, we know they actually
         // connected the selected wallet, and we set our localStorage
-        storage.setItem("walletId", selectedId);
+        if (address.address) storage.setItem("walletId", selectedId);
+        else storage.setItem("walletId", "");
       });
     },
   });

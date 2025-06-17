@@ -17,7 +17,7 @@
     "packages/*"
   ],
   "dependencies": {
-    "@creit.tech/stellar-wallets-kit": "^1.7.3",
+    "@creit.tech/stellar-wallets-kit": "^1.7.5",
     "@stellar/design-system": "^3.1.1",
     "@stellar/stellar-sdk": "^13.3.0",
     "react": "^19.0.0",
