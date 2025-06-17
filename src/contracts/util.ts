@@ -23,7 +23,10 @@ const env: z.infer<typeof envSchema> = parsed.success
       PUBLIC_STELLAR_RPC_URL: "http://localhost:8000/rpc",
     };
 
-export const stellarNetwork = env.PUBLIC_STELLAR_NETWORK;
+export const stellarNetwork =
+  env.PUBLIC_STELLAR_NETWORK === "STANDALONE"
+    ? "LOCAL"
+    : env.PUBLIC_STELLAR_NETWORK;
 export const networkPassphrase = env.PUBLIC_STELLAR_NETWORK_PASSPHRASE;
 
 // NOTE: needs to be exported for contract files in this directory

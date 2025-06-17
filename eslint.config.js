@@ -9,7 +9,12 @@ import prettier from "eslint-config-prettier";
 import { globalIgnores } from "eslint/config";
 
 export default tseslint.config(
-  globalIgnores(["dist", "packages", "src/contracts"]),
+  globalIgnores([
+    "dist",
+    "packages",
+    "src/contracts/*",
+    "!src/contracts/util.ts",
+  ]),
   {
     extends: [
       js.configs.recommended,

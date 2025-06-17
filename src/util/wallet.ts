@@ -39,7 +39,7 @@ export const disconnectWallet = async () => {
 
 function getHorizonHost(mode: string) {
   switch (mode) {
-    case "STANDALONE":
+    case "LOCAL":
       return "http://localhost:8000";
     case "FUTURENET":
       return "https://horizon-futurenet.stellar.org";
@@ -54,7 +54,7 @@ function getHorizonHost(mode: string) {
 
 export const fetchBalance = async (address: string) => {
   const horizon = new Horizon.Server(getHorizonHost(stellarNetwork), {
-    allowHttp: stellarNetwork === "STANDALONE",
+    allowHttp: stellarNetwork === "LOCAL",
   });
 
   const { balances } = await horizon.accounts().accountId(address).call();
