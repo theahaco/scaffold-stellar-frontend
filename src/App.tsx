@@ -3,7 +3,7 @@ import "./App.module.css";
 import ConnectAccount from "./components/ConnectAccount.tsx";
 import { Routes, Route, Outlet } from "react-router-dom";
 import Home from "./pages/Home";
-import Debugger from "./pages/Debugger.tsx";
+import Debugger from "./debug/Page.tsx";
 
 const AppLayout: React.FC = () => (
   <main>
