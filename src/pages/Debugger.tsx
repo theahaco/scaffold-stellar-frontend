@@ -1,94 +1,70 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Layout, Code, Card, Button, Input } from "@stellar/design-system";
-
-import * as soroban_hello_world_contract from "../contracts/soroban_hello_world_contract.ts";
-import * as fungible_token_contract from "../contracts/fungible_token_interface_example.ts";
 import { Client } from "@stellar/stellar-sdk/contract";
+import { ContractForm } from "../debug/components/ContractForm.tsx";
 
-const contractMap = {
-  soroban_hello_world_contract,
-  fungible_token_contract,
+// Dynamically import all contract clients under src/contracts/
+const contractModules = import.meta.glob("../contracts/*.ts");
+
+type ContractModule = {
+  default: Client;
 };
 
-type ContractKey = keyof typeof contractMap;
-const contractKeys = Object.keys(contractMap) as ContractKey[];
-
-interface ContractMethod {
-  name: string;
-  args: {
-    name: string;
-    type: string;
-  }[];
-}
-
-const toIgnore = [
-  "Address",
-  "AllowanceData",
-  "AllowanceKey",
-  "DataUrl",
-  "I32",
-  "I64",
-  "I128",
-  "I256",
-  "Metadata",
-  "ScString",
-  "ScSymbol",
-  "StorageKey",
-  "U32",
-  "U64",
-  "U128",
-  "U256",
-];
+type ContractMap = Record<string, ContractModule>;
 
 const Debugger: React.FC = () => {
-  // State holding the selected contract key
-  const [selectedContract, setSelectedContract] = useState<ContractKey>(
-    contractKeys[0]
-  );
-  const [contractMethods, setContractMethods] = useState<ContractMethod[]>([]);
-  console.log(contractMethods);
+  const [contractMap, setContractMap] = useState<ContractMap>({});
+  const [selectedContract, setSelectedContract] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(true);
 
-  const getContractMethods = () => {
-    const jsonSchema = contractMap[selectedContract].default.spec.jsonSchema();
-    if (jsonSchema.definitions) {
-      const methods: ContractMethod[] = [];
-      for (const [key, value] of Object.entries(jsonSchema.definitions)) {
-        if (!toIgnore.includes(key)) {
-          if (typeof value === "boolean") continue;
-          const args = value?.properties?.args;
-          if (typeof args === "boolean") continue;
-          if (
-            args &&
-            "properties" in args &&
-            typeof args.properties === "object"
-          ) {
-            const functionArgs = [];
-            for (const [argName, argSchema] of Object.entries(
-              args.properties ?? {}
-            )) {
-              if (typeof argSchema === "boolean") continue;
-              if ("$ref" in argSchema && typeof argSchema.$ref === "string") {
-                const match = argSchema.$ref.match(/^#\/definitions\/(.+)$/);
-                if (match) {
-                  const defName = match[1];
-                  const definition = jsonSchema.definitions?.[defName];
-                  if (definition) {
-                    functionArgs.push({ name: argName, type: defName });
-                  }
-                }
-              }
-            }
-            methods.push({ name: key, args: functionArgs });
+  useEffect(() => {
+    const loadContracts = async () => {
+      const loadedContracts: ContractMap = {};
+
+      for (const [path, importFn] of Object.entries(contractModules)) {
+        // Extract filename without extension from path
+        const filename = path.split("/").pop()?.replace(".ts", "") || "";
+
+        // Skip util file and empty filenames
+        if (filename && filename !== "util") {
+          try {
+            const module = (await importFn()) as ContractModule;
+            loadedContracts[filename] = module;
+          } catch (error) {
+            console.error(`Failed to load contract ${filename}:`, error);
           }
         }
       }
-      setContractMethods(methods);
-    }
-  };
 
-  useEffect(() => {
-    getContractMethods();
-  });
+      setContractMap(loadedContracts);
+      setSelectedContract(Object.keys(loadedContracts)[0] || "");
+      setIsLoading(false);
+    };
+
+    void loadContracts();
+  }, []);
+
+  const contractKeys = Object.keys(contractMap);
+
+  if (isLoading) {
+    return (
+      <Layout.Content>
+        <Layout.Inset>
+          <p>Loading contracts...</p>
+        </Layout.Inset>
+      </Layout.Content>
+    );
+  }
+
+  if (contractKeys.length === 0) {
+    return (
+      <Layout.Content>
+        <Layout.Inset>
+          <p>No contracts found in src/contracts/</p>
+        </Layout.Inset>
+      </Layout.Content>
+    );
+  }
 
   return (
     <Layout.Content>
@@ -101,6 +77,7 @@ const Debugger: React.FC = () => {
         </p>
         <hr />
       </Layout.Inset>
+
       {/* Contract Selector Pills */}
       <Layout.Inset>
         <div
@@ -127,8 +104,12 @@ const Debugger: React.FC = () => {
       <Layout.Inset>
         <div style={{ display: "flex", gap: "1rem" }}>
           {/* Contract detail card */}
-
-          <div style={{ flexBasis: "30%" }}>
+          <div
+            style={{
+              flexBasis: "30%",
+              alignSelf: "flex-start",
+            }}
+          >
             <Card variant="secondary">
               <h3>{selectedContract}</h3>
 
@@ -140,8 +121,8 @@ const Debugger: React.FC = () => {
                   position: "right",
                 }}
                 value={
-                  (contractMap[selectedContract].default as unknown as Client)
-                    .options.contractId
+                  (contractMap[selectedContract]?.default as unknown as Client)
+                    ?.options?.contractId || ""
                 }
               />
             </Card>
@@ -149,7 +130,10 @@ const Debugger: React.FC = () => {
 
           {/* Contract methods and interactions */}
           <div style={{ flex: 1 }}>
-            {/* TODO: Add components to interact with contract */}
+            <ContractForm
+              contractClient={contractMap[selectedContract]?.default}
+              contractClientError={null}
+            />
           </div>
         </div>
       </Layout.Inset>
