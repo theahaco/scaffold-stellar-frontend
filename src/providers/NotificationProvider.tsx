@@ -45,19 +45,11 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
       setNotifications((prev) => [...prev, newNotification]);
 
       setTimeout(() => {
-        setNotifications((prev) =>
-          prev.map((notification) =>
-            notification.id === newNotification.id
-              ? { ...notification, isVisible: false }
-              : notification,
-          ),
-        );
+        setNotifications(markRead(newNotification.id));
       }, 2500); // Start transition out after 2.5 seconds
 
       setTimeout(() => {
-        setNotifications((prev) =>
-          prev.filter((notification) => notification.id !== newNotification.id),
-        );
+        setNotifications(filterOut(newNotification.id));
       }, 5000); // Remove after 5 seconds
     },
     [],
@@ -84,6 +76,23 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
     </NotificationContext>
   );
 };
+
+function markRead(
+  id: Notification["id"],
+): React.SetStateAction<Notification[]> {
+  return (prev) =>
+    prev.map((notification) =>
+      notification.id === id
+        ? { ...notification, isVisible: true }
+        : notification,
+    );
+}
+
+function filterOut(
+  id: Notification["id"],
+): React.SetStateAction<Notification[]> {
+  return (prev) => prev.filter((notification) => notification.id !== id);
+}
 
 export { NotificationContext };
 export type { NotificationContextType };
