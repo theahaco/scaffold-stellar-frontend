@@ -8,13 +8,9 @@ import { useWallet } from "../../hooks/useWallet";
 
 export const ContractForm = ({
   contractClient,
-  // contractId,
-  // contractSpec,
   contractClientError,
 }: {
   contractClient: contract.Client;
-  // contractId: string;
-  // contractSpec: contract.Spec;
   contractClientError: Error | null;
 }) => {
   const { address: userPk } = useWallet();
@@ -24,15 +20,17 @@ export const ContractForm = ({
   const renderFunctionCard = () =>
     contractSpecFuncs
       ?.filter((func) => !func.name().toString().includes("__"))
-      ?.map((func) => (
-        <InvokeContractForm
-          key={`${func.name().toString()}`}
-          // contractId={contractId}
-          funcName={func.name().toString()}
-          // contractSpec={contractSpec}
-          contractClient={contractClient}
-        />
-      ));
+      ?.map((func) => {
+        const funcName = func.name().toString();
+
+        return (
+          <InvokeContractForm
+            key={funcName}
+            funcName={funcName}
+            contractClient={contractClient}
+          />
+        );
+      });
 
   const renderError = () => (
     <Alert variant="error" placement="inline" title="Error">
