@@ -3,24 +3,24 @@ import { useNotification } from "../hooks/useNotification.ts";
 import { useWallet } from "../hooks/useWallet.ts";
 import { Button, Tooltip } from "@stellar/design-system";
 import { getFriendbotUrl } from "../util/friendbot";
+import { useWalletBalance } from "../hooks/useWalletBalance.ts";
 
 const FundAccountButton: React.FC = () => {
   const { addNotification } = useNotification();
   const [isPending, startTransition] = useTransition();
-  const [isFunded, setIsFunded] = useState(false);
+  const { isFunded, isLoading } = useWalletBalance();
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
   const { address } = useWallet();
 
-  const handleFundAccount = (account: string) => {
+  if (!address) return null;
+
+  const handleFundAccount = () => {
     startTransition(async () => {
       try {
-        const response = await fetch(getFriendbotUrl(account), {
-          method: "GET",
-        });
+        const response = await fetch(getFriendbotUrl(address));
 
         if (response.ok) {
           addNotification("Account funded successfully!", "success");
-          setIsFunded(true);
         } else {
           const body: unknown = await response.json();
           if (
@@ -29,9 +29,6 @@ const FundAccountButton: React.FC = () => {
             "detail" in body &&
             typeof body.detail === "string"
           ) {
-            if (body.detail === "account already funded to starting balance") {
-              setIsFunded(true);
-            }
             addNotification(`Error funding account: ${body.detail}`, "error");
           } else {
             addNotification("Error funding account: Unknown error", "error");
@@ -42,8 +39,6 @@ const FundAccountButton: React.FC = () => {
       }
     });
   };
-
-  if (!address) return null;
 
   return (
     <div
@@ -57,8 +52,8 @@ const FundAccountButton: React.FC = () => {
         placement="bottom"
         triggerEl={
           <Button
-            disabled={isPending || isFunded}
-            onClick={handleFundAccount.bind(this, address)}
+            disabled={isPending || isLoading || isFunded}
+            onClick={handleFundAccount}
             variant="primary"
             size="md"
           >

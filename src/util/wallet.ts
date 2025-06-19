@@ -61,4 +61,6 @@ export const fetchBalance = async (address: string) => {
   return balances;
 };
 
+export type Balance = Awaited<ReturnType<typeof fetchBalance>>[number];
+
 export const wallet = kit;
