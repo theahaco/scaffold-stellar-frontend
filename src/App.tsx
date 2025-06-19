@@ -48,8 +48,9 @@ function App() {
           <h2>Interacting with wallets</h2>
           <p>
             This project is already integrated with Stellar Wallet Kit, and the{" "}
-            {`useWallet`} hook is available for you to use in your components.
-            You can use it to connect to get connected account information.
+            <Code size="md">useWallet</Code> hook is available for you to use in
+            your components. You can use it to connect to get connected account
+            information.
           </p>
           <h2>Deploying your app</h2>
           <p>
