@@ -28,5 +28,5 @@ createRoot(document.getElementById("root") as HTMLElement).render(
         </WalletProvider>
       </QueryClientProvider>
     </NotificationProvider>
-  </StrictMode>
+  </StrictMode>,
 );
