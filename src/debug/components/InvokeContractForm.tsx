@@ -5,7 +5,6 @@ import { Button, Card, Text, Textarea } from "@stellar/design-system";
 import { BASE_FEE, contract } from "@stellar/stellar-sdk";
 import { JSONSchema7 } from "json-schema";
 import { Box } from "../../components/layout/Box";
-import { JsonSchemaFormRenderer } from "./JsonSchemaFormRenderer";
 import { useAccountSequenceNumber } from "../hooks/useAccountSequenceNumber";
 import { useRpcPrepareTx } from "../hooks/useRpcPrepareTx";
 import { useSimulateTx } from "../hooks/useSimulateTx";
@@ -26,6 +25,7 @@ import { PrettyJsonTransaction } from "./PrettyJsonTransaction";
 import { TransactionSuccessCard } from "./TransactionSuccessCard";
 import { RpcErrorResponse } from "./ErrorResponse";
 import { network } from "../../contracts/util";
+import { JsonSchemaRenderer } from "./JsonSchemaRenderer";
 
 const pageBodyStyles = {
   content: {
@@ -326,7 +326,7 @@ export const InvokeContractForm = ({
         {formValue.contract_id &&
           formValue.function_name &&
           dereferencedSchema && (
-            <JsonSchemaFormRenderer
+            <JsonSchemaRenderer
               name={funcName}
               schema={dereferencedSchema as JSONSchema7}
               onChange={handleChange}

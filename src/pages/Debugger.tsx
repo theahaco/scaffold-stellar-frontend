@@ -22,10 +22,8 @@ const Debugger: React.FC = () => {
       const loadedContracts: ContractMap = {};
 
       for (const [path, importFn] of Object.entries(contractModules)) {
-        // Extract filename without extension from path
         const filename = path.split("/").pop()?.replace(".ts", "") || "";
 
-        // Skip util file and empty filenames
         if (filename && filename !== "util") {
           try {
             const module = (await importFn()) as ContractModule;

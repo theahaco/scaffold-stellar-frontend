@@ -7,7 +7,7 @@ import {
   rpc as StellarRpc,
   xdr,
 } from "@stellar/stellar-sdk";
-import type { JSONSchema7Definition } from "json-schema";
+import type { JSONSchema7, JSONSchema7Definition } from "json-schema";
 
 // =============================================================================
 // Generic
@@ -269,6 +269,33 @@ export type FractionValue = {
 export type RevokeSponsorshipValue = {
   type: SponsorshipType | string;
   data: AnyObject;
+};
+
+export type ScValPrimitiveType =
+  | "U32"
+  | "U64"
+  | "U128"
+  | "U256"
+  | "I32"
+  | "I64"
+  | "I128"
+  | "I256"
+  | "Address"
+  | "ScString"
+  | "ScSymbol"
+  | "DataUrl"
+  | "Bool";
+
+export type JsonSchemaFormProps = {
+  name: string;
+  schema: JSONSchema7;
+  path?: string[];
+  onChange: (value: SorobanInvokeValue) => void;
+  index?: number;
+  requiredFields?: string[];
+  parsedSorobanOperation: SorobanInvokeValue;
+  formError: AnyObject;
+  setFormError: (error: AnyObject) => void;
 };
 
 export type SponsorshipType =
