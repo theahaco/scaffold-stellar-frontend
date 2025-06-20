@@ -131,8 +131,6 @@ export const InvokeContractForm = ({
           networkPassphrase: network.passphrase,
         });
 
-        console.log("Transaction signed:", result);
-
         if (result.signedTxXdr && result.signedTxXdr !== "") {
           return result.signedTxXdr;
         }

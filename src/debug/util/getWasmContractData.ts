@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as StellarXdr from "./StellarXdr";
 import { prettifyJsonString } from "./prettifyJsonString";
 import {
@@ -35,7 +39,6 @@ export const getWasmContractData = async (wasmBytes: Buffer) => {
 
     return result;
   } catch (e) {
-    console.log("Error compiling wasm bytes:", wasmBytes);
     console.error("Error getting wasm contract data:", e);
     return null;
   }
@@ -70,12 +73,11 @@ const getJsonAndXdr = (sectionName: ContractSectionName, xdr: string) => {
     );
 
     return {
-      json: jsonStringArray.map((s) => prettifyJsonString(s)),
-      xdr: jsonStringArray.map((s) =>
+      json: jsonStringArray.map((s: string) => prettifyJsonString(s)),
+      xdr: jsonStringArray.map((s: string) =>
         StellarXdr.encode(TYPE_VARIANT[sectionName], s),
       ),
     };
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
     return { json: [], xdr: [] };
   }
