@@ -125,7 +125,6 @@ export const InvokeContractForm = ({
 
     if (userPk) {
       try {
-        console.log("Signing transaction with extension:", network);
         const result = await signTransaction(xdr || "", {
           address: userPk,
           networkPassphrase: network.passphrase,
