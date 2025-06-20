@@ -26,6 +26,7 @@ import { TransactionSuccessCard } from "./TransactionSuccessCard";
 import { RpcErrorResponse } from "./ErrorResponse";
 import { network } from "../../contracts/util";
 import { JsonSchemaRenderer } from "./JsonSchemaRenderer";
+import { ValidationResponseCard } from "./ValidationResponseCard";
 
 const pageBodyStyles = {
   content: {
@@ -346,23 +347,31 @@ export const InvokeContractForm = ({
 
     if (result) {
       return (
-        <Box gap="md">
-          <div
-            data-testid="invoke-contract-simulate-tx-response"
-            style={{
-              ...pageBodyStyles.content,
-              ...pageBodyStyles.scrollable,
-              ...(result && "error" in result
-                ? pageBodyStyles.contentError
-                : {}),
-            }}
-          >
-            <PrettyJsonTransaction
-              json={result}
-              xdr={result && "xdr" in result}
-            />
-          </div>
-        </Box>
+        <ValidationResponseCard
+          variant="primary"
+          title="Result"
+          // subtitle={`Transaction succeeded with ${response.operationCount} operation(s)`}
+          note={<></>}
+          response={
+            <Box gap="md">
+              <div
+                data-testid="invoke-contract-simulate-tx-response"
+                style={{
+                  ...pageBodyStyles.content,
+                  ...pageBodyStyles.scrollable,
+                  ...(result && "error" in result
+                    ? pageBodyStyles.contentError
+                    : {}),
+                }}
+              >
+                <PrettyJsonTransaction
+                  json={result}
+                  xdr={result && "xdr" in result}
+                />
+              </div>
+            </Box>
+          }
+        />
       );
     }
 
