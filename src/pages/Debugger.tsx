@@ -118,6 +118,7 @@ const Debugger: React.FC = () => {
                 copyButton={{
                   position: "right",
                 }}
+                readOnly
                 value={
                   (contractMap[selectedContract]?.default as unknown as Client)
                     ?.options?.contractId || ""
@@ -129,6 +130,7 @@ const Debugger: React.FC = () => {
           {/* Contract methods and interactions */}
           <div style={{ flex: 1 }}>
             <ContractForm
+              key={selectedContract}
               contractClient={contractMap[selectedContract]?.default}
               contractClientError={null}
             />
