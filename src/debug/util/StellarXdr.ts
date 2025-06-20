@@ -1,8 +1,8 @@
 import init, {
   decode,
-  decode_stream,
   encode,
   guess,
+  decode_stream,
 } from "@stellar/stellar-xdr-json";
 
 // A wrapper for the Stellar XDR JSON

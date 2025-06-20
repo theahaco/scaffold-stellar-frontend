@@ -3,14 +3,14 @@ import { Box } from "../../components/layout/Box";
 import { TxResponse } from "./TxResponse";
 import { ValidationResponseCard } from "./ValidationResponseCard";
 import { SubmitRpcResponse } from "../types/types";
-import init, { decode } from "@stellar/stellar-xdr-json";
 import { PrettyJsonTextarea } from "./PrettyJsonTextarea";
+import { decode, initialize } from "../util/StellarXdr";
 
 interface TransactionSuccessCardProps {
   response: SubmitRpcResponse;
 }
 
-await init();
+await initialize();
 
 export const TransactionSuccessCard = ({
   response,
