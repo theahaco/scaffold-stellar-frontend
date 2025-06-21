@@ -16,20 +16,25 @@ export interface WalletContextType {
   isPending: boolean;
 }
 
+const initialState = {
+  address: undefined,
+  network: undefined,
+  networkPassphrase: undefined,
+};
+
+const POLL_INTERVAL = 1000;
+
 export const WalletContext = // eslint-disable-line react-refresh/only-export-components
   createContext<WalletContextType>({ isPending: true });
 
 export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
-  const [address, setAddress] = useState<string>();
-  const [network, setNetwork] = useState<string>();
-  const [networkPassphrase, setNetworkPassphrase] = useState<string>();
+  const [state, setState] =
+    useState<Omit<WalletContextType, "isPending">>(initialState);
   const [isPending, startTransition] = useTransition();
   const popupLock = useRef(false);
 
   const nullify = () => {
-    setNetwork(undefined);
-    setNetworkPassphrase(undefined);
-    setAddress(undefined);
+    setState(initialState);
     storage.setItem("walletId", "");
   };
 
@@ -53,10 +58,13 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
           wallet.getNetwork(),
         ]);
         if (!a.address) storage.setItem("walletId", "");
-        if (a.address !== address) setAddress(a.address);
-        if (n.network !== network) setNetwork(n.network);
-        if (n.networkPassphrase !== networkPassphrase)
-          setNetworkPassphrase(n.networkPassphrase);
+        if (
+          a.address !== state.address ||
+          n.network !== state.network ||
+          n.networkPassphrase !== state.networkPassphrase
+        ) {
+          setState({ ...a, ...n });
+        }
       } catch (e) {
         // If `getNetwork` or `getAddress` throw errors... sign the user out???
         nullify();
@@ -72,42 +80,41 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
+    let isMounted = true;
+
+    // Create recursive polling function to check wallet state continuously
+    const pollWalletState = async () => {
+      if (!isMounted) return;
+
+      await updateCurrentWalletState();
+
+      if (isMounted) {
+        timer = setTimeout(() => void pollWalletState(), POLL_INTERVAL);
+      }
+    };
 
     // Get the wallet address when the component is mounted for the first time
     startTransition(async () => {
       await updateCurrentWalletState();
+      // Start polling after initial state is loaded
+      if (isMounted) {
+        timer = setTimeout(() => void pollWalletState(), POLL_INTERVAL);
+      }
     });
 
-    void (async () => {
-      // Poll the wallet extension for updates every second. This allows the
-      // app to stay aware of which address & network the user selected in
-      // their wallet extension.
-      //
-      // Using `while (true)` (as opposed to `setInterval`) allows awaits to
-      // complete between iterations.
-      while (true) {
-        await new Promise((res) => {
-          timer = setTimeout(res, 1000);
-        });
-        await updateCurrentWalletState();
-      }
-    })();
-
-    // Clear the timeout when the component unmounts
-    // (unmounting removes the `while (true)` loop)
+    // Clear the timeout and stop polling when the component unmounts
     return () => {
+      isMounted = false;
       if (timer) clearTimeout(timer);
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps -- it SHOULD only run once per component mount
 
   const contextValue = useMemo(
     () => ({
-      address,
-      network,
-      networkPassphrase,
+      ...state,
       isPending,
     }),
-    [address, network, networkPassphrase, isPending],
+    [state, isPending],
   );
 
   return <WalletContext value={contextValue}>{children}</WalletContext>;
