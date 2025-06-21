@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Server, Api } from "@stellar/stellar-sdk/rpc";
 import { xdr } from "@stellar/stellar-sdk";
-import { rpcUrl } from "../contracts/util";
+import { rpcUrl, stellarNetwork } from "../contracts/util";
 
 /**
  * Concatenated `${contractId}:${topic}`
@@ -16,6 +16,9 @@ const paging: Record<
   PagingKey,
   { lastLedgerStart?: number; pagingToken?: string }
 > = {};
+
+// NOTE: Server is configured using envvars which shouldn't change during runtime
+const server = new Server(rpcUrl, { allowHttp: stellarNetwork === "LOCAL" });
 
 /**
  * Subscribe to events for a given topic from a given contract, using a library
@@ -34,7 +37,6 @@ export function useSubscription(
 ) {
   const id = `${contractId}:${topic}`;
   paging[id] = paging[id] || {};
-  const server = new Server(rpcUrl, { allowHttp: true });
 
   React.useEffect(() => {
     let timeoutId: NodeJS.Timeout | null = null;
@@ -95,5 +97,5 @@ export function useSubscription(
       if (timeoutId != null) clearTimeout(timeoutId);
       stop = true;
     };
-  }, [contractId, topic, onEvent, id, pollInterval, server]);
+  }, [contractId, topic, onEvent, id, pollInterval]);
 }

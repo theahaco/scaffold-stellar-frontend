@@ -21,7 +21,8 @@ lerna-debug.log*
 
 # environment variables
 .env
-.env.production
+.env.*
+!.env.example
 
 # easy way to create temporary local-only files and folders
 *.local.*
