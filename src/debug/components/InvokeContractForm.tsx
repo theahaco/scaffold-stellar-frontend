@@ -1,7 +1,15 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { useEffect, useRef, useState } from "react";
-import { Button, Card, Text, Textarea } from "@stellar/design-system";
+import {
+  Alert,
+  Button,
+  Card,
+  Icon,
+  Text,
+  Textarea,
+} from "@stellar/design-system";
 import { BASE_FEE, contract } from "@stellar/stellar-sdk";
 import { JSONSchema7 } from "json-schema";
 import { Box } from "../../components/layout/Box";
@@ -27,6 +35,8 @@ import { RpcErrorResponse } from "./ErrorResponse";
 import { network } from "../../contracts/util";
 import { JsonSchemaRenderer } from "./JsonSchemaRenderer";
 import { ValidationResponseCard } from "./ValidationResponseCard";
+import { Api } from "@stellar/stellar-sdk/rpc";
+import Pill from "../../components/Pill";
 
 const pageBodyStyles = {
   content: {
@@ -45,6 +55,43 @@ const pageBodyStyles = {
     maxHeight: "37.5rem", // 600px
     overflow: "auto" as const,
   },
+};
+
+const readWritePillColors = {
+  read: {
+    backgroundColor: "#E6F9EC",
+    color: "#006600",
+    icon: <Icon.Eye />,
+    label: "Read",
+  },
+  write: {
+    backgroundColor: "#e6f2ff",
+    color: "#6699ff",
+    icon: <Icon.Pencil01 />,
+    label: "Write",
+  },
+};
+//FFB223
+const renderReadWritePill = (isWriteFn: boolean | undefined) => {
+  if (isWriteFn === undefined) return null;
+
+  const pillType = isWriteFn ? "write" : "read";
+  const { backgroundColor, color, icon, label } = readWritePillColors[pillType];
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        gap: "0.5rem",
+        marginBottom: "1rem",
+      }}
+    >
+      <Pill textColor={color} bgColor={backgroundColor}>
+        {icon}
+        {label}
+      </Pill>
+    </div>
+  );
 };
 
 export const InvokeContractForm = ({
@@ -70,9 +117,15 @@ export const InvokeContractForm = ({
     args: {},
   });
   const [formError, setFormError] = useState<AnyObject>({});
+  // Based on whether the function requires input arguments
   const [isGetFunction, setIsGetFunction] = useState(false);
+  // Based on reads and writes to the contract
+  // Can only be determined based on the simulation result
+  const [isWriteFn, setIsWriteFn] = useState<boolean | undefined>(undefined);
   const [dereferencedSchema, setDereferencedSchema] =
     useState<DereferencedSchemaType | null>(null);
+  // Used to delay a submit until after a simulation is complete
+  const [pendingSubmit, setPendingSubmit] = useState(false);
 
   const hasNoFormErrors = isEmptyObject(formError);
 
@@ -156,9 +209,45 @@ export const InvokeContractForm = ({
     }
   }, [contractSpec, funcName]);
 
+  const isSuccessfulSimulation =
+    simulateTxData &&
+    "result" in simulateTxData &&
+    !simulateTxData.result.error;
+
+  const isFailedSimulation =
+    simulateTxData && "result" in simulateTxData && simulateTxData.result.error;
+
+  useEffect(() => {
+    if (isSuccessfulSimulation) {
+      const result =
+        simulateTxData.result as Api.RawSimulateTransactionResponse;
+      const simulationChangesState =
+        result.stateChanges && result.stateChanges.length > 0;
+
+      if (pendingSubmit) {
+        void triggerSubmit();
+      }
+
+      if (simulationChangesState) {
+        setIsWriteFn(true);
+        return;
+      }
+
+      setIsWriteFn(false);
+      return;
+    }
+
+    // If the simulation is not successful, reset the isWriteFn state
+    setIsWriteFn(undefined);
+    setPendingSubmit(false);
+  }, [simulateTxData]);
+
   const handleChange = (value: SorobanInvokeValue) => {
     setInvokeError(null);
     setFormValue(value);
+    resetSimulateTx();
+    resetPrepareTx();
+    resetSubmitRpc();
   };
 
   const isSimulating =
@@ -180,6 +269,19 @@ export const InvokeContractForm = ({
   };
 
   const handleSubmit = async () => {
+    setPendingSubmit(true);
+
+    if (!simulatedResultResponse) {
+      await handleSimulate();
+      return;
+    }
+
+    void triggerSubmit();
+  };
+
+  const triggerSubmit = async () => {
+    setPendingSubmit(false);
+
     if (!prepareTxData?.transactionXdr) {
       setInvokeError({
         message: "No transaction data available to sign",
@@ -212,14 +314,12 @@ export const InvokeContractForm = ({
   };
 
   const handleSimulate = async () => {
-    // reset
     setInvokeError(null);
     resetSimulateState();
     resetSubmitState();
     resetPrepareTx();
 
     try {
-      // fetch sequence number first
       await fetchSequenceNumber();
 
       if (!sequenceNumberData) {
@@ -287,9 +387,19 @@ export const InvokeContractForm = ({
 
   const renderTitle = (name: string, description?: string) => (
     <>
-      <Text size="sm" as="div" weight="bold">
-        {name}
-      </Text>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          gap: "0.5rem",
+        }}
+      >
+        <Text size="sm" as="div" weight="bold">
+          {name}
+        </Text>
+        {renderReadWritePill(isWriteFn)}
+      </div>
+
       {description ? (
         <Textarea
           id={`invoke-contract-description-${name}`}
@@ -331,6 +441,7 @@ export const InvokeContractForm = ({
               formError={formError}
               setFormError={setFormError}
               parsedSorobanOperation={formValue}
+              isWriteFn={isWriteFn}
             />
           )}
       </Box>
@@ -343,14 +454,33 @@ export const InvokeContractForm = ({
 
     const result = simulateResult || submitResult;
 
-    if (result) {
+    const simulationSummary = isSuccessfulSimulation ? (
+      <Alert variant="success" placement="inline" title="Successful Simulation">
+        {`The Simulation succeeded with
+        ${
+          (
+            simulateResult as Api.RawSimulateTransactionResponse
+          ).results?.filter(
+            (r) => "returnValueJson" in r && r.returnValueJson !== "void",
+          ).length || 0
+        }
+        returned value(s).`}
+      </Alert>
+    ) : isFailedSimulation ? (
+      <Alert variant="error" placement="inline" title="Simulation Failed">
+        {simulateResult?.error}`
+      </Alert>
+    ) : null;
+
+    if (result && !isSuccessfulTxExection) {
       return (
         <ValidationResponseCard
           variant="primary"
-          title="Result"
+          title="Response"
           // subtitle={`Transaction succeeded with ${response.operationCount} operation(s)`}
           note={<></>}
-          response={
+          summary={simulationSummary}
+          detailedResponse={
             <Box gap="md">
               <div
                 data-testid="invoke-contract-simulate-tx-response"
@@ -376,8 +506,11 @@ export const InvokeContractForm = ({
     return null;
   };
 
+  const isSuccessfulTxExection =
+    isSubmitRpcSuccess && submitRpcResponse && network.id;
+
   const renderSuccess = () => {
-    if (isSubmitRpcSuccess && submitRpcResponse && network.id) {
+    if (isSuccessfulTxExection) {
       return (
         <div ref={responseSuccessEl}>
           <TransactionSuccessCard response={submitRpcResponse} />
@@ -431,7 +564,8 @@ export const InvokeContractForm = ({
     isSimulating ||
     !userPk ||
     !hasNoFormErrors ||
-    !simulatedResultResponse;
+    isFailedSimulation;
+
   const isSimulationDisabled = () => {
     const disabled = !isGetFunction && !Object.keys(formValue.args).length;
     return !userPk || !hasNoFormErrors || disabled;
@@ -464,7 +598,6 @@ export const InvokeContractForm = ({
               Submit
             </Button>
           </Box>
-
           <>{renderResponse()}</>
           <>{renderSuccess()}</>
           <>{renderError()}</>

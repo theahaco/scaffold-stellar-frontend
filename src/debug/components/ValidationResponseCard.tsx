@@ -1,10 +1,12 @@
-import { Card, Text } from "@stellar/design-system";
+import { Button, Card, Text } from "@stellar/design-system";
 import { Box } from "../../components/layout/Box";
+import { useState } from "react";
 
 type ValidationResponseCard = {
   variant: "primary" | "success" | "error";
   title: string | React.ReactNode;
-  response: string | React.ReactNode;
+  summary?: string | React.ReactNode;
+  detailedResponse: string | React.ReactNode;
   subtitle?: string | React.ReactNode;
   note?: string | React.ReactNode;
   footerLeftEl?: React.ReactNode;
@@ -57,12 +59,34 @@ const styles = {
 export const ValidationResponseCard = ({
   variant,
   title,
-  response,
+  summary,
+  detailedResponse,
   subtitle,
   note,
   footerLeftEl,
   footerRightEl,
 }: ValidationResponseCard) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const renderSummary = () => {
+    if (summary) {
+      return (
+        <Text
+          as="div"
+          size="sm"
+          weight="semi-bold"
+          style={
+            {
+              marginBottom: "1rem",
+            } as React.CSSProperties
+          }
+        >
+          {summary}
+        </Text>
+      );
+    }
+  };
+
   return (
     <Card>
       <Box gap="xs" style={styles.container}>
@@ -81,11 +105,32 @@ export const ValidationResponseCard = ({
             </Text>
           ) : null}
 
-          <Card variant="secondary" noPadding>
-            <div style={styles.content}>
-              {response}
-              <style>
-                {`
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "2 rem" }}
+          >
+            {renderSummary()}
+
+            <Button
+              title="Expand"
+              variant="tertiary"
+              size="sm"
+              onClick={() => setIsExpanded(!isExpanded)}
+              style={
+                {
+                  // ...styles.responsiveButtons,
+                  alignSelf: "flex-end",
+                  marginBottom: "1rem",
+                } as React.CSSProperties
+              }
+            >
+              {isExpanded ? "Hide " : "Show "} Details
+            </Button>
+            {isExpanded && (
+              <Card variant="secondary" noPadding>
+                <div style={styles.content}>
+                  {detailedResponse}
+                  <style>
+                    {`
                   .ValidationResponseCard__content ul {
                     font-size: inherit;
                     line-height: inherit;
@@ -104,10 +149,11 @@ export const ValidationResponseCard = ({
                     }
                   }
                 `}
-              </style>
-            </div>
-          </Card>
-
+                  </style>
+                </div>
+              </Card>
+            )}
+          </div>
           {footerLeftEl || footerRightEl || note ? (
             <Box gap="lg">
               <>

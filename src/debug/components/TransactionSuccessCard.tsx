@@ -1,16 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Box } from "../../components/layout/Box";
 import { TxResponse } from "./TxResponse";
 import { ValidationResponseCard } from "./ValidationResponseCard";
 import { SubmitRpcResponse } from "../types/types";
-import { PrettyJsonTextarea } from "./PrettyJsonTextarea";
-import { decode, initialize } from "../util/StellarXdr";
+
+import { XdrJsonViewer } from "./XdrJsonViewer";
 
 interface TransactionSuccessCardProps {
   response: SubmitRpcResponse;
 }
-
-await initialize();
 
 export const TransactionSuccessCard = ({
   response,
@@ -21,7 +18,7 @@ export const TransactionSuccessCard = ({
       title="Transaction submitted!"
       subtitle={`Transaction succeeded with ${response.operationCount} operation(s)`}
       note={<></>}
-      response={
+      detailedResponse={
         <Box gap="lg">
           <TxResponse
             data-testid="submit-tx-rpc-success-hash"
@@ -38,15 +35,9 @@ export const TransactionSuccessCard = ({
             data-testid="submit-tx-rpc-success-envelope-xdr"
             label="Transaction Envelope:"
             item={
-              <PrettyJsonTextarea
-                label=""
-                isCodeWrapped={true}
-                json={JSON.parse(
-                  decode(
-                    "TransactionEnvelope",
-                    response.result.envelopeXdr.toXDR("base64").toString(),
-                  ),
-                )}
+              <XdrJsonViewer
+                xdr={response.result.envelopeXdr.toXDR("base64").toString()}
+                typeVariant="TransactionEnvelope"
               />
             }
           />
@@ -55,15 +46,9 @@ export const TransactionSuccessCard = ({
             data-testid="submit-tx-rpc-success-result-xdr"
             label="Transaction Result:"
             item={
-              <PrettyJsonTextarea
-                label=""
-                isCodeWrapped={true}
-                json={JSON.parse(
-                  decode(
-                    "TransactionResult",
-                    response.result.resultXdr.toXDR("base64").toString(),
-                  ),
-                )}
+              <XdrJsonViewer
+                xdr={response.result.resultXdr.toXDR("base64").toString()}
+                typeVariant="TransactionResult"
               />
             }
           />
@@ -71,15 +56,9 @@ export const TransactionSuccessCard = ({
             data-testid="submit-tx-rpc-success-result-meta-xdr"
             label="Transaction Result Meta:"
             item={
-              <PrettyJsonTextarea
-                label=""
-                isCodeWrapped={true}
-                json={JSON.parse(
-                  decode(
-                    "TransactionMeta",
-                    response.result.resultMetaXdr.toXDR("base64").toString(),
-                  ),
-                )}
+              <XdrJsonViewer
+                xdr={response.result.resultMetaXdr.toXDR("base64").toString()}
+                typeVariant="TransactionMeta"
               />
             }
           />

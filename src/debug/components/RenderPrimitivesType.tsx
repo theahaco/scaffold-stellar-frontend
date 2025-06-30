@@ -1,11 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable react-x/jsx-key-before-spread */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 import React from "react";
-import { Icon, Input, Select } from "@stellar/design-system";
+import { Icon, Input, Select, Text } from "@stellar/design-system";
 import type { JSONSchema7 } from "json-schema";
 import { get } from "lodash";
 
@@ -17,6 +17,7 @@ import { PositiveIntPicker } from "./PositiveIntPicker";
 
 import type { AnyObject, SorobanInvokeValue } from "../types/types";
 import { convertSpecTypeToScValType } from "../util/sorobanUtils";
+import Pill from "../../components/Pill";
 
 export const renderPrimitivesType = ({
   name,
@@ -47,9 +48,34 @@ export const renderPrimitivesType = ({
     path.join("."),
   ].join(".");
 
+  const renderTypePill = (icon?: React.ReactNode) => (
+    <Pill bgColor="#F3F3F3" textColor="#333">
+      {icon}
+      {schemaType.toLowerCase()}
+    </Pill>
+  );
+
   const sharedProps = {
     id: path.join("."),
-    label: `${nestedItemLabel} (${schemaType})`,
+    label: (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyItems: "space-between",
+          alignSelf: "stretch",
+
+          width: "100%",
+
+          gap: "0.5rem",
+        }}
+      >
+        {renderTypePill()}
+        <Text size="sm" as="div" weight="bold">
+          {nestedItemLabel}
+        </Text>
+      </div>
+    ),
     value: get(parsedSorobanOperation.args, path.join("."))?.value || "",
     error: formError?.[formErrorKey] || undefined,
   };
@@ -131,21 +157,24 @@ export const renderPrimitivesType = ({
   switch (schemaType) {
     case "Address":
       return (
-        <Input
-          {...sharedProps}
-          onChange={(e) => {
-            handleChange(e, schemaType);
-            handleValidate(e, schemaType, [
-              validate.getPublicKeyError,
-              validate.getContractIdError,
-            ]);
-          }}
-          key={path.join(".")}
-          infoText={description || ""}
-          leftElement={<Icon.User03 />}
-          note={<>{description}</>}
-          fieldSize="md"
-        />
+        <>
+          <Input
+            {...sharedProps}
+            onChange={(e) => {
+              handleChange(e, schemaType);
+              handleValidate(e, schemaType, [
+                validate.getPublicKeyError,
+                validate.getContractIdError,
+              ]);
+            }}
+            key={path.join(".")}
+            infoText={description || ""}
+            leftElement={<Icon.User03 />}
+            // rightElement={typePill}
+            note={<>{description}</>}
+            fieldSize="md"
+          />
+        </>
       );
     case "U32":
       return (
