@@ -24,13 +24,13 @@ const Debugger: React.FC = () => {
       for (const [path, importFn] of Object.entries(contractModules)) {
         const filename = path.split("/").pop()?.replace(".ts", "") || "";
 
-        if (filename && filename !== "util") {
-          try {
-            const module = (await importFn()) as ContractModule;
-            loadedContracts[filename] = module;
-          } catch (error) {
-            console.error(`Failed to load contract ${filename}:`, error);
-          }
+        if (filename && filename === "util") continue;
+
+        try {
+          const module = (await importFn()) as ContractModule;
+          loadedContracts[filename] = module;
+        } catch (error) {
+          console.warn(`Skipping contract ${filename} – import failed`, error);
         }
       }
 
@@ -100,40 +100,45 @@ const Debugger: React.FC = () => {
       </Layout.Inset>
 
       <Layout.Inset>
-        <div style={{ display: "flex", gap: "1rem" }}>
-          {/* Contract detail card */}
-          <div
-            style={{
-              flexBasis: "30%",
-              alignSelf: "flex-start",
-            }}
-          >
-            <Card variant="secondary">
-              <h3>{selectedContract}</h3>
+        <div style={{ marginTop: "0 2rem" }}>
+          <div style={{ display: "flex", flexFlow: "column", gap: "1rem" }}>
+            {/* Contract detail card */}
+            <div
+              style={{
+                flexBasis: "30%",
+                minWidth: "100%",
+                alignSelf: "flex-start",
+              }}
+            >
+              <Card variant="secondary">
+                <h3>{selectedContract}</h3>
 
-              <Input
-                label="Contract ID"
-                id="contract-id"
-                fieldSize="md"
-                copyButton={{
-                  position: "right",
-                }}
-                readOnly
-                value={
-                  (contractMap[selectedContract]?.default as unknown as Client)
-                    ?.options?.contractId || ""
-                }
+                <Input
+                  label="Contract ID"
+                  id="contract-id"
+                  fieldSize="md"
+                  copyButton={{
+                    position: "right",
+                  }}
+                  readOnly
+                  value={
+                    (
+                      contractMap[selectedContract]
+                        ?.default as unknown as Client
+                    )?.options?.contractId || ""
+                  }
+                />
+              </Card>
+            </div>
+
+            {/* Contract methods and interactions */}
+            <div style={{ flex: 1 }}>
+              <ContractForm
+                key={selectedContract}
+                contractClient={contractMap[selectedContract]?.default}
+                contractClientError={null}
               />
-            </Card>
-          </div>
-
-          {/* Contract methods and interactions */}
-          <div style={{ flex: 1 }}>
-            <ContractForm
-              key={selectedContract}
-              contractClient={contractMap[selectedContract]?.default}
-              contractClientError={null}
-            />
+            </div>
           </div>
         </div>
       </Layout.Inset>
