@@ -1,13 +1,34 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import React, { useState } from "react";
+import { useState } from "react";
 import { PrettyJsonTextarea } from "./PrettyJsonTextarea";
 import { decode, guess, initialize } from "../util/StellarXdr";
-import { Button, Code, Icon } from "@stellar/design-system";
+import { Code, Icon } from "@stellar/design-system";
 
 interface Props {
   xdr: string;
   typeVariant?: string;
 }
+
+const variant = {
+  toggled: {
+    backgroundColor: "#f0f0f0",
+    color: "#333",
+    padding: "0.25rem 0.5rem",
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+    borderRadius: "4px",
+  },
+  untoggled: {
+    backgroundColor: "#C9C8C8",
+    color: "#333",
+    padding: "0.25rem 0.5rem",
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+    borderRadius: "4px",
+  },
+};
 
 await initialize();
 
@@ -37,21 +58,42 @@ export const XdrJsonViewer = ({ xdr, typeVariant }: Props) => {
       {displayFormatted === "JSON" && (
         <PrettyJsonTextarea label="" isCodeWrapped={true} json={parsedJson} />
       )}
-      <Button
+      <div
+        style={{
+          alignSelf: "flex-end",
+          cursor: "pointer",
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "flex-end",
+          alignItems: "center",
+          gap: "0.5rem",
+          padding: "0.25rem",
+          borderRadius: "4px",
+          backgroundColor: "#C9C8C8",
+          color: "#333",
+        }}
         title={`View as ${displayFormatted === "XDR" ? "JSON" : "XDR"}`}
-        variant="tertiary"
-        size="sm"
         onClick={toggleDisplay}
-        iconPosition="left"
-        icon={displayFormatted === "XDR" ? <Icon.Brackets /> : <Icon.Code01 />}
-        style={
-          {
-            alignSelf: "flex-end",
-          } as React.CSSProperties
-        }
       >
-        {displayFormatted === "XDR" ? "JSON " : "XDR"}
-      </Button>
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          <div
+            style={
+              displayFormatted === "XDR" ? variant.toggled : variant.untoggled
+            }
+          >
+            <Icon.Brackets />
+            XDR
+          </div>
+          <div
+            style={
+              displayFormatted === "JSON" ? variant.toggled : variant.untoggled
+            }
+          >
+            <Icon.Code01 />
+            JSON
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
