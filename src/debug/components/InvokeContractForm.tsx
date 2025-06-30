@@ -418,11 +418,15 @@ export const InvokeContractForm = ({
       {description ? (
         <Textarea
           id={`invoke-contract-description-${name}`}
-          fieldSize="md"
-          disabled
-          rows={description.length > 100 ? 7 : 1}
+          label="Rustdoc"
+          infoText="This description is auto-generated from the contract's Rust documentation. It can be edited in the contract's source code."
+          infoTextIcon={<Icon.InfoCircle />}
+          fieldSize="sm"
+          wrap="on"
+          rows={description.length > 100 ? 4 : 1}
           value={description}
           spellCheck="false"
+          readOnly
         >
           {description}
         </Textarea>
