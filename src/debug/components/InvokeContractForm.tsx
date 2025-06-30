@@ -9,6 +9,7 @@ import {
   Icon,
   Text,
   Textarea,
+  Tooltip,
 } from "@stellar/design-system";
 import { BASE_FEE, contract } from "@stellar/stellar-sdk";
 import { JSONSchema7 } from "json-schema";
@@ -86,6 +87,20 @@ const renderReadWritePill = (isWriteFn: boolean | undefined) => {
         marginBottom: "1rem",
       }}
     >
+      {!isWriteFn && (
+        <Tooltip
+          triggerEl={<Icon.InfoCircle color="#FFB223" />}
+          title={
+            <Text size="md" as="div">
+              {`When a transaction doesn't change the state of the contract, it is
+              considered a read operation. \nIn this scenario, it is not
+              necessary to submit the transaction to the network, as it does not
+              modify any data. \nYou can simply simulate the transaction to see
+              the results without incurring any costs.`}
+            </Text>
+          }
+        />
+      )}
       <Pill textColor={color} bgColor={backgroundColor}>
         {icon}
         {label}
