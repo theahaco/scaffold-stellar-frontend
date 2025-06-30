@@ -170,7 +170,6 @@ export const renderPrimitivesType = ({
             key={path.join(".")}
             infoText={description || ""}
             leftElement={<Icon.User03 />}
-            // rightElement={typePill}
             note={<>{description}</>}
             fieldSize="md"
           />
