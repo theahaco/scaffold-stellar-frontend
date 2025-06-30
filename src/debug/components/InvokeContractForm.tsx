@@ -496,7 +496,6 @@ export const InvokeContractForm = ({
         <ValidationResponseCard
           variant="primary"
           title="Response"
-          // subtitle={`Transaction succeeded with ${response.operationCount} operation(s)`}
           note={<></>}
           summary={simulationSummary}
           detailedResponse={

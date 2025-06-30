@@ -66,13 +66,13 @@ export const HorizonErrorResponse = ({
       variant="error"
       title="Transaction failed!"
       subtitle={message}
-      response={extras}
+      detailedResponse={extras}
     />
   );
 };
 
 export const RpcErrorResponse = ({ error }: { error: SubmitRpcError }) => {
-  const getTitle = (status: SubmitRpcErrorStatus) => {
+  const getSubtitle = (status: SubmitRpcErrorStatus) => {
     switch (status) {
       case "DUPLICATE":
         return "Duplicate transaction";
@@ -119,8 +119,9 @@ export const RpcErrorResponse = ({ error }: { error: SubmitRpcError }) => {
   return (
     <ValidationResponseCard
       variant="error"
-      title={getTitle(error.status)}
-      response={errorFields()}
+      title="Transaction Submission Error!"
+      subtitle={getSubtitle(error.status)}
+      detailedResponse={errorFields()}
     />
   );
 };
