@@ -66,7 +66,6 @@ const renderReadWriteBadge = (isWriteFn: boolean | undefined) => {
       style={{
         display: "flex",
         gap: "0.5rem",
-        marginBottom: "1rem",
         alignItems: "center",
       }}
     >
@@ -394,39 +393,40 @@ export const InvokeContractForm = ({
     setSimulationQueued(false);
   };
 
-  const renderTitle = (name: string, description?: string) => (
+  const renderTitle = (name: string) => (
     <>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "left",
-          gap: "0.5rem",
-        }}
-      >
+      <Box gap="sm" direction="row">
         <Text size="sm" as="div" weight="bold">
           {name}
         </Text>
         {renderReadWriteBadge(isWriteFn)}
-      </div>
-
-      {description ? (
-        <Textarea
-          id={`invoke-contract-description-${name}`}
-          label="Rustdoc"
-          infoText="This description is auto-generated from the contract's Rust documentation. It can be edited in the contract's source code."
-          infoTextIcon={<Icon.InfoCircle />}
-          fieldSize="sm"
-          wrap="on"
-          rows={description.length > 100 ? 4 : 1}
-          value={description}
-          spellCheck="false"
-          readOnly
-        >
-          {description}
-        </Textarea>
-      ) : null}
+      </Box>
     </>
   );
+
+  const renderRustDoc = (description?: string) => {
+    if (!description) return null;
+
+    return (
+      <Textarea
+        id={`invoke-contract-description-${funcName}`}
+        label="Rustdoc"
+        infoText="This description is auto-generated from the contract's Rust documentation. It can be edited in the contract's source code."
+        infoTextIcon={<Icon.InfoCircle />}
+        fieldSize="sm"
+        wrap="on"
+        rows={description.length > 100 ? 4 : 1}
+        value={description}
+        spellCheck="false"
+        readOnly
+      >
+        {description}
+      </Textarea>
+    );
+  };
+
+  const isEmptySchema =
+    Object.entries(dereferencedSchema?.properties || {}).length === 0;
 
   useEffect(() => {
     if (dereferencedSchema && !dereferencedSchema?.required.length) {
@@ -437,16 +437,21 @@ export const InvokeContractForm = ({
   }, [dereferencedSchema]);
 
   const renderSchema = () => {
-    if (!contractSpec || !dereferencedSchema) {
+    if (!contractSpec || !contractSpec.jsonSchema) {
       return null;
     }
 
     return (
       <Box gap="md">
-        {renderTitle(funcName, dereferencedSchema?.description)}
+        <Box gap="sm" direction="row" justify="space-between" align="center">
+          {renderTitle(funcName)}
+          {isEmptySchema && renderButtons()}
+        </Box>
+        {renderRustDoc(dereferencedSchema?.description)}
         {formValue.contract_id &&
           formValue.function_name &&
-          dereferencedSchema && (
+          dereferencedSchema &&
+          !isEmptySchema && (
             <JsonSchemaRenderer
               name={funcName}
               schema={dereferencedSchema as JSONSchema7}
@@ -556,6 +561,30 @@ export const InvokeContractForm = ({
     return null;
   };
 
+  const renderButtons = () => (
+    <Box gap="sm" direction="row" align="end" justify="end" wrap="wrap">
+      <Button
+        size="md"
+        variant="tertiary"
+        disabled={isSimulationDisabled()}
+        isLoading={isSimulating}
+        onClick={() => void handleSimulate()}
+      >
+        Simulate
+      </Button>
+
+      <Button
+        size="md"
+        variant="secondary"
+        isLoading={isExtensionLoading || isSubmitRpcPending}
+        disabled={isSubmitDisabled}
+        onClick={() => void handleSubmit()}
+      >
+        Submit
+      </Button>
+    </Box>
+  );
+
   const isSimulationDisabled = () => {
     const disabled = !isGetFunction && !Object.keys(formValue.args).length;
     return !userPk || !hasNoFormErrors || disabled;
@@ -570,30 +599,9 @@ export const InvokeContractForm = ({
   return (
     <Card>
       <div className="ContractInvoke">
-        <Box gap="md">
+        <Box gap="md" direction={isEmptyObject({ a: true }) ? "row" : "column"}>
           {renderSchema()}
-
-          <Box gap="sm" direction="row" align="end" justify="end" wrap="wrap">
-            <Button
-              size="md"
-              variant="tertiary"
-              disabled={isSimulationDisabled()}
-              isLoading={isSimulating}
-              onClick={() => void handleSimulate()}
-            >
-              Simulate
-            </Button>
-
-            <Button
-              size="md"
-              variant="secondary"
-              isLoading={isExtensionLoading || isSubmitRpcPending}
-              disabled={isSubmitDisabled}
-              onClick={() => void handleSubmit()}
-            >
-              Submit
-            </Button>
-          </Box>
+          {!isEmptySchema && renderButtons()}
           <>{renderResponse()}</>
           <>{renderSuccess()}</>
           <>{renderError()}</>
