@@ -4,6 +4,7 @@ import { ValidationResponseCard } from "./ValidationResponseCard";
 import { SubmitRpcResponse } from "../types/types";
 
 import { XdrJsonViewer } from "./XdrJsonViewer";
+import { Alert } from "@stellar/design-system";
 
 interface TransactionSuccessCardProps {
   response: SubmitRpcResponse;
@@ -16,7 +17,16 @@ export const TransactionSuccessCard = ({
     <ValidationResponseCard
       variant="success"
       title="Transaction submitted!"
-      subtitle={`Transaction succeeded with ${response.operationCount} operation(s)`}
+      summary={
+        <Alert
+          variant="success"
+          placement="inline"
+          title="Successful Execution"
+        >
+          {" "}
+          {`Transaction succeeded with ${response.operationCount} operation(s)`}
+        </Alert>
+      }
       note={<></>}
       detailedResponse={
         <Box gap="lg">

@@ -13,6 +13,7 @@ import {
   SubmitRpcError,
   SubmitRpcErrorStatus,
 } from "../types/types";
+import { Alert } from "@stellar/design-system";
 
 export const HorizonErrorResponse = ({
   error,
@@ -64,8 +65,12 @@ export const HorizonErrorResponse = ({
   return (
     <ValidationResponseCard
       variant="error"
-      title="Transaction failed!"
-      subtitle={message}
+      title="Error!"
+      summary={
+        <Alert variant="error" placement="inline" title="Failed Execution">
+          {message}
+        </Alert>
+      }
       detailedResponse={extras}
     />
   );
