@@ -58,42 +58,6 @@ const pageBodyStyles = {
   },
 };
 
-const renderReadWriteBadge = (isWriteFn: boolean | undefined) => {
-  if (isWriteFn === undefined) return null;
-
-  return (
-    <div
-      style={{
-        display: "flex",
-        gap: "0.5rem",
-        alignItems: "center",
-      }}
-    >
-      <Badge
-        icon={isWriteFn ? <Icon.Pencil01 /> : <Icon.Eye />}
-        variant={isWriteFn ? "secondary" : "success"}
-        iconPosition="left"
-      >
-        {isWriteFn ? "Write" : "Read"}
-      </Badge>
-      {!isWriteFn && (
-        <Tooltip
-          triggerEl={<Icon.InfoCircle color="#FFB223" />}
-          title={
-            <Text size="md" as="div">
-              {`When a transaction doesn't change the state of the contract, it is
-              considered a read operation. \nIn this scenario, it is not
-              necessary to submit the transaction to the network, as it does not
-              modify any data. \nYou can simply simulate the transaction to see
-              the results without incurring any costs.`}
-            </Text>
-          }
-        />
-      )}
-    </div>
-  );
-};
-
 export const InvokeContractForm = ({
   contractClient,
   funcName,
@@ -128,6 +92,8 @@ export const InvokeContractForm = ({
   const [isSimulationQueued, setSimulationQueued] = useState(false);
   // Used to delay a submit until after a simulation is complete
   const [isSubmitQueued, setSubmissionQueued] = useState(false);
+
+  const [isReadTooltipVisible, setIsReadTooltipVisible] = useState(false);
 
   const hasNoFormErrors = isEmptyObject(formError);
 
@@ -391,6 +357,44 @@ export const InvokeContractForm = ({
     }
 
     setSimulationQueued(false);
+  };
+
+  const renderReadWriteBadge = (isWriteFn: boolean | undefined) => {
+    if (isWriteFn === undefined) return null;
+
+    const badge = (
+      <Badge
+        icon={isWriteFn ? <Icon.Pencil01 /> : <Icon.Eye />}
+        variant={isWriteFn ? "secondary" : "success"}
+        iconPosition="left"
+      >
+        {isWriteFn ? "Write" : "Read"}
+      </Badge>
+    );
+
+    return !isWriteFn ? (
+      <div
+        onMouseEnter={() => setIsReadTooltipVisible(true)}
+        onMouseLeave={() => setIsReadTooltipVisible(false)}
+        style={{ cursor: "pointer" }}
+      >
+        <Tooltip
+          isVisible={isReadTooltipVisible}
+          isContrast
+          title="Read Only"
+          placement="right-end"
+          triggerEl={badge}
+        >
+          {`When a transaction doesn't change the state of the contract, it is
+               considered a read operation. \nIn this scenario, it is not
+               necessary to submit the transaction to the network, as it does not
+               modify any data. \nYou can simply simulate the transaction to see
+               the results without incurring any costs.`}
+        </Tooltip>
+      </div>
+    ) : (
+      badge
+    );
   };
 
   const renderTitle = (name: string) => (
