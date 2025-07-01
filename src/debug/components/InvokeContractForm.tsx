@@ -67,8 +67,16 @@ const renderReadWriteBadge = (isWriteFn: boolean | undefined) => {
         display: "flex",
         gap: "0.5rem",
         marginBottom: "1rem",
+        alignItems: "center",
       }}
     >
+      <Badge
+        icon={isWriteFn ? <Icon.Pencil01 /> : <Icon.Eye />}
+        variant={isWriteFn ? "secondary" : "success"}
+        iconPosition="left"
+      >
+        {isWriteFn ? "Write" : "Read"}
+      </Badge>
       {!isWriteFn && (
         <Tooltip
           triggerEl={<Icon.InfoCircle color="#FFB223" />}
@@ -83,13 +91,6 @@ const renderReadWriteBadge = (isWriteFn: boolean | undefined) => {
           }
         />
       )}
-      <Badge
-        icon={isWriteFn ? <Icon.Pencil01 /> : <Icon.Eye />}
-        variant={isWriteFn ? "secondary" : "success"}
-        iconPosition="left"
-      >
-        {isWriteFn ? "Write" : "Read"}
-      </Badge>
     </div>
   );
 };
@@ -398,7 +399,7 @@ export const InvokeContractForm = ({
       <div
         style={{
           display: "flex",
-          justifyContent: "space-between",
+          justifyContent: "left",
           gap: "0.5rem",
         }}
       >
