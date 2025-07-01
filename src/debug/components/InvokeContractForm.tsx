@@ -139,8 +139,10 @@ export const InvokeContractForm = ({
   const [isWriteFn, setIsWriteFn] = useState<boolean | undefined>(undefined);
   const [dereferencedSchema, setDereferencedSchema] =
     useState<DereferencedSchemaType | null>(null);
+  // used to delay the simulation until after the sequence number is fetched
+  const [isSimulationQueued, setSimulationQueued] = useState(false);
   // Used to delay a submit until after a simulation is complete
-  const [pendingSubmit, setPendingSubmit] = useState(false);
+  const [isSubmitQueued, setSubmissionQueued] = useState(false);
 
   const hasNoFormErrors = isEmptyObject(formError);
 
@@ -178,7 +180,6 @@ export const InvokeContractForm = ({
     error: submitRpcError,
     isPending: isSubmitRpcPending,
     isSuccess: isSubmitRpcSuccess,
-    isError: isSubmitRpcError,
     reset: resetSubmitRpc,
   } = useSubmitRpcTx();
 
@@ -239,7 +240,7 @@ export const InvokeContractForm = ({
       const simulationChangesState =
         result.stateChanges && result.stateChanges.length > 0;
 
-      if (pendingSubmit) {
+      if (isSubmitQueued && !isSimulationQueued && prepareTxData) {
         void triggerSubmit();
       }
 
@@ -252,10 +253,17 @@ export const InvokeContractForm = ({
       return;
     }
 
-    // If the simulation is not successful, reset the isWriteFn state
-    setIsWriteFn(undefined);
-    setPendingSubmit(false);
-  }, [simulateTxData]);
+    if (isFailedSimulation) {
+      setSubmissionQueued(false);
+      setIsWriteFn(undefined);
+    }
+  }, [simulateTxData, isSimulationQueued, prepareTxData]);
+
+  useEffect(() => {
+    if (isSimulationQueued && !isFetchingSequenceNumber) {
+      void triggerSimulate();
+    }
+  }, [sequenceNumberData, isFetchingSequenceNumber]);
 
   const handleChange = (value: SorobanInvokeValue) => {
     setInvokeError(null);
@@ -283,19 +291,24 @@ export const InvokeContractForm = ({
     }
   };
 
+  const handleSimulate = async () => {
+    setInvokeError(null);
+    resetSimulateState();
+    resetSubmitState();
+    resetPrepareTx();
+
+    setSimulationQueued(true);
+
+    await fetchSequenceNumber();
+  };
+
   const handleSubmit = async () => {
-    setPendingSubmit(true);
-
-    if (!simulatedResultResponse) {
-      await handleSimulate();
-      return;
-    }
-
-    void triggerSubmit();
+    setSubmissionQueued(true);
+    return handleSimulate();
   };
 
   const triggerSubmit = async () => {
-    setPendingSubmit(false);
+    setSubmissionQueued(false);
 
     if (!prepareTxData?.transactionXdr) {
       setInvokeError({
@@ -328,15 +341,8 @@ export const InvokeContractForm = ({
     }
   };
 
-  const handleSimulate = async () => {
-    setInvokeError(null);
-    resetSimulateState();
-    resetSubmitState();
-    resetPrepareTx();
-
+  const triggerSimulate = () => {
     try {
-      await fetchSequenceNumber();
-
       if (!sequenceNumberData) {
         throw new Error("Failed to fetch sequence number. Please try again.");
       }
@@ -398,6 +404,8 @@ export const InvokeContractForm = ({
         methodType: "simulate",
       });
     }
+
+    setSimulationQueued(false);
   };
 
   const renderTitle = (name: string, description?: string) => (
@@ -562,33 +570,17 @@ export const InvokeContractForm = ({
     return null;
   };
 
-  /*
-    isSubmitDisabled is true if:
-    - there is an invoke error from simulation or signing
-    - there is a submit rpc error
-    - the transaction is simulating
-    - the wallet is not connected
-    - there are form validation errors
-    - the transaction data from simulation is not available (needed to submit)
-  */
-
-  const simulatedResultResponse =
-    simulateTxData?.result?.transactionData ||
-    simulateTxData?.result?.transactionDataJson;
-
-  const isSubmitDisabled =
-    !!invokeError?.message ||
-    isSubmitRpcError ||
-    isSimulating ||
-    !userPk ||
-    !hasNoFormErrors ||
-    isFailedSimulation;
-
   const isSimulationDisabled = () => {
     const disabled = !isGetFunction && !Object.keys(formValue.args).length;
     return !userPk || !hasNoFormErrors || disabled;
   };
 
+  const isSubmitDisabled =
+    !!invokeError?.message ||
+    isSimulating ||
+    !userPk ||
+    !hasNoFormErrors ||
+    isSimulationDisabled();
   return (
     <Card>
       <div className="ContractInvoke">
