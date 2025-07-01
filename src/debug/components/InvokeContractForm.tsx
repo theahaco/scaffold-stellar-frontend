@@ -4,6 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   Alert,
+  Badge,
   Button,
   Card,
   Icon,
@@ -37,7 +38,6 @@ import { network } from "../../contracts/util";
 import { JsonSchemaRenderer } from "./JsonSchemaRenderer";
 import { ValidationResponseCard } from "./ValidationResponseCard";
 import { Api } from "@stellar/stellar-sdk/rpc";
-import Pill from "../../components/Pill";
 
 const pageBodyStyles = {
   content: {
@@ -58,26 +58,8 @@ const pageBodyStyles = {
   },
 };
 
-const readWritePillColors = {
-  read: {
-    backgroundColor: "#E6F9EC",
-    color: "#006600",
-    icon: <Icon.Eye />,
-    label: "Read",
-  },
-  write: {
-    backgroundColor: "#e6f2ff",
-    color: "#6699ff",
-    icon: <Icon.Pencil01 />,
-    label: "Write",
-  },
-};
-//FFB223
-const renderReadWritePill = (isWriteFn: boolean | undefined) => {
+const renderReadWriteBadge = (isWriteFn: boolean | undefined) => {
   if (isWriteFn === undefined) return null;
-
-  const pillType = isWriteFn ? "write" : "read";
-  const { backgroundColor, color, icon, label } = readWritePillColors[pillType];
 
   return (
     <div
@@ -101,10 +83,13 @@ const renderReadWritePill = (isWriteFn: boolean | undefined) => {
           }
         />
       )}
-      <Pill textColor={color} bgColor={backgroundColor}>
-        {icon}
-        {label}
-      </Pill>
+      <Badge
+        icon={isWriteFn ? <Icon.Pencil01 /> : <Icon.Eye />}
+        variant={isWriteFn ? "secondary" : "success"}
+        iconPosition="left"
+      >
+        {isWriteFn ? "Write" : "Read"}
+      </Badge>
     </div>
   );
 };
@@ -420,7 +405,7 @@ export const InvokeContractForm = ({
         <Text size="sm" as="div" weight="bold">
           {name}
         </Text>
-        {renderReadWritePill(isWriteFn)}
+        {renderReadWriteBadge(isWriteFn)}
       </div>
 
       {description ? (

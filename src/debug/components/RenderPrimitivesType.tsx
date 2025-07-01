@@ -5,7 +5,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 import React from "react";
-import { Icon, Input, Select, Text } from "@stellar/design-system";
+import { Badge, Icon, Input, Select, Text } from "@stellar/design-system";
 import type { JSONSchema7 } from "json-schema";
 import { get } from "lodash";
 
@@ -17,7 +17,6 @@ import { PositiveIntPicker } from "./PositiveIntPicker";
 
 import type { AnyObject, SorobanInvokeValue } from "../types/types";
 import { convertSpecTypeToScValType } from "../util/sorobanUtils";
-import Pill from "../../components/Pill";
 
 export const renderPrimitivesType = ({
   name,
@@ -48,11 +47,10 @@ export const renderPrimitivesType = ({
     path.join("."),
   ].join(".");
 
-  const renderTypePill = (icon?: React.ReactNode) => (
-    <Pill bgColor="#F3F3F3" textColor="#333">
-      {icon}
+  const renderTypeBadge = (icon?: React.ReactNode) => (
+    <Badge variant="tertiary" icon={icon}>
       {schemaType.toLowerCase()}
-    </Pill>
+    </Badge>
   );
 
   const sharedProps = {
@@ -70,7 +68,7 @@ export const renderPrimitivesType = ({
           gap: "0.5rem",
         }}
       >
-        {renderTypePill()}
+        {renderTypeBadge()}
         <Text size="sm" as="div" weight="bold">
           {nestedItemLabel}
         </Text>
