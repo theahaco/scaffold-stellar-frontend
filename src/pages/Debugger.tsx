@@ -110,7 +110,7 @@ const Debugger: React.FC = () => {
                 alignSelf: "flex-start",
               }}
             >
-              <Card variant="secondary">
+              <Card variant="primary">
                 <h3>{selectedContract}</h3>
 
                 <Input

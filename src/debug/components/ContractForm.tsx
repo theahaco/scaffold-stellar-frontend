@@ -46,7 +46,7 @@ export const ContractForm = ({
           your wallet to proceed.
         </Alert>
       ) : null}
-      <Card>
+      <Card variant="secondary">
         <Box gap="lg" data-testid="invoke-contract-container">
           <Text as="h2" size="md" weight="semi-bold">
             Invoke Contract
