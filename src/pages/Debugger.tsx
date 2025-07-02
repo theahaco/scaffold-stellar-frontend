@@ -2,12 +2,18 @@ import React, { useState, useEffect } from "react";
 import { Layout, Code, Card, Button, Input } from "@stellar/design-system";
 import { Client } from "@stellar/stellar-sdk/contract";
 import { ContractForm } from "../debug/components/ContractForm.tsx";
+import {
+  ContractMetadata,
+  loadContractMetadata,
+} from "../debug/util/loadContractMetada.ts";
+import { Box } from "../components/layout/Box.tsx";
 
 // Dynamically import all contract clients under src/contracts/
 const contractModules = import.meta.glob("../contracts/*.ts");
 
 type ContractModule = {
   default: Client;
+  metadata?: ContractMetadata;
 };
 
 type ContractMap = Record<string, ContractModule>;
@@ -16,6 +22,7 @@ const Debugger: React.FC = () => {
   const [contractMap, setContractMap] = useState<ContractMap>({});
   const [selectedContract, setSelectedContract] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isDetailExpanded, setIsDetailExpanded] = useState(false);
 
   useEffect(() => {
     const loadContracts = async () => {
@@ -28,7 +35,10 @@ const Debugger: React.FC = () => {
 
         try {
           const module = (await importFn()) as ContractModule;
-          loadedContracts[filename] = module;
+          const metadata = await loadContractMetadata(
+            module.default.options.contractId,
+          );
+          loadedContracts[filename] = { ...module, metadata };
         } catch (error) {
           console.warn(`Skipping contract ${filename} – import failed`, error);
         }
@@ -128,6 +138,70 @@ const Debugger: React.FC = () => {
                     )?.options?.contractId || ""
                   }
                 />
+
+                {isDetailExpanded && (
+                  <>
+                    {(contractMap[selectedContract]?.metadata
+                      ?.contractenvmetav0 as object) && (
+                      <Box gap="md">
+                        <h4>Env Metadata</h4>
+                        {Object.keys(
+                          contractMap[selectedContract]?.metadata
+                            ?.contractenvmetav0
+                            ?.sc_env_meta_kind_interface_version as object,
+                        ).map((key) => (
+                          <Box key={key} gap="sm">
+                            <strong>{key}:</strong>{" "}
+                            {String(
+                              (
+                                contractMap[selectedContract]?.metadata
+                                  ?.contractenvmetav0
+                                  ?.sc_env_meta_kind_interface_version as Record<
+                                  string,
+                                  unknown
+                                >
+                              )[key],
+                            )}
+                          </Box>
+                        ))}
+                      </Box>
+                    )}
+
+                    {(contractMap[selectedContract]?.metadata
+                      ?.contractmetav0 as object) && (
+                      <Box gap="md">
+                        <h4>Env Metadata</h4>
+
+                        {Object.keys(
+                          contractMap[selectedContract]?.metadata
+                            ?.contractmetav0?.sc_meta_v0 as object,
+                        ).map((key) => (
+                          <Box key={key} gap="sm">
+                            <strong>{key}:</strong>{" "}
+                            {String(
+                              (
+                                contractMap[selectedContract]?.metadata
+                                  ?.contractmetav0?.sc_meta_v0 as Record<
+                                  string,
+                                  unknown
+                                >
+                              )[key],
+                            )}
+                          </Box>
+                        ))}
+                      </Box>
+                    )}
+                  </>
+                )}
+
+                <Button
+                  variant="tertiary"
+                  size="sm"
+                  onClick={() => setIsDetailExpanded(!isDetailExpanded)}
+                  style={{ justifySelf: "flex-end", marginTop: "1rem" }}
+                >
+                  {isDetailExpanded ? "Hide Details" : "Show Details"}
+                </Button>
               </Card>
             </div>
 
