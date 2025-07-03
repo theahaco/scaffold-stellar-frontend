@@ -553,6 +553,8 @@ export const CONTRACT_SECTIONS = [
 export type ContractSectionName = (typeof CONTRACT_SECTIONS)[number];
 
 export type ContractData = {
+  sc_env_meta_kind_interface_version?: ContractData | null;
+  sc_meta_v0?: ContractData | null;
   xdr?: string[];
   json?: string[];
   text?: string[];

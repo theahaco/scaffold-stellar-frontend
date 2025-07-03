@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Server } from "@stellar/stellar-sdk/rpc";
 import { network } from "../../contracts/util";
 import { Contract } from "@stellar/stellar-sdk";
@@ -10,8 +13,8 @@ import {
 import { prettifyJsonString } from "./prettifyJsonString";
 
 export interface ContractMetadata {
-  contractmetav0?: { sc_meta_v0: unknown };
-  contractenvmetav0?: { sc_env_meta_kind_interface_version: unknown };
+  contractmetav0?: unknown;
+  contractenvmetav0?: unknown;
   wasmHash?: string;
   wasmBinary?: string;
 }
@@ -31,20 +34,17 @@ export const loadContractMetadata = async (contractId: string) => {
 
     const metadata = {
       contractmetav0:
-        wasmData && wasmData.contractmetav0 && wasmData.contractmetav0.json?.[0]
-          ? (JSON.parse(wasmData.contractmetav0.json[0]) as unknown)
+        wasmData && wasmData.contractmetav0
+          ? (wasmData.contractmetav0 as unknown)
           : undefined,
+
       contractenvmetav0:
-        wasmData &&
-        wasmData.contractenvmetav0 &&
-        wasmData.contractenvmetav0.json?.[0]
-          ? (JSON.parse(wasmData.contractenvmetav0.json[0]) as unknown)
+        wasmData && wasmData.contractenvmetav0
+          ? (wasmData.contractenvmetav0 as unknown)
           : undefined,
       wasmHash,
       wasmBinary: wasm.toString("hex"),
     };
-
-    console.log("WASM Data:", metadata);
 
     return { ...metadata } as ContractMetadata;
   } catch (error) {
@@ -108,7 +108,27 @@ export const getWasmContractData = async (wasmBytes: Buffer) => {
           const sectionData = sectionResult(sectionName, sections[i]);
 
           if (sectionData) {
-            result[sectionName] = sectionData;
+            const sectionDataJson = JSON.parse(sectionData.json[0]);
+            let sectionContent = {};
+            Object.keys(sectionDataJson).map((key) =>
+              sectionDataJson[key].key
+                ? (sectionContent = {
+                    ...sectionContent,
+
+                    [sectionDataJson[key].key]: sectionDataJson[key].val,
+                  })
+                : Object.keys(sectionDataJson[key]).map((innerKey) => {
+                    sectionContent = {
+                      ...sectionContent,
+                      [innerKey]: sectionDataJson[key][innerKey],
+                    };
+                  }),
+            );
+
+            result[sectionName] = {
+              ...result[sectionName],
+              ...sectionContent,
+            };
           }
         }
       }

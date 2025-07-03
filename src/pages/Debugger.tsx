@@ -121,79 +121,95 @@ const Debugger: React.FC = () => {
               }}
             >
               <Card variant="primary">
-                <h3>{selectedContract}</h3>
+                <Box gap="md">
+                  <h3>{selectedContract}</h3>
 
-                <Input
-                  label="Contract ID"
-                  id="contract-id"
-                  fieldSize="md"
-                  copyButton={{
-                    position: "right",
-                  }}
-                  readOnly
-                  value={
-                    (
-                      contractMap[selectedContract]
-                        ?.default as unknown as Client
-                    )?.options?.contractId || ""
-                  }
-                />
+                  <Input
+                    label="Contract ID"
+                    id="contract-id"
+                    fieldSize="md"
+                    copyButton={{
+                      position: "right",
+                    }}
+                    readOnly
+                    value={
+                      (
+                        contractMap[selectedContract]
+                          ?.default as unknown as Client
+                      )?.options?.contractId || ""
+                    }
+                  />
 
-                {isDetailExpanded && (
-                  <>
-                    {(contractMap[selectedContract]?.metadata
-                      ?.contractenvmetav0 as object) && (
-                      <Box gap="md">
-                        <h4>Env Metadata</h4>
-                        {Object.keys(
-                          contractMap[selectedContract]?.metadata
-                            ?.contractenvmetav0
-                            ?.sc_env_meta_kind_interface_version as object,
-                        ).map((key) => (
-                          <Box key={key} gap="sm">
-                            <strong>{key}:</strong>{" "}
-                            {String(
-                              (
-                                contractMap[selectedContract]?.metadata
-                                  ?.contractenvmetav0
-                                  ?.sc_env_meta_kind_interface_version as Record<
-                                  string,
-                                  unknown
-                                >
-                              )[key],
-                            )}
+                  {isDetailExpanded && (
+                    <>
+                      <Input
+                        label="Contract Wasm Hash"
+                        id="contract-wasm-hash"
+                        fieldSize="md"
+                        copyButton={{
+                          position: "right",
+                        }}
+                        readOnly
+                        value={
+                          contractMap[selectedContract]?.metadata?.wasmHash
+                        }
+                      />
+
+                      {(contractMap[selectedContract]?.metadata
+                        ?.contractenvmetav0 as object) &&
+                        contractMap[selectedContract]?.metadata
+                          ?.contractenvmetav0 && (
+                          <Box gap="md">
+                            <h4>Env Metadata</h4>
+                            {Object.keys(
+                              contractMap[selectedContract]?.metadata
+                                ?.contractenvmetav0 as object,
+                            ).map((key) => (
+                              <Box key={key} gap="sm">
+                                <strong>{key}:</strong>{" "}
+                                {String(
+                                  (
+                                    contractMap[selectedContract]?.metadata
+                                      ?.contractenvmetav0 as Record<
+                                      string,
+                                      unknown
+                                    >
+                                  )[key],
+                                )}
+                              </Box>
+                            ))}
                           </Box>
-                        ))}
-                      </Box>
-                    )}
+                        )}
 
-                    {(contractMap[selectedContract]?.metadata
-                      ?.contractmetav0 as object) && (
-                      <Box gap="md">
-                        <h4>Env Metadata</h4>
+                      {(contractMap[selectedContract]?.metadata
+                        ?.contractmetav0 as object) &&
+                        contractMap[selectedContract]?.metadata
+                          ?.contractmetav0 && (
+                          <Box gap="md">
+                            <h4> Metadata</h4>
 
-                        {Object.keys(
-                          contractMap[selectedContract]?.metadata
-                            ?.contractmetav0?.sc_meta_v0 as object,
-                        ).map((key) => (
-                          <Box key={key} gap="sm">
-                            <strong>{key}:</strong>{" "}
-                            {String(
-                              (
-                                contractMap[selectedContract]?.metadata
-                                  ?.contractmetav0?.sc_meta_v0 as Record<
-                                  string,
-                                  unknown
-                                >
-                              )[key],
-                            )}
+                            {Object.keys(
+                              contractMap[selectedContract]?.metadata
+                                .contractmetav0 as object,
+                            ).map((key) => (
+                              <Box key={key} gap="sm">
+                                <strong>{key}:</strong>{" "}
+                                {String(
+                                  (
+                                    contractMap[selectedContract]?.metadata
+                                      ?.contractmetav0 as Record<
+                                      string,
+                                      unknown
+                                    >
+                                  )[key],
+                                )}
+                              </Box>
+                            ))}
                           </Box>
-                        ))}
-                      </Box>
-                    )}
-                  </>
-                )}
-
+                        )}
+                    </>
+                  )}
+                </Box>
                 <Button
                   variant="tertiary"
                   size="sm"
