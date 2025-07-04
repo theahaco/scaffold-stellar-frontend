@@ -7,6 +7,7 @@ import {
   loadContractMetadata,
 } from "../debug/util/loadContractMetada.ts";
 import { Box } from "../components/layout/Box.tsx";
+import MetadataCard from "../debug/components/MetadataCard.tsx";
 
 // Dynamically import all contract clients under src/contracts/
 const contractModules = import.meta.glob("../contracts/*.ts");
@@ -161,23 +162,18 @@ const Debugger: React.FC = () => {
                           ?.contractenvmetav0 && (
                           <Box gap="md">
                             <h4>Env Metadata</h4>
-                            {Object.keys(
-                              contractMap[selectedContract]?.metadata
-                                ?.contractenvmetav0 as object,
-                            ).map((key) => (
-                              <Box key={key} gap="sm">
-                                <strong>{key}:</strong>{" "}
-                                {String(
-                                  (
-                                    contractMap[selectedContract]?.metadata
-                                      ?.contractenvmetav0 as Record<
-                                      string,
-                                      unknown
-                                    >
-                                  )[key],
-                                )}
-                              </Box>
-                            ))}
+                            <Box gap="md" direction="row" wrap="wrap">
+                              {Object.entries(
+                                contractMap[selectedContract]?.metadata
+                                  .contractenvmetav0 || {},
+                              ).map(([key, value]) => (
+                                <MetadataCard
+                                  key={key}
+                                  title={key}
+                                  content={String(value)}
+                                />
+                              ))}
+                            </Box>
                           </Box>
                         )}
 
@@ -187,24 +183,18 @@ const Debugger: React.FC = () => {
                           ?.contractmetav0 && (
                           <Box gap="md">
                             <h4> Metadata</h4>
-
-                            {Object.keys(
-                              contractMap[selectedContract]?.metadata
-                                .contractmetav0 as object,
-                            ).map((key) => (
-                              <Box key={key} gap="sm">
-                                <strong>{key}:</strong>{" "}
-                                {String(
-                                  (
-                                    contractMap[selectedContract]?.metadata
-                                      ?.contractmetav0 as Record<
-                                      string,
-                                      unknown
-                                    >
-                                  )[key],
-                                )}
-                              </Box>
-                            ))}
+                            <Box gap="md" direction="row" wrap="wrap">
+                              {Object.entries(
+                                contractMap[selectedContract]?.metadata
+                                  .contractmetav0 || {},
+                              ).map(([key, value]) => (
+                                <MetadataCard
+                                  key={key}
+                                  title={key}
+                                  content={String(value)}
+                                />
+                              ))}
+                            </Box>
                           </Box>
                         )}
                     </>
