@@ -1,7 +1,12 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { sanitizeObject } from "../../util/sanitizeObject";
 import { isEmptyObject } from "../../util/isEmptyObject";
-import { AnyObject, RevokeSponsorshipValue } from "../../types/types";
+import {
+  AnyObject,
+  AssetObjectValue,
+  AssetPoolShareObjectValue,
+  OptionSigner,
+  RevokeSponsorshipValue,
+} from "../../types/types";
 
 import { getPublicKeyError } from "./getPublicKeyError";
 import { getAssetError } from "./getAssetError";
@@ -30,35 +35,42 @@ export const getRevokeSponsorshipError = (
 
   switch (value.type) {
     case "account":
-      response = { account_id: getPublicKeyError(value.data.account_id) };
+      response = {
+        account_id: getPublicKeyError(value.data.account_id as string),
+      };
       break;
     case "trustline":
       response = {
-        account_id: getPublicKeyError(value.data.account_id),
-        asset: getAssetError(value.data.asset),
+        account_id: getPublicKeyError(value.data.account_id as string),
+        asset: getAssetError(
+          value.data.asset as
+            | undefined
+            | AssetObjectValue
+            | AssetPoolShareObjectValue,
+        ),
       };
       break;
     case "offer":
       response = {
-        seller_id: getPublicKeyError(value.data.seller_id),
-        offer_id: getPositiveIntError(value.data.offer_id || ""),
+        seller_id: getPublicKeyError(value.data.seller_id as string),
+        offer_id: getPositiveIntError((value.data.offer_id as string) || ""),
       };
       break;
     case "data":
       response = {
-        account_id: getPublicKeyError(value.data.account_id),
-        data_name: getDataNameError(value.data.data_name || ""),
+        account_id: getPublicKeyError(value.data.account_id as string),
+        data_name: getDataNameError((value.data.data_name as string) || ""),
       };
       break;
     case "claimable_balance":
       response = {
-        balance_id: getClaimableBalanceIdError(value.data.balance_id),
+        balance_id: getClaimableBalanceIdError(value.data.balance_id as string),
       };
       break;
     case "signer":
       response = {
-        account_id: getPublicKeyError(value.data.account_id),
-        signer: getOptionsSignerError(value.data.signer),
+        account_id: getPublicKeyError(value.data.account_id as string),
+        signer: getOptionsSignerError(value.data.signer as OptionSigner),
       };
       break;
     default:

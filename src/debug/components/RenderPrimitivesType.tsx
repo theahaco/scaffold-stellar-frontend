@@ -1,9 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable react-x/jsx-key-before-spread */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
 import React from "react";
 import { Badge, Icon, Input, Select, Text } from "@stellar/design-system";
 import type { JSONSchema7 } from "json-schema";
@@ -49,7 +44,7 @@ export const renderPrimitivesType = ({
 
   const renderTypeBadge = (icon?: React.ReactNode) => (
     <Badge variant="tertiary" icon={icon}>
-      {schemaType.toLowerCase()}
+      {(schemaType as string).toLowerCase()}
     </Badge>
   );
 
@@ -74,8 +69,10 @@ export const renderPrimitivesType = ({
         </Text>
       </div>
     ),
-    value: get(parsedSorobanOperation.args, path.join("."))?.value || "",
-    error: formError?.[formErrorKey] || undefined,
+    value:
+      ((get(parsedSorobanOperation.args, path.join(".")) as AnyObject)
+        ?.value as string) || "",
+    error: (formError?.[formErrorKey] as string) || undefined,
   };
 
   const invokeContractBaseProps = {
@@ -144,11 +141,9 @@ export const renderPrimitivesType = ({
         [formErrorKey]: error ? error : "",
       });
     } else {
-      setFormError((prev: AnyObject) => {
-        const newFormError = { ...prev };
-        delete newFormError[formErrorKey];
-        return newFormError;
-      });
+      const newFormError = { ...formError };
+      delete newFormError[formErrorKey];
+      setFormError(newFormError);
     }
   };
 

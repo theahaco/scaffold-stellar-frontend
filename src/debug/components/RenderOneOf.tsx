@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { JSONSchema7 } from "json-schema";
@@ -54,11 +52,13 @@ export const renderOneOf = ({
   if (path.length > 1) {
     tagName = get(parsedSorobanOperation.args[keyName], path.join("."))?.tag;
   } else {
-    tagName = parsedSorobanOperation.args[keyName]?.tag;
+    tagName = (parsedSorobanOperation.args[keyName] as AnyObject)?.tag;
   }
 
   const selectedSchema = schema.oneOf.find(
-    (oneOf) => jsonSchema.isSchemaObject(oneOf) && oneOf?.title === tagName,
+    (oneOf) =>
+      jsonSchema.isSchemaObject(oneOf as AnyObject) &&
+      (oneOf as AnyObject)?.title === tagName,
   );
 
   const onSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -73,7 +73,7 @@ export const renderOneOf = ({
           : pathSegments.join(".");
 
       const updatedTupleList = jsonSchema.setDeepValue(
-        parsedSorobanOperation.args[keyName],
+        parsedSorobanOperation.args[keyName] as AnyObject,
         updatedPath,
         {
           tag: e.target.value,
@@ -108,7 +108,10 @@ export const renderOneOf = ({
         id="json-schema-form-renderer-one-of"
         fieldSize="md"
         label={name}
-        value={get(parsedSorobanOperation.args, path.join("."))?.tag}
+        value={
+          (get(parsedSorobanOperation.args, path.join(".")) as AnyObject)
+            ?.tag as string
+        }
         onChange={onSelectChange}
       >
         {/* title is the tag */}
@@ -130,7 +133,7 @@ export const renderOneOf = ({
       </Select>
 
       {selectedSchema &&
-      jsonSchema.isSchemaObject(selectedSchema) &&
+      jsonSchema.isSchemaObject(selectedSchema as AnyObject) &&
       jsonSchema.isTaggedUnion(selectedSchema as JSONSchema7)
         ? renderTupleType({
             path,

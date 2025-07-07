@@ -19,7 +19,7 @@ export type CustomKeyValueLinkMap = {
 };
 
 type PrettyJsonProps = {
-  json: AnyObject;
+  json: unknown;
   customKeyValueLinkMap?: CustomKeyValueLinkMap;
   customValueRenderer?: (
     item: unknown,
@@ -129,7 +129,7 @@ export const PrettyJson = ({
     return null;
   }
 
-  const isRpcResponse = Object.keys(json)[0] === "jsonrpc";
+  const isRpcResponse = Object.keys(json as AnyObject)[0] === "jsonrpc";
 
   const ItemCount = ({ itemList }: { itemList: unknown[] }) => (
     <div style={styles.expandSize}>{getItemSizeLabel(itemList)}</div>

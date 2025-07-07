@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { isEmptyObject } from "./isEmptyObject";
 import { AnyObject } from "../types/types";
 
@@ -10,7 +8,7 @@ export const sanitizeObject = <T extends AnyObject>(
   return Object.keys(obj).reduce((res, param) => {
     const paramValue = obj[param];
 
-    const emptyObj = noEmptyObj && isEmptyObject(paramValue);
+    const emptyObj = noEmptyObj && isEmptyObject(paramValue as AnyObject);
 
     if (paramValue && !emptyObj) {
       return { ...res, [param]: paramValue };

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { isEmptyObject } from "../../util/isEmptyObject";
 import { sanitizeObject } from "../../util/sanitizeObject";
@@ -18,11 +17,11 @@ export const getClaimaintsError = (val: AnyObject[]) => {
   val.forEach((claimant) => {
     const validate = {
       destination: claimant.destination
-        ? getPublicKeyError(claimant.destination)
+        ? getPublicKeyError(claimant.destination as string)
         : false,
       predicate:
-        claimant.predicate && !isEmptyObject(claimant.predicate)
-          ? validatePredicate(claimant.predicate)
+        claimant.predicate && !isEmptyObject(claimant.predicate as AnyObject)
+          ? validatePredicate(claimant.predicate as AnyObject)
           : false,
     };
 
@@ -64,8 +63,8 @@ const validateEntry = (
     } else if (Array.isArray(value)) {
       value.forEach((v, idx) => validateEntry(v, result, `${path}[${idx}]`));
     } else if (typeof value === "object") {
-      if (!isEmptyObject(value)) {
-        validateEntry(value, result, path);
+      if (!isEmptyObject(value as AnyObject)) {
+        validateEntry(value as AnyObject, result, path);
       }
     }
   });

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Card } from "@stellar/design-system";
 import { JSONSchema7 } from "json-schema";
 
@@ -32,7 +30,7 @@ export const renderTupleType = ({
 }) => {
   const getKeyName = get(parsedSorobanOperation.args, path.join("."));
 
-  if (!getKeyName?.tag || !schema.properties?.values) {
+  if (!(getKeyName as AnyObject)?.tag || !schema.properties?.values) {
     return null;
   }
 
@@ -42,7 +40,7 @@ export const renderTupleType = ({
   return (
     <Box gap="md">
       <LabelHeading size="md" infoText={schema.description}>
-        {getKeyName?.tag}
+        {(getKeyName as AnyObject)?.tag as string}
       </LabelHeading>
 
       <Card>

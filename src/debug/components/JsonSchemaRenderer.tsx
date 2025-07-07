@@ -1,6 +1,4 @@
 /* eslint-disable react-x/no-array-index-key */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import React from "react";
 import { Card, Text } from "@stellar/design-system";
 import type { JSONSchema7 } from "json-schema";
@@ -10,7 +8,7 @@ import { jsonSchema } from "../util/jsonSchema";
 import { Box } from "../../components/layout/Box";
 import { LabelHeading } from "./LabelHeading";
 
-import { JsonSchemaFormProps } from "../types/types";
+import { AnyObject, JsonSchemaFormProps } from "../types/types";
 
 import { renderPrimitivesType } from "./RenderPrimitivesType";
 import { renderArrayType } from "./RenderArrayType";
@@ -25,7 +23,7 @@ export const JsonSchemaRenderer = ({
   formError,
   setFormError,
 }: JsonSchemaFormProps) => {
-  const schemaType = jsonSchema.getSchemaType(schema);
+  const schemaType = jsonSchema.getSchemaType(schema as AnyObject);
 
   // function schema always starts with an object type
   if (!schemaType) {
@@ -37,9 +35,11 @@ export const JsonSchemaRenderer = ({
       <Box gap="md" key={`${name}-${path.join(".")}`}>
         {Object.entries(schema.properties || {}).map(
           ([key, propertySchema], index) => {
-            const propertySchemaType = jsonSchema.getSchemaType(propertySchema);
+            const propertySchemaType = jsonSchema.getSchemaType(
+              propertySchema as AnyObject,
+            );
             const propertySchemaObject = jsonSchema.isSchemaObject(
-              propertySchema,
+              propertySchema as AnyObject,
             )
               ? propertySchema
               : undefined;
@@ -51,9 +51,12 @@ export const JsonSchemaRenderer = ({
                     {key}
                   </LabelHeading>
 
-                  {propertySchemaObject?.description ? (
+                  {(propertySchemaObject as AnyObject)?.description ? (
                     <Text as="div" size="xs">
-                      {propertySchemaObject.description}
+                      {
+                        (propertySchemaObject as AnyObject)
+                          .description as string
+                      }
                     </Text>
                   ) : null}
 
