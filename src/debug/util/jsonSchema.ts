@@ -1,8 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import type { JSONSchema7 } from "json-schema";
 
@@ -24,7 +21,11 @@ import { set } from "lodash";
  *
  * This will update the value of requests[1].request_type
  */
-const setDeepValue = (obj: AnyObject, path: string, val: any): AnyObject => {
+const setDeepValue = (
+  obj: AnyObject,
+  path: string,
+  val: AnyObject,
+): AnyObject => {
   if (!obj) return {};
   const newObj = JSON.parse(JSON.stringify(obj));
   return set(newObj, path, val);
@@ -52,11 +53,11 @@ const parsePath = (path: string): (string | number)[] =>
     return isNaN(parsed) ? key : parsed;
   });
 
-const getSchemaType = (prop: any) => {
+const getSchemaType = (prop: AnyObject) => {
   if (!prop) return undefined;
 
   if (prop.$ref) {
-    return prop.$ref.replace("#/definitions/", "");
+    return (prop.$ref as string).replace("#/definitions/", "");
   }
 
   if (prop.oneOf) {
@@ -66,13 +67,15 @@ const getSchemaType = (prop: any) => {
   return prop.type;
 };
 
-const isSchemaObject = (schema: any): schema is JSONSchema7 =>
+const isSchemaObject = (
+  schema: JSONSchema7 | AnyObject,
+): schema is JSONSchema7 =>
   schema && typeof schema === "object" && !Array.isArray(schema);
 
-const getSchemaItems = (schema: any) => {
+const getSchemaItems = (schema: JSONSchema7 | AnyObject) => {
   if (schema.items && typeof schema.items !== "boolean") {
-    if (schema.items.properties) {
-      return schema.items.properties;
+    if ((schema.items as AnyObject).properties) {
+      return (schema.items as AnyObject).properties;
     }
     return schema.items;
   }
@@ -80,15 +83,17 @@ const getSchemaItems = (schema: any) => {
 };
 
 const getSchemaProperty = (
-  schema: any,
+  schema: JSONSchema7 | AnyObject,
   key: string,
 ): JSONSchema7 | undefined => {
   if (!isSchemaObject(schema) || !schema.properties) return undefined;
   const prop = schema.properties[key];
-  return isSchemaObject(prop) ? prop : undefined;
+  return isSchemaObject(prop as JSONSchema7)
+    ? (prop as JSONSchema7)
+    : undefined;
 };
 
-const isTuple = (schema: any) => {
+const isTuple = (schema: AnyObject) => {
   return schema.type === "array" && Array.isArray(schema.items);
 };
 

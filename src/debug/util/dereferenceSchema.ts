@@ -1,16 +1,12 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-
 // https://jsonforms.io/api/core/interfaces/jsonschema7.html
-import type { JSONSchema7 } from "json-schema";
+import type { JSONSchema7, JSONSchema7Definition } from "json-schema";
 import type { DereferencedSchemaType } from "../types/types";
 import type { ScValPrimitiveType } from "../types/types";
 
-const resolveNestedSchema = (schema: any, fullSchema: JSONSchema7): any => {
+const resolveNestedSchema = (
+  schema: unknown,
+  fullSchema: JSONSchema7,
+): unknown => {
   if (!schema) return schema;
 
   if (typeof schema !== "object") return schema;
@@ -19,8 +15,8 @@ const resolveNestedSchema = (schema: any, fullSchema: JSONSchema7): any => {
     return schema.map((item) => resolveNestedSchema(item, fullSchema));
   }
 
-  if (schema.$ref) {
-    const refPath = schema.$ref.replace("#/definitions/", "");
+  if ("$ref" in schema && schema.$ref) {
+    const refPath = (schema.$ref as string).replace("#/definitions/", "");
     const refSchema = fullSchema?.definitions?.[refPath];
 
     if (!refSchema || typeof refSchema === "boolean") return schema;
@@ -42,7 +38,7 @@ const resolveNestedSchema = (schema: any, fullSchema: JSONSchema7): any => {
       "Bool",
     ] as ScValPrimitiveType[];
 
-    const finalSchema = isScPrimitive.includes(refPath)
+    const finalSchema = isScPrimitive.includes(refPath as ScValPrimitiveType)
       ? {
           type: refPath,
           description: refSchema?.description ?? "",
@@ -52,31 +48,31 @@ const resolveNestedSchema = (schema: any, fullSchema: JSONSchema7): any => {
     return finalSchema;
   }
 
-  if (schema.oneOf) {
+  if ("oneOf" in schema && schema.oneOf && Array.isArray(schema.oneOf)) {
     return {
       ...schema,
-      oneOf: schema.oneOf.map((item: any) =>
+      oneOf: schema.oneOf.map((item: unknown) =>
         resolveNestedSchema(item, fullSchema),
       ),
     };
   }
 
-  if (schema.items) {
+  if ("items" in schema && schema.items) {
     return {
       ...schema,
       items: resolveNestedSchema(schema.items, fullSchema),
     };
   }
 
-  if (schema.type === "boolean") {
+  if ("type" in schema && schema.type === "boolean") {
     return {
       ...schema,
       type: "Bool",
     };
   }
 
-  if (schema.properties) {
-    const resolvedProps: Record<string, any> = {};
+  if ("properties" in schema && schema.properties) {
+    const resolvedProps: Record<string, unknown> = {};
     Object.entries(schema.properties).forEach(([key, value]) => {
       resolvedProps[key] = resolveNestedSchema(value, fullSchema);
     });
@@ -87,7 +83,7 @@ const resolveNestedSchema = (schema: any, fullSchema: JSONSchema7): any => {
   }
 
   // Return the schema as is if no special handling needed
-  return schema.properties;
+  return "properties" in schema ? schema.properties : undefined;
 };
 
 /**
@@ -120,7 +116,12 @@ export const dereferenceSchema = (
   return {
     name: methodName,
     description: methodSchemaObj.description ?? "",
-    properties: resolvedSchema.properties,
+    properties:
+      typeof resolvedSchema === "object" &&
+      resolvedSchema &&
+      "properties" in resolvedSchema
+        ? (resolvedSchema.properties as Record<string, JSONSchema7Definition>)
+        : {},
     required: requiredFields,
     additionalProperties: methodSchemaObj.additionalProperties ?? false,
     type: "object",

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-redundant-type-constituents */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import {
   MemoType,
@@ -12,7 +11,7 @@ import type { JSONSchema7, JSONSchema7Definition } from "json-schema";
 // =============================================================================
 // Generic
 // =============================================================================
-export type AnyObject = { [key: string]: any };
+export type AnyObject = { [key: string]: unknown };
 export type EmptyObj = Record<PropertyKey, never>;
 export type ThemeColorType = "sds-theme-dark" | "sds-theme-light";
 export type LabSettings = Record<string, string>;
@@ -43,20 +42,20 @@ export type Network = {
 export type NetworkHeaders = Record<string, string>;
 
 export type StatusPageComponent = {
-  [key: string]: any;
+  [key: string]: unknown;
   id: string;
   name: string;
 };
 
 export type StatusPageIncident = {
-  [key: string]: any;
+  [key: string]: unknown;
   id: string;
   name: string;
   body: string;
 };
 
 export type StatusPageScheduled = {
-  [key: string]: any;
+  [key: string]: unknown;
   id: string;
   name: string;
   scheduled_for: string;
@@ -488,7 +487,7 @@ export type ContractStorageResponseItem = {
   paging_token: string;
   ttl: number;
   updated: number;
-  value: any;
+  value: unknown;
   expired?: boolean;
 };
 
@@ -513,11 +512,11 @@ export type WasmData = {
   build: {
     attestation: string;
     attestationUrl: string;
-    commit: any;
+    commit: unknown;
     commitUrl: string;
-    summary: any;
-    summaryUrl: any;
-    workflowFile: any;
+    summary: unknown;
+    summaryUrl: unknown;
+    workflowFile: unknown;
     workflowFileUrl: string;
   };
 };

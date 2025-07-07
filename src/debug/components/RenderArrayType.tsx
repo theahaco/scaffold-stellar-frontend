@@ -1,10 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable react-x/no-array-index-key */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { JSONSchema7 } from "json-schema";
 import { Button, Card, Icon, Text } from "@stellar/design-system";
 import { get } from "lodash";
@@ -46,13 +40,17 @@ export const renderArrayType = ({
 
   const schemaItems = jsonSchema.getSchemaItems(schema);
 
-  const nestedArgsItems = get(parsedSorobanOperation.args, name) || [];
+  const nestedArgsItems = get(parsedSorobanOperation.args, name);
 
   const disableAddButton =
-    jsonSchema.isTuple(schema) ||
-    schemaItems.maxItems === nestedArgsItems.length;
+    jsonSchema.isTuple(schema as AnyObject) ||
+    (Array.isArray(nestedArgsItems) &&
+      typeof schemaItems === "object" &&
+      schemaItems &&
+      "maxItems" in schemaItems &&
+      schemaItems.maxItems === nestedArgsItems.length);
 
-  if (jsonSchema.isTuple(schema)) {
+  if (jsonSchema.isTuple(schema as AnyObject) && Array.isArray(schemaItems)) {
     return schemaItems.map((item: JSONSchema7, index: number) => {
       // will render primitive/array/all the types
       const nestedPath = [name, index].join(".");
@@ -65,7 +63,7 @@ export const renderArrayType = ({
         onChange,
         formError,
         setFormError,
-      });
+      } as JsonSchemaFormProps);
     });
   }
 
@@ -81,8 +79,9 @@ export const renderArrayType = ({
         </Text>
       ) : null}
 
-      {nestedArgsItems.length > 0 &&
-        nestedArgsItems.map((args: any, index: number) => {
+      {Array.isArray(nestedArgsItems) &&
+        nestedArgsItems.length > 0 &&
+        nestedArgsItems.map((args: unknown, index: number) => {
           const nestedPathTitle = [name, index].join(".");
           const argHeader = [name, index].join("[").concat("]");
 
@@ -91,19 +90,21 @@ export const renderArrayType = ({
               <Card>
                 <Box gap="md" key={`${name}-${index}`}>
                   {/* Map Type (scSpecTypeMap) */}
-                  {jsonSchema.isSchemaObject(schema.items) &&
-                  schema.items.type === "object" ? (
+                  {jsonSchema.isSchemaObject(schema.items as AnyObject) &&
+                  (schema.items as AnyObject).type === "object" ? (
                     <>
                       <LabelHeading size="lg">{argHeader}</LabelHeading>
 
-                      {Object.keys(args).map((arg) => {
+                      {Object.keys(args as object).map((arg) => {
                         // will return the nested path for the item
                         // ex. requests.0.address
                         const nestedPath = [nestedPathTitle, arg].join(".");
 
                         return renderer({
                           name: nestedPath,
-                          schema: schemaItems?.[arg] as JSONSchema7,
+                          schema: (schemaItems as AnyObject)?.[
+                            arg
+                          ] as JSONSchema7,
                           path: [nestedPath],
                           parsedSorobanOperation,
                           onChange,
@@ -117,7 +118,7 @@ export const renderArrayType = ({
                       {/* Vec Type (scSpecTypeVec) */}
                       {renderer({
                         name: nestedPathTitle,
-                        schema: schemaItems,
+                        schema: schemaItems as JSONSchema7,
                         path: [nestedPathTitle],
                         parsedSorobanOperation,
                         onChange,
@@ -136,14 +137,17 @@ export const renderArrayType = ({
                       type="button"
                       onClick={() => {
                         const updatedList = arrayItem.delete(
-                          get(parsedSorobanOperation.args, path.join(".")),
+                          get(
+                            parsedSorobanOperation.args,
+                            path.join("."),
+                          ) as AnyObject[],
                           index,
                         );
 
                         const updatedArgs = jsonSchema.setDeepValue(
                           parsedSorobanOperation.args,
                           path.join("."),
-                          updatedList,
+                          updatedList as unknown as AnyObject,
                         );
 
                         onChange({
@@ -168,13 +172,16 @@ export const renderArrayType = ({
               const template = getTemplate({ schema });
 
               const args =
-                get(parsedSorobanOperation.args, path.join(".")) || [];
+                (get(
+                  parsedSorobanOperation.args,
+                  path.join("."),
+                ) as AnyObject[]) || [];
               args.push(template);
 
               const updatedList = jsonSchema.setDeepValue(
                 parsedSorobanOperation.args,
                 path.join("."),
-                args,
+                args as unknown as AnyObject,
               );
 
               onChange({
@@ -200,10 +207,10 @@ const getTemplate = ({ schema }: { schema: JSONSchema7 }) => {
   const schemaItems = jsonSchema.getSchemaItems(schema);
 
   if (
-    jsonSchema.isSchemaObject(schema.items) &&
-    schema.items.type === "object"
+    jsonSchema.isSchemaObject(schema.items as AnyObject) &&
+    (schema.items as AnyObject).type === "object"
   ) {
-    template = Object.keys(schemaItems || {}).reduce(
+    template = Object.keys((schemaItems as object) || {}).reduce(
       (acc: Record<string, string | AnyObject>, key) => {
         // Good example:
         // CDVQVKOY2YSXS2IC7KN6MNASSHPAO7UN2UR2ON4OI2SKMFJNVAMDX6DP

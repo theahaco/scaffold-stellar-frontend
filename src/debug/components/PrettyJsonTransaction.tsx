@@ -1,9 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-
 import { useEffect } from "react";
 import { toSafeNumberOrThrow } from "lossless-json";
 
@@ -43,23 +37,32 @@ export const PrettyJsonTransaction = ({
     }
   }, [isTx, refetch]);
 
-  const customValueRenderer = (item: any, key: string, parentKey?: string) => {
+  const customValueRenderer = (
+    item: unknown,
+    key: string,
+    parentKey?: string,
+  ): React.ReactNode => {
     // Signature hint
     if (parentKey === "signatures" && key === "hint") {
-      return PrettyJson.renderStringValue({ item: signatureHint(item) });
+      return PrettyJson.renderStringValue({
+        item: signatureHint(item as string),
+      });
     }
 
     // Signature check
     if (data && parentKey === "signatures" && key === "signature") {
-      const match = data.find((s) => s.sig.equals(Buffer.from(item, "hex")));
+      const match =
+        typeof item === "string"
+          ? data.find((s) => s.sig.equals(Buffer.from(item, "hex")))
+          : undefined;
 
       if (match) {
         return PrettyJson.renderStringValue({
-          item,
+          item: item as string,
         });
       }
 
-      return item;
+      return item as string;
     }
 
     // Amount
@@ -75,7 +78,7 @@ export const PrettyJsonTransaction = ({
     ];
 
     if (amountKeys.includes(key)) {
-      const parsedAmount = xdrUtils.fromAmount(item);
+      const parsedAmount = xdrUtils.fromAmount(item as string);
       let formattedAmount = "";
 
       try {
@@ -83,30 +86,30 @@ export const PrettyJsonTransaction = ({
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (e) {
         // It might fail for BigInt
-        formattedAmount = formatAmount(parsedAmount as any);
+        formattedAmount = formatAmount(Number(parsedAmount));
       }
 
       if (formattedAmount) {
         return PrettyJson.renderStringValue({
-          item: `${formattedAmount} (raw: ${item})`,
+          item: `${formattedAmount} (raw: ${item as string})`,
           itemType: "number",
         });
       }
 
-      return PrettyJson.renderStringValue({ item });
+      return PrettyJson.renderStringValue({ item: item as string });
     }
 
     // Manage data
     if (parentKey === "manage_data") {
       if (key === "data_name") {
         return PrettyJson.renderStringValue({
-          item: `${item} (hex: ${Buffer.from(item).toString("base64")})`,
+          item: `${item as string} (hex: ${Buffer.from(item as string).toString("base64")})`,
         });
       }
 
       if (key === "data_value") {
         return PrettyJson.renderStringValue({
-          item: `${Buffer.from(item, "hex").toString()} (hex: ${Buffer.from(item, "hex").toString("base64")})`,
+          item: `${Buffer.from(item as string, "hex").toString()} (hex: ${Buffer.from(item as string, "hex").toString("base64")})`,
         });
       }
     }
@@ -114,8 +117,8 @@ export const PrettyJsonTransaction = ({
     return null;
   };
 
-  const customKeyRenderer = (item: any, key: string) => {
-    if (key === "signatures" && item?.length > 0) {
+  const customKeyRenderer = (item: unknown, key: string) => {
+    if (key === "signatures" && Array.isArray(item) && item.length > 0) {
       return <div className="PrettyJson__key__note">· Signatures Checked</div>;
     }
 

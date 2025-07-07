@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-export const sanitizeArray = (array: any[]) => {
+export const sanitizeArray = (array: unknown[]) => {
   return array.filter((i) => Boolean(i));
 };

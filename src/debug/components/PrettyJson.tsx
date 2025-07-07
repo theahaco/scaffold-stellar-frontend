@@ -1,7 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable react-x/no-nested-component-definitions */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import { Icon, Link, Loader } from "@stellar/design-system";
 
@@ -25,11 +22,11 @@ type PrettyJsonProps = {
   json: AnyObject;
   customKeyValueLinkMap?: CustomKeyValueLinkMap;
   customValueRenderer?: (
-    item: any,
+    item: unknown,
     key: string,
     parentKey?: string,
   ) => React.ReactNode | null;
-  customKeyRenderer?: (item: any, key: string) => React.ReactNode | null;
+  customKeyRenderer?: (item: unknown, key: string) => React.ReactNode | null;
   isLoading?: boolean;
   isCollapsible?: boolean;
 };
@@ -134,7 +131,7 @@ export const PrettyJson = ({
 
   const isRpcResponse = Object.keys(json)[0] === "jsonrpc";
 
-  const ItemCount = ({ itemList }: { itemList: any[] }) => (
+  const ItemCount = ({ itemList }: { itemList: unknown[] }) => (
     <div style={styles.expandSize}>{getItemSizeLabel(itemList)}</div>
   );
 
@@ -145,7 +142,7 @@ export const PrettyJson = ({
     children,
   }: {
     itemKey?: string;
-    itemList: any[];
+    itemList: unknown[];
     char: Char;
     children: React.ReactNode;
   }) => {
@@ -193,34 +190,37 @@ export const PrettyJson = ({
     );
   };
 
-  const getItemSizeLabel = (items: any[]) => {
+  const getItemSizeLabel = (items: unknown[]) => {
     const size = items.length;
     return size === 1 ? `${size} item` : `${size} items`;
   };
 
-  const render = (item: any, parentKey?: string): React.ReactElement => {
-    const renderValue = (item: any, key: string, parentKey?: string) => {
+  const render = (item: unknown, parentKey?: string): React.ReactElement => {
+    const renderValue = (item: unknown, key: string, parentKey?: string) => {
       const custom = customKeyValueLinkMap?.[key];
 
       if (custom) {
         if (
           custom.condition &&
+          typeof item === "string" &&
           !custom.condition(item, parentKey, isRpcResponse)
         ) {
           return render(item, key);
         }
 
-        const href = custom.getHref(item, key);
+        if (typeof item === "string") {
+          const href = custom.getHref(item, key);
 
-        return (
-          <Link
-            href={href || item}
-            {...(href ? { target: "_blank" } : {})}
-            isUnderline
-          >
-            {custom.text || item}
-          </Link>
-        );
+          return (
+            <Link
+              href={href || item}
+              {...(href ? { target: "_blank" } : {})}
+              isUnderline
+            >
+              {custom.text || item}
+            </Link>
+          );
+        }
       }
 
       const customValue = customValueRenderer
@@ -234,7 +234,7 @@ export const PrettyJson = ({
       case "object":
         return (
           <React.Fragment key={parentKey}>
-            {Object.entries(item).map(([key, value]) => {
+            {Object.entries(item as object).map(([key, value]) => {
               const keyProp = parentKey ? `${parentKey}-${key}` : key;
 
               if (typeof value === "object") {
@@ -306,7 +306,7 @@ export const PrettyJson = ({
                           return (
                             <Collapsible
                               key={`${keyProp}-${index}`}
-                              itemList={Object.keys(v)}
+                              itemList={Object.keys(v as AnyObject)}
                               char="{"
                             >
                               {render(v, key)}
@@ -320,7 +320,7 @@ export const PrettyJson = ({
                   );
                 }
 
-                if (value && isEmptyObject(value)) {
+                if (value && isEmptyObject(value as AnyObject)) {
                   return (
                     <div key={keyProp} style={styles.inline}>
                       <div style={styles.nested}>
@@ -338,7 +338,7 @@ export const PrettyJson = ({
                   <Collapsible
                     key={keyProp}
                     itemKey={key}
-                    itemList={Object.keys(value)}
+                    itemList={Object.keys(value as AnyObject)}
                     char="{"
                   >
                     {render(value, key)}
@@ -373,7 +373,7 @@ export const PrettyJson = ({
       default:
         return (
           <Value>
-            <ValueType type={typeof item}>{`${item}`}</ValueType>
+            <ValueType type={typeof item}>{`${item as string}`}</ValueType>
             <Comma />
           </Value>
         );
@@ -479,7 +479,7 @@ const renderStringValue = ({
   itemType?: "number" | "string";
   parentKey?: string;
   customValueRenderer?: (
-    item: any,
+    item: unknown,
     key: string,
     parentKey?: string,
   ) => React.ReactNode | null;

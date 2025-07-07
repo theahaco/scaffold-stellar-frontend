@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/only-throw-error */
 /* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */
 import { useMutation } from "@tanstack/react-query";
@@ -75,7 +72,7 @@ export const useSubmitRpcTx = () => {
           networkPassphrase,
         );
         // TS doesn't recognize operations property even though it is there
-        const operations = (submittedTx as any)?.operations || ([] as any[]);
+        const operations = submittedTx?.operations || [];
 
         return {
           hash: sentTx.hash,

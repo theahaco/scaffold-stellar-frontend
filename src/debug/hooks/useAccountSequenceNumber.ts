@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/only-throw-error */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
@@ -36,12 +33,14 @@ export const useAccountSequenceNumber = ({
           `${horizonUrl}/accounts/${sourceAccount}`,
           { headers },
         );
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const responseJson = await response.json();
 
         if (responseJson?.status === 0) {
           throw `Unable to reach server at ${horizonUrl}.`;
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         if (responseJson?.status?.toString()?.startsWith("4")) {
           if (responseJson?.title === "Resource Missing") {
             throw "Account not found. Make sure the correct network is selected and the account is funded/created.";
@@ -55,8 +54,8 @@ export const useAccountSequenceNumber = ({
         }
 
         return (BigInt(responseJson.sequence) + BigInt(1)).toString();
-      } catch (e: any) {
-        throw `${e}. Check network configuration.`;
+      } catch (e: unknown) {
+        throw `${e as Error}. Check network configuration.`;
       }
     },
     enabled,

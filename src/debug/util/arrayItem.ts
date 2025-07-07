@@ -1,7 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-const isValidItemIndex = (array: any[], itemIndex: number) => {
+const isValidItemIndex = (array: unknown[], itemIndex: number) => {
   // No items in the array
   if (array.length === 0) {
     return false;
@@ -15,11 +12,11 @@ const isValidItemIndex = (array: any[], itemIndex: number) => {
   return true;
 };
 
-const addItem = <T>(array: any[], item: T) => {
+const addItem = <T>(array: unknown[], item: T) => {
   return [...array, item];
 };
 
-const deleteItem = (array: any[], itemIndex: number) => {
+const deleteItem = (array: unknown[], itemIndex: number) => {
   if (!isValidItemIndex(array, itemIndex)) {
     return array;
   }
@@ -30,7 +27,7 @@ const deleteItem = (array: any[], itemIndex: number) => {
   return itemArray;
 };
 
-const duplicateItem = (array: any[], itemIndexToDuplicate: number) => {
+const duplicateItem = (array: unknown[], itemIndexToDuplicate: number) => {
   if (!isValidItemIndex(array, itemIndexToDuplicate)) {
     return array;
   }
@@ -39,7 +36,7 @@ const duplicateItem = (array: any[], itemIndexToDuplicate: number) => {
 };
 
 const moveItem = (
-  array: any[],
+  array: unknown[],
   itemIndex: number,
   direction: "before" | "after",
 ) => {
@@ -65,7 +62,7 @@ const moveItem = (
   return itemArray;
 };
 
-const updateItem = (array: any[], itemIndex: number, newItem: any) => {
+const updateItem = (array: unknown[], itemIndex: number, newItem: unknown) => {
   if (!isValidItemIndex(array, itemIndex)) {
     return array;
   }
