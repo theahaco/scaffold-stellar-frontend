@@ -8,6 +8,7 @@ import {
 } from "../debug/util/loadContractMetada.ts";
 import { Box } from "../components/layout/Box.tsx";
 import MetadataCard from "../debug/components/MetadataCard.tsx";
+import { NavLink, useParams, useNavigate } from "react-router-dom";
 
 // Dynamically import all contract clients under src/contracts/
 const contractModules = import.meta.glob("../contracts/*.ts");
@@ -24,6 +25,9 @@ const Debugger: React.FC = () => {
   const [selectedContract, setSelectedContract] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [isDetailExpanded, setIsDetailExpanded] = useState(false);
+
+  const { contractName } = useParams<{ contractName?: string }>();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadContracts = async () => {
@@ -55,6 +59,29 @@ const Debugger: React.FC = () => {
 
   const contractKeys = Object.keys(contractMap);
 
+  useEffect(() => {
+    if (!isLoading && contractKeys.length > 0) {
+      if (!contractName || !contractMap[contractName]) {
+        // Redirect to the first contract if none is selected or invalid
+        navigate(`/debug/${contractKeys[0]}`, { replace: true });
+      } else {
+        setSelectedContract(contractName);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contractName, isLoading, contractKeys.join(",")]);
+
+  useEffect(() => {
+    if (!isLoading && contractKeys.length > 0) {
+      if (contractName && contractKeys.includes(contractName)) {
+        setSelectedContract(contractName);
+      } else {
+        setSelectedContract(contractKeys[0]);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contractName, isLoading, contractKeys.join(",")]);
+
   if (isLoading) {
     return (
       <Layout.Content>
@@ -70,6 +97,16 @@ const Debugger: React.FC = () => {
       <Layout.Content>
         <Layout.Inset>
           <p>No contracts found in src/contracts/</p>
+        </Layout.Inset>
+      </Layout.Content>
+    );
+  }
+
+  if (!selectedContract || !contractMap[selectedContract]) {
+    return (
+      <Layout.Content>
+        <Layout.Inset>
+          <p>No contract selected or contract not found.</p>
         </Layout.Inset>
       </Layout.Content>
     );
@@ -98,14 +135,19 @@ const Debugger: React.FC = () => {
           }}
         >
           {contractKeys.map((key) => (
-            <Button
+            <NavLink
               key={key}
-              variant={selectedContract === key ? "primary" : "tertiary"}
-              size="sm"
-              onClick={() => setSelectedContract(key)}
+              to={`/debug/${key}`}
+              style={{
+                textDecoration: "none",
+              }}
             >
-              {key}
-            </Button>
+              {({ isActive }) => (
+                <Button variant={isActive ? "primary" : "tertiary"} size="sm">
+                  {key}
+                </Button>
+              )}
+            </NavLink>
           ))}
         </div>
       </Layout.Inset>
