@@ -2,67 +2,20 @@ import React, { useState, useEffect } from "react";
 import { Layout, Code, Card, Button, Input } from "@stellar/design-system";
 import { Client } from "@stellar/stellar-sdk/contract";
 import { ContractForm } from "../debug/components/ContractForm.tsx";
-import {
-  ContractMetadata,
-  loadContractMetadata,
-} from "../debug/util/loadContractMetada.ts";
 import { Box } from "../components/layout/Box.tsx";
 import MetadataCard from "../debug/components/MetadataCard.tsx";
-import { NavLink, useParams } from "react-router-dom";
-
-// Dynamically import all contract clients under src/contracts/
-const contractModules = import.meta.glob("../contracts/*.ts");
-
-type ContractModule = {
-  default: Client;
-  metadata?: ContractMetadata;
-};
-
-type ContractMap = Record<string, ContractModule>;
+import { NavLink, useNavigate, useParams } from "react-router-dom";
+import { useContracts } from "../debug/hooks/useContracts.ts";
 
 const Debugger: React.FC = () => {
-  const [contractMap, setContractMap] = useState<ContractMap>({});
+  const { data, isLoading } = useContracts();
+  const contractMap = data?.loadedContracts ?? {};
+  const failedContracts = data?.failed ?? {};
+  const navigate = useNavigate();
+
   const [selectedContract, setSelectedContract] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(true);
   const [isDetailExpanded, setIsDetailExpanded] = useState(false);
-  const [failedContracts, setFailedContracts] = useState<
-    Record<string, string>
-  >({});
-
   const { contractName } = useParams<{ contractName?: string }>();
-
-  useEffect(() => {
-    const loadContracts = async () => {
-      const loadedContracts: ContractMap = {};
-      const failed: Record<string, string> = {};
-
-      for (const [path, importFn] of Object.entries(contractModules)) {
-        const filename = path.split("/").pop()?.replace(".ts", "") || "";
-
-        if (filename && filename === "util") continue;
-
-        try {
-          const module = (await importFn()) as ContractModule;
-          const metadata = await loadContractMetadata(
-            module.default.options.contractId,
-          );
-          loadedContracts[filename] = { ...module, metadata };
-        } catch (error) {
-          console.warn(`Skipping contract ${filename} – import failed`, error);
-          failed[filename] =
-            error instanceof Error ? error.message : String(error);
-        }
-      }
-
-      setContractMap(loadedContracts);
-      setFailedContracts(failed);
-
-      setSelectedContract(Object.keys(loadedContracts)[0] || "");
-      setIsLoading(false);
-    };
-
-    void loadContracts();
-  }, []);
 
   const contractKeys = Array.from(
     new Set([...Object.keys(contractMap), ...Object.keys(failedContracts)]),
@@ -82,6 +35,9 @@ const Debugger: React.FC = () => {
     if (!isLoading && contractKeys.length > 0) {
       if (contractName && contractKeys.includes(contractName)) {
         setSelectedContract(contractName);
+      } else if (!contractName) {
+        // Redirect to the first contract if no contractName in URL
+        navigate(`/debug/${contractKeys[0]}`, { replace: true });
       } else {
         setSelectedContract(contractKeys[0]);
       }
