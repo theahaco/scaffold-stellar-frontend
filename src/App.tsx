@@ -1,7 +1,7 @@
 import { Button, Icon, Layout } from "@stellar/design-system";
 import "./App.module.css";
 import ConnectAccount from "./components/ConnectAccount.tsx";
-import { Routes, Route, Outlet } from "react-router-dom";
+import { Routes, Route, Outlet, NavLink } from "react-router-dom";
 import Home from "./pages/Home";
 import Debugger from "./pages/Debugger.tsx";
 
@@ -12,15 +12,21 @@ const AppLayout: React.FC = () => (
       projectTitle="My App"
       contentRight={
         <>
-          <Button
-            variant="tertiary"
-            size="md"
-            onClick={() => (window.location.href = "/debug")}
-            disabled={window.location.pathname === "/debug"}
-          >
-            <Icon.Code02 size="md" />
-            Debugger
-          </Button>
+          <nav>
+            <NavLink to="/debug">
+              {({ isActive }) => (
+                <Button
+                  variant="tertiary"
+                  size="md"
+                  onClick={() => (window.location.href = "/debug")}
+                  disabled={isActive}
+                >
+                  <Icon.Code02 size="md" />
+                  Debugger
+                </Button>
+              )}
+            </NavLink>
+          </nav>
           <ConnectAccount />
         </>
       }
