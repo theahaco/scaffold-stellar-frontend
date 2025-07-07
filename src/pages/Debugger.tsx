@@ -8,7 +8,7 @@ import {
 } from "../debug/util/loadContractMetada.ts";
 import { Box } from "../components/layout/Box.tsx";
 import MetadataCard from "../debug/components/MetadataCard.tsx";
-import { NavLink, useParams, useNavigate } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 
 // Dynamically import all contract clients under src/contracts/
 const contractModules = import.meta.glob("../contracts/*.ts");
@@ -25,13 +25,16 @@ const Debugger: React.FC = () => {
   const [selectedContract, setSelectedContract] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [isDetailExpanded, setIsDetailExpanded] = useState(false);
+  const [failedContracts, setFailedContracts] = useState<
+    Record<string, string>
+  >({});
 
   const { contractName } = useParams<{ contractName?: string }>();
-  const navigate = useNavigate();
 
   useEffect(() => {
     const loadContracts = async () => {
       const loadedContracts: ContractMap = {};
+      const failed: Record<string, string> = {};
 
       for (const [path, importFn] of Object.entries(contractModules)) {
         const filename = path.split("/").pop()?.replace(".ts", "") || "";
@@ -46,10 +49,14 @@ const Debugger: React.FC = () => {
           loadedContracts[filename] = { ...module, metadata };
         } catch (error) {
           console.warn(`Skipping contract ${filename} – import failed`, error);
+          failed[filename] =
+            error instanceof Error ? error.message : String(error);
         }
       }
 
       setContractMap(loadedContracts);
+      setFailedContracts(failed);
+
       setSelectedContract(Object.keys(loadedContracts)[0] || "");
       setIsLoading(false);
     };
@@ -57,15 +64,15 @@ const Debugger: React.FC = () => {
     void loadContracts();
   }, []);
 
-  const contractKeys = Object.keys(contractMap);
-
+  const contractKeys = Array.from(
+    new Set([...Object.keys(contractMap), ...Object.keys(failedContracts)]),
+  );
   useEffect(() => {
     if (!isLoading && contractKeys.length > 0) {
-      if (!contractName || !contractMap[contractName]) {
-        // Redirect to the first contract if none is selected or invalid
-        navigate(`/debug/${contractKeys[0]}`, { replace: true });
-      } else {
+      if (contractName && contractKeys.includes(contractName)) {
         setSelectedContract(contractName);
+      } else {
+        setSelectedContract(contractKeys[0]);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -97,16 +104,6 @@ const Debugger: React.FC = () => {
       <Layout.Content>
         <Layout.Inset>
           <p>No contracts found in src/contracts/</p>
-        </Layout.Inset>
-      </Layout.Content>
-    );
-  }
-
-  if (!selectedContract || !contractMap[selectedContract]) {
-    return (
-      <Layout.Content>
-        <Layout.Inset>
-          <p>No contract selected or contract not found.</p>
         </Layout.Inset>
       </Layout.Content>
     );
@@ -152,118 +149,140 @@ const Debugger: React.FC = () => {
         </div>
       </Layout.Inset>
 
-      <Layout.Inset>
-        <div style={{ marginTop: "0 2rem" }}>
-          <div style={{ display: "flex", flexFlow: "column", gap: "1rem" }}>
-            {/* Contract detail card */}
-            <div
-              style={{
-                flexBasis: "30%",
-                minWidth: "100%",
-                alignSelf: "flex-start",
-              }}
-            >
-              <Card variant="primary">
-                <Box gap="md">
-                  <h3>{selectedContract}</h3>
+      {/* Show error or contract details */}
+      {(!selectedContract ||
+        (!contractMap[selectedContract] &&
+          !failedContracts[selectedContract])) && (
+        <Layout.Inset>
+          <p>No contract selected or contract not found.</p>
+        </Layout.Inset>
+      )}
 
-                  <Input
-                    label="Contract ID"
-                    id="contract-id"
-                    fieldSize="md"
-                    copyButton={{
-                      position: "right",
-                    }}
-                    readOnly
-                    value={
-                      (
-                        contractMap[selectedContract]
-                          ?.default as unknown as Client
-                      )?.options?.contractId || ""
-                    }
-                  />
+      {failedContracts[selectedContract] && (
+        <Layout.Inset>
+          <h2>{selectedContract}</h2>
+          <p style={{ color: "red" }}>
+            Failed to import contract: {failedContracts[selectedContract]}
+          </p>
+        </Layout.Inset>
+      )}
 
-                  {isDetailExpanded && (
-                    <>
+      {contractMap[selectedContract] && (
+        <>
+          <Layout.Inset>
+            <div style={{ marginTop: "0 2rem" }}>
+              <div style={{ display: "flex", flexFlow: "column", gap: "1rem" }}>
+                {/* Contract detail card */}
+                <div
+                  style={{
+                    flexBasis: "30%",
+                    minWidth: "100%",
+                    alignSelf: "flex-start",
+                  }}
+                >
+                  <Card variant="primary">
+                    <Box gap="md">
+                      <h3>{selectedContract}</h3>
+
                       <Input
-                        label="Contract Wasm Hash"
-                        id="contract-wasm-hash"
+                        label="Contract ID"
+                        id="contract-id"
                         fieldSize="md"
                         copyButton={{
                           position: "right",
                         }}
                         readOnly
                         value={
-                          contractMap[selectedContract]?.metadata?.wasmHash
+                          (
+                            contractMap[selectedContract]
+                              ?.default as unknown as Client
+                          )?.options?.contractId || ""
                         }
                       />
 
-                      {(contractMap[selectedContract]?.metadata
-                        ?.contractenvmetav0 as object) &&
-                        contractMap[selectedContract]?.metadata
-                          ?.contractenvmetav0 && (
-                          <Box gap="md">
-                            <h4>Env Metadata</h4>
-                            <Box gap="md" direction="row" wrap="wrap">
-                              {Object.entries(
-                                contractMap[selectedContract]?.metadata
-                                  .contractenvmetav0 || {},
-                              ).map(([key, value]) => (
-                                <MetadataCard
-                                  key={key}
-                                  title={key}
-                                  content={String(value)}
-                                />
-                              ))}
-                            </Box>
-                          </Box>
-                        )}
+                      {isDetailExpanded && (
+                        <>
+                          <Input
+                            label="Contract Wasm Hash"
+                            id="contract-wasm-hash"
+                            fieldSize="md"
+                            copyButton={{
+                              position: "right",
+                            }}
+                            readOnly
+                            value={
+                              contractMap[selectedContract]?.metadata?.wasmHash
+                            }
+                          />
 
-                      {(contractMap[selectedContract]?.metadata
-                        ?.contractmetav0 as object) &&
-                        contractMap[selectedContract]?.metadata
-                          ?.contractmetav0 && (
-                          <Box gap="md">
-                            <h4> Metadata</h4>
-                            <Box gap="md" direction="row" wrap="wrap">
-                              {Object.entries(
-                                contractMap[selectedContract]?.metadata
-                                  .contractmetav0 || {},
-                              ).map(([key, value]) => (
-                                <MetadataCard
-                                  key={key}
-                                  title={key}
-                                  content={String(value)}
-                                />
-                              ))}
-                            </Box>
-                          </Box>
-                        )}
-                    </>
-                  )}
-                </Box>
-                <Button
-                  variant="tertiary"
-                  size="sm"
-                  onClick={() => setIsDetailExpanded(!isDetailExpanded)}
-                  style={{ justifySelf: "flex-end", marginTop: "1rem" }}
-                >
-                  {isDetailExpanded ? "Hide Details" : "Show Details"}
-                </Button>
-              </Card>
-            </div>
+                          {(contractMap[selectedContract]?.metadata
+                            ?.contractenvmetav0 as object) &&
+                            contractMap[selectedContract]?.metadata
+                              ?.contractenvmetav0 && (
+                              <Box gap="md">
+                                <h4>Env Metadata</h4>
+                                <Box gap="md" direction="row" wrap="wrap">
+                                  {Object.entries(
+                                    contractMap[selectedContract]?.metadata
+                                      .contractenvmetav0 || {},
+                                  ).map(([key, value]) => (
+                                    <MetadataCard
+                                      key={key}
+                                      title={key}
+                                      content={String(value)}
+                                    />
+                                  ))}
+                                </Box>
+                              </Box>
+                            )}
 
-            {/* Contract methods and interactions */}
-            <div style={{ flex: 1 }}>
-              <ContractForm
-                key={selectedContract}
-                contractClient={contractMap[selectedContract]?.default}
-                contractClientError={null}
-              />
+                          {(contractMap[selectedContract]?.metadata
+                            ?.contractmetav0 as object) &&
+                            contractMap[selectedContract]?.metadata
+                              ?.contractmetav0 && (
+                              <Box gap="md">
+                                <h4> Metadata</h4>
+                                <Box gap="md" direction="row" wrap="wrap">
+                                  {Object.entries(
+                                    contractMap[selectedContract]?.metadata
+                                      .contractmetav0 || {},
+                                  ).map(([key, value]) => (
+                                    <MetadataCard
+                                      key={key}
+                                      title={key}
+                                      content={String(value)}
+                                    />
+                                  ))}
+                                </Box>
+                              </Box>
+                            )}
+                        </>
+                      )}
+                    </Box>
+                    <Button
+                      variant="tertiary"
+                      size="sm"
+                      onClick={() => setIsDetailExpanded(!isDetailExpanded)}
+                      style={{ justifySelf: "flex-end", marginTop: "1rem" }}
+                    >
+                      {isDetailExpanded ? "Hide Details" : "Show Details"}
+                    </Button>
+                  </Card>
+                </div>
+
+                {/* Contract methods and interactions */}
+                <div style={{ flex: 1 }}>
+                  <ContractForm
+                    key={selectedContract}
+                    contractClient={contractMap[selectedContract]?.default}
+                    contractClientError={null}
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </Layout.Inset>
+          </Layout.Inset>{" "}
+        </>
+      )}
     </Layout.Content>
   );
 };
