@@ -108,22 +108,25 @@ export const getWasmContractData = async (wasmBytes: Buffer) => {
           const sectionData = sectionResult(sectionName, sections[i]);
 
           if (sectionData) {
-            const sectionDataJson = JSON.parse(sectionData.json[0]);
             let sectionContent = {};
-            Object.keys(sectionDataJson).map((key) =>
-              sectionDataJson[key].key
-                ? (sectionContent = {
-                    ...sectionContent,
 
-                    [sectionDataJson[key].key]: sectionDataJson[key].val,
-                  })
-                : Object.keys(sectionDataJson[key]).map((innerKey) => {
-                    sectionContent = {
+            sectionData.json.forEach((json) => {
+              const sectionDataJson = JSON.parse(json);
+              Object.keys(sectionDataJson).map((key) =>
+                sectionDataJson[key].key
+                  ? (sectionContent = {
                       ...sectionContent,
-                      [innerKey]: sectionDataJson[key][innerKey],
-                    };
-                  }),
-            );
+
+                      [sectionDataJson[key].key]: sectionDataJson[key].val,
+                    })
+                  : Object.keys(sectionDataJson[key]).map((innerKey) => {
+                      sectionContent = {
+                        ...sectionContent,
+                        [innerKey]: sectionDataJson[key][innerKey],
+                      };
+                    }),
+              );
+            });
 
             result[sectionName] = {
               ...result[sectionName],
