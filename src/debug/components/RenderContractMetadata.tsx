@@ -1,25 +1,33 @@
 import React from "react";
 import { Box } from "../../components/layout/Box";
-import MetadataCard from "./MetadataCard";
 import { ContractMetadata } from "../util/loadContractMetada";
-import { Input } from "@stellar/design-system";
+import { Input, Table } from "@stellar/design-system";
+import { AnyObject } from "../types/types";
 
 interface RenderContractMetadataProps {
   metadata?: ContractMetadata;
 }
 
+interface TableItem {
+  val: string;
+  key: string;
+  id: string;
+}
 const RenderContractMetadata: React.FC<RenderContractMetadataProps> = ({
   metadata,
 }) => {
   if (!metadata) return null;
 
-  const renderCards = (data: unknown) => {
+  const getTableData = (data: unknown): TableItem[] => {
     if (typeof data !== "object" || data === null) {
-      return <MetadataCard title="Metadata" content={String(data)} />;
+      return [];
     }
-    return Object.entries(data).map(([key, value]) => (
-      <MetadataCard key={key} title={key} content={String(value)} />
-    ));
+    return Object.entries(data).map(([key, value]) => ({
+      key: String(key),
+      val: value as string,
+
+      id: String(key),
+    }));
   };
 
   return (
@@ -38,10 +46,24 @@ const RenderContractMetadata: React.FC<RenderContractMetadataProps> = ({
       <Box gap="md" direction="column">
         <h4>Metadata </h4>
         <>
-          {metadata.contractmetav0 && renderCards(metadata.contractmetav0)}
-
-          {metadata.contractenvmetav0 &&
-            renderCards(metadata.contractenvmetav0)}
+          <Table
+            breakpoint={300}
+            hideNumberColumn
+            columnLabels={[
+              { id: "key", label: "Key" },
+              { id: "val", label: "Value" },
+            ]}
+            data={getTableData({
+              ...(metadata.contractmetav0 as AnyObject),
+              ...(metadata.contractenvmetav0 as AnyObject),
+            })}
+            renderItemRow={(item: TableItem) => (
+              <>
+                <td>{item.key}</td>
+                <td>{item.val}</td>
+              </>
+            )}
+          />
         </>
       </Box>
     </>
