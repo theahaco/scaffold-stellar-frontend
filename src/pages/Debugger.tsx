@@ -3,9 +3,9 @@ import { Layout, Code, Card, Button, Input } from "@stellar/design-system";
 import { Client } from "@stellar/stellar-sdk/contract";
 import { ContractForm } from "../debug/components/ContractForm.tsx";
 import { Box } from "../components/layout/Box.tsx";
-import MetadataCard from "../debug/components/MetadataCard.tsx";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 import { useContracts } from "../debug/hooks/useContracts.ts";
+import RenderContractMetadata from "../debug/components/RenderContractMetadata.tsx";
 
 const Debugger: React.FC = () => {
   const { data, isLoading } = useContracts();
@@ -158,60 +158,9 @@ const Debugger: React.FC = () => {
 
                       {isDetailExpanded && (
                         <>
-                          <Input
-                            label="Contract Wasm Hash"
-                            id="contract-wasm-hash"
-                            fieldSize="md"
-                            copyButton={{
-                              position: "right",
-                            }}
-                            readOnly
-                            value={
-                              contractMap[selectedContract]?.metadata?.wasmHash
-                            }
+                          <RenderContractMetadata
+                            metadata={contractMap[selectedContract]?.metadata}
                           />
-
-                          {(contractMap[selectedContract]?.metadata
-                            ?.contractenvmetav0 as object) &&
-                            contractMap[selectedContract]?.metadata
-                              ?.contractenvmetav0 && (
-                              <Box gap="md">
-                                <h4>Env Metadata</h4>
-                                <Box gap="md" direction="row" wrap="wrap">
-                                  {Object.entries(
-                                    contractMap[selectedContract]?.metadata
-                                      .contractenvmetav0 || {},
-                                  ).map(([key, value]) => (
-                                    <MetadataCard
-                                      key={key}
-                                      title={key}
-                                      content={String(value)}
-                                    />
-                                  ))}
-                                </Box>
-                              </Box>
-                            )}
-
-                          {(contractMap[selectedContract]?.metadata
-                            ?.contractmetav0 as object) &&
-                            contractMap[selectedContract]?.metadata
-                              ?.contractmetav0 && (
-                              <Box gap="md">
-                                <h4> Metadata</h4>
-                                <Box gap="md" direction="row" wrap="wrap">
-                                  {Object.entries(
-                                    contractMap[selectedContract]?.metadata
-                                      .contractmetav0 || {},
-                                  ).map(([key, value]) => (
-                                    <MetadataCard
-                                      key={key}
-                                      title={key}
-                                      content={String(value)}
-                                    />
-                                  ))}
-                                </Box>
-                              </Box>
-                            )}
                         </>
                       )}
                     </Box>
