@@ -85,6 +85,7 @@ const Debugger: React.FC = () => {
             gap: "0.5rem",
             marginBottom: "1rem",
             marginTop: "1rem",
+            flexWrap: "wrap",
           }}
         >
           {contractKeys.map((key) => (
