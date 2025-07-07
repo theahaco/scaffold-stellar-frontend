@@ -13,8 +13,8 @@ import {
 import { prettifyJsonString } from "./prettifyJsonString";
 
 export interface ContractMetadata {
-  contractmetav0?: unknown;
-  contractenvmetav0?: unknown;
+  contractmetav0?: { [key: string]: string };
+  contractenvmetav0?: { [key: string]: string };
   wasmHash?: string;
   wasmBinary?: string;
 }
@@ -109,7 +109,6 @@ export const getWasmContractData = async (wasmBytes: Buffer) => {
 
           if (sectionData) {
             let sectionContent = {};
-
             sectionData.json.forEach((json) => {
               const sectionDataJson = JSON.parse(json);
               Object.keys(sectionDataJson).map((key) =>
