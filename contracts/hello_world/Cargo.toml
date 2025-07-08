@@ -1,5 +1,5 @@
 [package]
-name = "soroban-hello-world-contract"
+name = "stellar-hello-world-contract"
 description = "A simple hello world contract"
 edition.workspace = true
 license.workspace = true

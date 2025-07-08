@@ -7,7 +7,7 @@ const Home: React.FC = () => (
       <h1>Welcome to your app!</h1>
       <p>
         This is a basic template to get your dapp started with the Stellar
-        Design System and Soroban contracts. You can customize it further by
+        Design System and Stellar contracts. You can customize it further by
         adding your own contracts, components, and styles.
       </p>
       <h2>Developing your contracts</h2>
@@ -24,11 +24,11 @@ const Home: React.FC = () => (
       Scaffold stellar automatically builds your contract packages, and you can
       import them in your frontend code like this:
       <pre>
-        <Code size="md">{`import soroban_hello_world_contract from "./contracts/soroban_hello_world_contract.ts";`}</Code>
+        <Code size="md">{`import stellar_hello_world_contract from "./contracts/stellar_hello_world_contract.ts";`}</Code>
       </pre>
       <p>And then you can call the contract methods like this:</p>
       <pre>
-        <Code size="md">{`const statusMessage = await soroban_hello_world_contract.hello({"to": "world"});`}</Code>
+        <Code size="md">{`const statusMessage = await stellar_hello_world_contract.hello({"to": "world"});`}</Code>
       </pre>
       <p>
         By doing this, you can use the contract methods in your components. If

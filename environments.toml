@@ -20,10 +20,10 @@ default = true # Optional. Whether to use this account as the `--source` for com
 # You can only use `client = true` when:
 #   - the contract source must be part of the local Cargo workspace (in the
 #     PROJECT_ROOT/contracts folder)
-#   - The specified name here ("soroban_hello_world_contract") must match the
+#   - The specified name here ("stellar_hello_world_contract") must match the
 #     underscored-version of the `name` in the contract's Cargo.toml.
 #   - The environment is `development` or `test`
-soroban_hello_world_contract = { client = true }
+stellar_hello_world_contract = { client = true }
 
 # Rather than in one list, TOML allows specifying contracts in their own "sections"
 [development.contracts.fungible_token_interface_example]
@@ -35,6 +35,12 @@ client = true
 # Only available in `development` and `test` environments
 constructor_args = """
 --owner me --initial_supply "1000000000000000000000000"
+"""
+
+[development.contracts.nft_enumerable_example]
+client = true
+constructor_args = """
+--owner me
 """
 
 # Calls to the contract to make after it's deployed and initialized with

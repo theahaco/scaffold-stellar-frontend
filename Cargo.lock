@@ -1171,13 +1171,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "soroban-hello-world-contract"
-version = "0.0.1"
-dependencies = [
- "soroban-sdk",
-]
-
-[[package]]
 name = "soroban-ledger-snapshot"
 version = "22.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1329,6 +1322,13 @@ source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.2.0#aa585
 dependencies = [
  "soroban-sdk",
  "stellar-constants 0.2.0",
+]
+
+[[package]]
+name = "stellar-hello-world-contract"
+version = "0.0.1"
+dependencies = [
+ "soroban-sdk",
 ]
 
 [[package]]
