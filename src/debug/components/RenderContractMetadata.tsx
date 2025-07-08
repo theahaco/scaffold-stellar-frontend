@@ -114,15 +114,16 @@ const RenderContractMetadata: React.FC<RenderContractMetadataProps> = ({
         value={metadata?.wasmHash}
       />
 
-      <Box gap="xs" direction="column">
+      <Box gap="sm" direction="column">
         <Label size="sm" htmlFor="contract-metadata">
           Contract Metadata
         </Label>
         <Card variant="primary">
-          <Text as="span" size="xs" style={{ marginBottom: "0.5rem" }}>
+          <Text as="span" size="xs">
             This section contains the metadata of the contract, which is a
             collection of key-value pairs that provide additional information
-            about the contract. See{" "}
+            about the contract. This data is added to the contract during
+            compilation and can be retrieved directly from the WASM file. See{" "}
             <Link href={metaDocsLink} target="_blank" rel="noopener noreferrer">
               Contract Metadata Documentation
             </Link>{" "}
@@ -133,6 +134,7 @@ const RenderContractMetadata: React.FC<RenderContractMetadataProps> = ({
               display: "flex",
               flexDirection: "column",
               alignItems: "flex-start",
+              marginTop: "1.5rem",
             }}
           >
             <Table
