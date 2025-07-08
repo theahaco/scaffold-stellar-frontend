@@ -75,13 +75,13 @@ name = "testnet-user"
 default = true
 
 [staging.contracts]
-# soroban-atomic-swap-contract = "C123..."
-# soroban-auth-contract = "C234..."
-# soroban-errors-contract = "C345..."
-# soroban-hello-world-contract = "C456..."
-# soroban-increment-contract = "C567..."
-# soroban-token-contract = "C678..."
-# eurc = "C789..."
+# soroban-atomic-swap-contract = { id = "C123..." }
+# soroban-auth-contract = { id = "C234..." }
+# soroban-errors-contract = { id = "C345..." }
+# soroban-hello-world-contract = { id = "C456..." }
+# soroban-increment-contract = { id = "C567..." }
+# soroban-token-contract = { id = "C678..." }
+# eurc = { id = "C789..." }
 
 ### Production environment configuration
 [production.network]
@@ -93,10 +93,10 @@ name = "official-team-account"
 default = true
 
 [production.contracts]
-# soroban-atomic-swap-contract = "C987..."
-# soroban-auth-contract = "C876..."
-# soroban-errors-contract = "C765..."
-# soroban-hello-world-contract = "C654..."
-# soroban-increment-contract = "C543..."
-# soroban-token-contract = "C432..."
-# eurc = "C321..."
+# soroban-atomic-swap-contract = { id = "C987..." }
+# soroban-auth-contract = { id = "C876..." }
+# soroban-errors-contract = { id = "C765..." }
+# soroban-hello-world-contract = { id = "C654..." }
+# soroban-increment-contract = { id = "C543..." }
+# soroban-token-contract = { id = "C432..." }
+# eurc = { id = "C321..." }
