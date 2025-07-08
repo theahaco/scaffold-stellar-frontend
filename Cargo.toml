@@ -21,7 +21,7 @@ tag = "v0.3.0"
 
 [workspace.dependencies.stellar-fungible]
 git = "https://github.com/OpenZeppelin/stellar-contracts"
-tag = "v0.2.0"
+tag = "v0.3.0"
 
 [workspace.dependencies.stellar-non-fungible]
 git = "https://github.com/OpenZeppelin/stellar-contracts"
