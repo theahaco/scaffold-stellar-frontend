@@ -29,11 +29,11 @@ tag = "v0.3.0"
 
 [workspace.dependencies.stellar-pausable]
 git = "https://github.com/OpenZeppelin/stellar-contracts"
-tag = "v0.2.0"
+tag = "v0.3.0"
 
 [workspace.dependencies.stellar-pausable-macros]
 git = "https://github.com/OpenZeppelin/stellar-contracts"
-tag = "v0.2.0"
+tag = "v0.3.0"
 
 [profile.release]
 opt-level = "z"

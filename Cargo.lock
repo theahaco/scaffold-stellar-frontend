@@ -1332,6 +1332,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "stellar-macro-helpers"
+version = "0.3.0"
+source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.3.0#659fcabdc0e4712254dfebe4f45efd54f49826e9"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.101",
+]
+
+[[package]]
 name = "stellar-non-fungible"
 version = "0.3.0"
 source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.3.0#659fcabdc0e4712254dfebe4f45efd54f49826e9"
@@ -1342,19 +1352,20 @@ dependencies = [
 
 [[package]]
 name = "stellar-pausable"
-version = "0.2.0"
-source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.2.0#aa585815451b48445796d87c82d006d2a08c6ef8"
+version = "0.3.0"
+source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.3.0#659fcabdc0e4712254dfebe4f45efd54f49826e9"
 dependencies = [
  "soroban-sdk",
 ]
 
 [[package]]
 name = "stellar-pausable-macros"
-version = "0.2.0"
-source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.2.0#aa585815451b48445796d87c82d006d2a08c6ef8"
+version = "0.3.0"
+source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.3.0#659fcabdc0e4712254dfebe4f45efd54f49826e9"
 dependencies = [
  "proc-macro2",
  "quote",
+ "stellar-macro-helpers",
  "syn 2.0.101",
 ]
 
