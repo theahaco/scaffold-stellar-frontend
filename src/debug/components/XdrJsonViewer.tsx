@@ -81,7 +81,7 @@ export const XdrJsonViewer = ({ xdr, typeVariant }: Props) => {
               displayFormatted === "XDR" ? variant.toggled : variant.untoggled
             }
           >
-            <Icon.Brackets />
+            <Icon.Code01 />
             XDR
           </div>
           <div
@@ -89,7 +89,7 @@ export const XdrJsonViewer = ({ xdr, typeVariant }: Props) => {
               displayFormatted === "JSON" ? variant.toggled : variant.untoggled
             }
           >
-            <Icon.Code01 />
+            <Icon.Brackets />
             JSON
           </div>
         </div>
