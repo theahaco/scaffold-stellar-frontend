@@ -20,10 +20,10 @@ default = true # Optional. Whether to use this account as the `--source` for com
 # You can only use `client = true` when:
 #   - the contract source must be part of the local Cargo workspace (in the
 #     PROJECT_ROOT/contracts folder)
-#   - The specified name here ("soroban_hello_world_contract") must match the
+#   - The specified name here ("stellar_hello_world_contract") must match the
 #     underscored-version of the `name` in the contract's Cargo.toml.
 #   - The environment is `development` or `test`
-soroban_hello_world_contract = { client = true }
+stellar_hello_world_contract = { client = true }
 
 # Rather than in one list, TOML allows specifying contracts in their own "sections"
 [development.contracts.fungible_token_interface_example]
@@ -35,6 +35,12 @@ client = true
 # Only available in `development` and `test` environments
 constructor_args = """
 --owner me --initial_supply "1000000000000000000000000"
+"""
+
+[development.contracts.nft_enumerable_example]
+client = true
+constructor_args = """
+--owner me
 """
 
 # Calls to the contract to make after it's deployed and initialized with
@@ -75,13 +81,13 @@ name = "testnet-user"
 default = true
 
 [staging.contracts]
-# soroban-atomic-swap-contract = "C123..."
-# soroban-auth-contract = "C234..."
-# soroban-errors-contract = "C345..."
-# soroban-hello-world-contract = "C456..."
-# soroban-increment-contract = "C567..."
-# soroban-token-contract = "C678..."
-# eurc = "C789..."
+# soroban-atomic-swap-contract = { id = "C123..." }
+# soroban-auth-contract = { id = "C234..." }
+# soroban-errors-contract = { id = "C345..." }
+# soroban-hello-world-contract = { id = "C456..." }
+# soroban-increment-contract = { id = "C567..." }
+# soroban-token-contract = { id = "C678..." }
+# eurc = { id = "C789..." }
 
 ### Production environment configuration
 [production.network]
@@ -93,10 +99,10 @@ name = "official-team-account"
 default = true
 
 [production.contracts]
-# soroban-atomic-swap-contract = "C987..."
-# soroban-auth-contract = "C876..."
-# soroban-errors-contract = "C765..."
-# soroban-hello-world-contract = "C654..."
-# soroban-increment-contract = "C543..."
-# soroban-token-contract = "C432..."
-# eurc = "C321..."
+# soroban-atomic-swap-contract = { id = "C987..." }
+# soroban-auth-contract = { id = "C876..." }
+# soroban-errors-contract = { id = "C765..." }
+# soroban-hello-world-contract = { id = "C654..." }
+# soroban-increment-contract = { id = "C543..." }
+# soroban-token-contract = { id = "C432..." }
+# eurc = { id = "C321..." }

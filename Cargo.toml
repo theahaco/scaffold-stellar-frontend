@@ -1,8 +1,6 @@
 [workspace]
+members = ["contracts/*"]
 resolver = "2"
-members = [
-  "contracts/*",
-]
 
 [workspace.package]
 authors = ["AhaLabs"]
@@ -11,24 +9,42 @@ license = "Apache-2.0"
 repository = "https://github.com/AhaLabs/scaffold-stellar"
 version = "0.0.1"
 
-[workspace.dependencies]
-soroban-sdk = { version = "22.0.7" }
-soroban-token-sdk = { version = "22.0.1" }
-stellar-pausable = { git = "https://github.com/OpenZeppelin/stellar-contracts", tag = "v0.2.0" }
-stellar-pausable-macros = { git = "https://github.com/OpenZeppelin/stellar-contracts", tag = "v0.2.0" }
-stellar-fungible = { git = "https://github.com/OpenZeppelin/stellar-contracts", tag = "v0.2.0" }
+[workspace.dependencies.soroban-sdk]
+version = "22.0.7"
+
+[workspace.dependencies.soroban-token-sdk]
+version = "22.0.1"
+
+[workspace.dependencies.stellar-default-impl-macro]
+git = "https://github.com/OpenZeppelin/stellar-contracts"
+tag = "v0.3.0"
+
+[workspace.dependencies.stellar-fungible]
+git = "https://github.com/OpenZeppelin/stellar-contracts"
+tag = "v0.3.0"
+
+[workspace.dependencies.stellar-non-fungible]
+git = "https://github.com/OpenZeppelin/stellar-contracts"
+tag = "v0.3.0"
+
+[workspace.dependencies.stellar-pausable]
+git = "https://github.com/OpenZeppelin/stellar-contracts"
+tag = "v0.3.0"
+
+[workspace.dependencies.stellar-pausable-macros]
+git = "https://github.com/OpenZeppelin/stellar-contracts"
+tag = "v0.3.0"
 
 [profile.release]
 opt-level = "z"
-overflow-checks = true
-debug = 0
-strip = "symbols"
-debug-assertions = false
-panic = "abort"
-codegen-units = 1
+debug = false
 lto = true
+debug-assertions = false
+codegen-units = 1
+panic = "abort"
+overflow-checks = true
+strip = true
 
-# For more information about this profile see https://soroban.stellar.org/docs/basic-tutorials/logging#cargotoml-profile
 [profile.release-with-logs]
-inherits = "release"
 debug-assertions = true
+inherits = "release"

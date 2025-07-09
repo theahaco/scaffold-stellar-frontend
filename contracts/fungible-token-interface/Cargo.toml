@@ -2,7 +2,7 @@
 name = "fungible-token-interface-example"
 edition.workspace = true
 license.workspace = true
-repository = "https://github.com/OpenZeppelin/stellar-contracts"
+repository.workspace = true
 publish = false
 version.workspace = true
 

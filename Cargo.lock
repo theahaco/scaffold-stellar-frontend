@@ -754,6 +754,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "78ca9ab1a0babb1e7d5695e3530886289c18cf2f87ec19a575a0abdce112e3a3"
 
 [[package]]
+name = "nft-enumerable-example"
+version = "0.0.1"
+dependencies = [
+ "soroban-sdk",
+ "stellar-default-impl-macro",
+ "stellar-non-fungible",
+]
+
+[[package]]
 name = "num-bigint"
 version = "0.4.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1162,13 +1171,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "soroban-hello-world-contract"
-version = "0.0.1"
-dependencies = [
- "soroban-sdk",
-]
-
-[[package]]
 name = "soroban-ledger-snapshot"
 version = "22.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1289,16 +1291,52 @@ checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 
 [[package]]
 name = "stellar-constants"
-version = "0.2.0"
-source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.2.0#aa585815451b48445796d87c82d006d2a08c6ef8"
+version = "0.3.0"
+source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.3.0#659fcabdc0e4712254dfebe4f45efd54f49826e9"
 dependencies = [
  "soroban-sdk",
 ]
 
 [[package]]
+name = "stellar-default-impl-macro"
+version = "0.3.0"
+source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.3.0#659fcabdc0e4712254dfebe4f45efd54f49826e9"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.101",
+]
+
+[[package]]
 name = "stellar-fungible"
-version = "0.2.0"
-source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.2.0#aa585815451b48445796d87c82d006d2a08c6ef8"
+version = "0.3.0"
+source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.3.0#659fcabdc0e4712254dfebe4f45efd54f49826e9"
+dependencies = [
+ "soroban-sdk",
+ "stellar-constants",
+]
+
+[[package]]
+name = "stellar-hello-world-contract"
+version = "0.0.1"
+dependencies = [
+ "soroban-sdk",
+]
+
+[[package]]
+name = "stellar-macro-helpers"
+version = "0.3.0"
+source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.3.0#659fcabdc0e4712254dfebe4f45efd54f49826e9"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.101",
+]
+
+[[package]]
+name = "stellar-non-fungible"
+version = "0.3.0"
+source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.3.0#659fcabdc0e4712254dfebe4f45efd54f49826e9"
 dependencies = [
  "soroban-sdk",
  "stellar-constants",
@@ -1306,19 +1344,20 @@ dependencies = [
 
 [[package]]
 name = "stellar-pausable"
-version = "0.2.0"
-source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.2.0#aa585815451b48445796d87c82d006d2a08c6ef8"
+version = "0.3.0"
+source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.3.0#659fcabdc0e4712254dfebe4f45efd54f49826e9"
 dependencies = [
  "soroban-sdk",
 ]
 
 [[package]]
 name = "stellar-pausable-macros"
-version = "0.2.0"
-source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.2.0#aa585815451b48445796d87c82d006d2a08c6ef8"
+version = "0.3.0"
+source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.3.0#659fcabdc0e4712254dfebe4f45efd54f49826e9"
 dependencies = [
  "proc-macro2",
  "quote",
+ "stellar-macro-helpers",
  "syn 2.0.101",
 ]
 
