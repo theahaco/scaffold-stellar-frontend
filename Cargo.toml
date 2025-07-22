@@ -10,10 +10,10 @@ repository = "https://github.com/AhaLabs/scaffold-stellar"
 version = "0.0.1"
 
 [workspace.dependencies.soroban-sdk]
-version = "22.0.7"
+version = "22.0.8"
 
 [workspace.dependencies.soroban-token-sdk]
-version = "22.0.1"
+version = "22.0.8"
 
 [workspace.dependencies.stellar-default-impl-macro]
 git = "https://github.com/OpenZeppelin/stellar-contracts"
