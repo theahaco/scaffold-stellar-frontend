@@ -7,6 +7,10 @@ repository.workspace = true
 publish = false
 version.workspace = true
 
+[package.metadata.stellar]
+# Set contract metadata for authors, homepage, and version based on the Cargo.toml package values
+cargo_inherit = true 
+
 [lib]
 crate-type = ["cdylib"]
 doctest = false
