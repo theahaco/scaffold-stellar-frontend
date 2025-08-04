@@ -60,6 +60,23 @@ const Debugger: React.FC = () => {
       <Layout.Content>
         <Layout.Inset>
           <p>No contracts found in src/contracts/</p>
+          <p>
+            Do you have any contracts defined in your root{" "}
+            <Code size="sm">contracts</Code> folder, and defined in your
+            environments.toml file?
+          </p>
+          <p>
+            Use <Code size="sm">stellar scaffold generate contract</Code> to
+            install contracts from the{" "}
+            <a href="https://github.com/OpenZeppelin/stellar-contracts">
+              OpenZeppelin Stellar Contracts
+            </a>{" "}
+            repository, or visit the{" "}
+            <a href="https://wizard.openzeppelin.com/stellar">
+              OpenZeppelin Wizard
+            </a>{" "}
+            to interactively build your contract.
+          </p>
         </Layout.Inset>
       </Layout.Content>
     );
