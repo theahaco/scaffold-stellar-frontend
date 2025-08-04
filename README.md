@@ -1,5 +1,7 @@
 # Scaffold Stellar Frontend
 
+_To get started with Scaffold Stellar, visit its repo: [github.com/AhaLabs/scaffold-stellar](https://github.com/AhaLabs/scaffold-stellar). This repository is only the frontend piece._
+
 _Under active development._
 
 A modern, up-to-date toolkit for building Stellar smart contract frontends.
