@@ -1,6 +1,6 @@
 # Scaffold Stellar Frontend
 
-_To get started with Scaffold Stellar, visit its repo: [github.com/AhaLabs/scaffold-stellar](https://github.com/AhaLabs/scaffold-stellar). This repository is only the frontend piece._
+_To get started with Scaffold Stellar, visit its repo: [github.com/AhaLabs/scaffold-stellar](https://github.com/AhaLabs/scaffold-stellar)._
 
 _Under active development._
 
