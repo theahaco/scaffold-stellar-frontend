@@ -33,12 +33,18 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     useState<Omit<WalletContextType, "isPending">>(initialState);
   const [isPending, startTransition] = useTransition();
   const popupLock = useRef(false);
-
   const signTransaction = wallet.signTransaction.bind(wallet);
+  const stateRef = useRef(state);
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
 
   const nullify = () => {
     setState(initialState);
     storage.setItem("walletId", "");
+    storage.setItem("walletAddress", "");
+    storage.setItem("walletNetwork", "");
+    storage.setItem("networkPassphrase", "");
   };
 
   const updateCurrentWalletState = async () => {
@@ -46,6 +52,23 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     // installed/connected/authorized. We need to manage that on our side by
     // checking our storage item.
     const walletId = storage.getItem("walletId");
+    const walletNetwork = storage.getItem("walletNetwork");
+    const walletAddr = storage.getItem("walletAddress");
+    const passphrase = storage.getItem("networkPassphrase");
+
+    if (
+      !stateRef.current.address &&
+      walletAddr !== null &&
+      walletNetwork !== null &&
+      passphrase !== null
+    ) {
+      setState({
+        address: walletAddr,
+        network: walletNetwork,
+        networkPassphrase: passphrase,
+      });
+    }
+
     if (!walletId) {
       nullify();
     } else {
@@ -56,6 +79,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         popupLock.current = true;
         wallet.setWallet(walletId);
+        if (walletId !== "freighter" && walletAddr !== null) return;
         const [a, n] = await Promise.all([
           wallet.getAddress(),
           wallet.getNetwork(),
@@ -66,6 +90,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
           n.network !== state.network ||
           n.networkPassphrase !== state.networkPassphrase
         ) {
+          storage.setItem("walletAddress", a.address);
           setState({ ...a, ...n });
         }
       } catch (e) {
@@ -100,6 +125,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     startTransition(async () => {
       await updateCurrentWalletState();
       // Start polling after initial state is loaded
+
       if (isMounted) {
         timer = setTimeout(() => void pollWalletState(), POLL_INTERVAL);
       }

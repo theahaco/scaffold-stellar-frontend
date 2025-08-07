@@ -12,6 +12,9 @@
  */
 type Schema = {
   walletId: string;
+  walletAddress: string;
+  walletNetwork: string;
+  networkPassphrase: string;
 };
 
 /**

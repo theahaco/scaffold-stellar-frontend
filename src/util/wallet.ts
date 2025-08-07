@@ -2,8 +2,8 @@ import storage from "./storage";
 import {
   ISupportedWallet,
   StellarWalletsKit,
-  sep43Modules,
   WalletNetwork,
+  sep43Modules,
 } from "@creit.tech/stellar-wallets-kit";
 import { Horizon } from "@stellar/stellar-sdk";
 import { networkPassphrase, stellarNetwork } from "../contracts/util";
@@ -25,9 +25,25 @@ export const connectWallet = async () => {
       void kit.getAddress().then((address) => {
         // Once `getAddress` returns successfully, we know they actually
         // connected the selected wallet, and we set our localStorage
-        if (address.address) storage.setItem("walletId", selectedId);
-        else storage.setItem("walletId", "");
+        if (address.address) {
+          storage.setItem("walletId", selectedId);
+          storage.setItem("walletAddress", address.address);
+        } else {
+          storage.setItem("walletId", "");
+          storage.setItem("walletAddress", "");
+        }
       });
+      if (selectedId == "freighter" || selectedId == "hot-wallet") {
+        void kit.getNetwork().then((network) => {
+          if (network.network && network.networkPassphrase) {
+            storage.setItem("walletNetwork", network.network);
+            storage.setItem("networkPassphrase", network.networkPassphrase);
+          } else {
+            storage.setItem("walletNetwork", "");
+            storage.setItem("networkPassphrase", "");
+          }
+        });
+      }
     },
   });
 };
