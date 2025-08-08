@@ -38,7 +38,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   const signTransaction = wallet.signTransaction.bind(wallet);
 
   // The state is not updated in updateCurrentWalletState() so we need
-  // to create a ref and to keep it up to date with the useEffect
+  // to create a ref and to keep it up to date with the useEffect.
   const stateRef = useRef(state);
   useEffect(() => {
     if (state.address !== stateRef.current.address) stateRef.current = state;
@@ -62,8 +62,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     } else {
       if (popupLock.current) return;
       // If our storage item is there, then we try to get the user's address &
-      // network from their wallet. Note: `getAddress` MAY open their wallet
-      // extension, depending on which wallet they select!
+      // network from their wallet.
       try {
         popupLock.current = true;
         wallet.setWallet(walletId);
@@ -88,7 +87,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
         nullify();
         // then log the error (instead of throwing) so we have visibility
         // into the error while working on Scaffold Stellar but we do not
-        // crash the app process
+        // crash the app process.
         console.error(e);
       } finally {
         popupLock.current = false;
@@ -109,7 +108,6 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     } else return;
     if (walletId == "freighter") return;
 
-    storage.setItem("walletAddress", "");
     wallet
       .getAddress()
       .then((address) => {
