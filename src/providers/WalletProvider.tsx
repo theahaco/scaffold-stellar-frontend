@@ -94,6 +94,39 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     void updateBalances();
   }, [updateBalances]);
+  const updateNetwork = async () => {
+    try {
+      const n = await wallet.getNetwork();
+      if (n.network) {
+        storage.setItem("walletNetwork", n.network);
+        storage.setItem("networkPassphrase", n.networkPassphrase);
+        return n;
+      } else {
+        storage.setItem("walletId", "");
+        storage.setItem("walletNetwork", "");
+        storage.setItem("networkPassphrase", "");
+      }
+    } catch (err) {
+      console.error(err);
+      nullify();
+    }
+  };
+
+  const updateAddress = async () => {
+    try {
+      const a = await wallet.getAddress();
+      if (a.address) {
+        storage.setItem("walletAddress", a.address);
+        return a;
+      } else {
+        storage.setItem("walletId", "");
+        storage.setItem("walletAddress", "");
+      }
+    } catch (err) {
+      console.error(err);
+      nullify();
+    }
+  };
 
   const updateNetwork = async () => {
     try {
