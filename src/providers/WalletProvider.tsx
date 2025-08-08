@@ -107,7 +107,24 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       wallet.setWallet(walletId);
     } else return;
     if (walletId == "freighter") return;
-
+    if (walletId == "hot-wallet") {
+      wallet
+        .getNetwork()
+        .then((n) => {
+          if (n.network) {
+            storage.setItem("walletNetwork", n.network);
+            storage.setItem("networkPassphrase", n.networkPassphrase);
+          } else {
+            storage.setItem("walletId", "");
+            storage.setItem("walletNetwork", "");
+            storage.setItem("networkPassphrase", "");
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          nullify();
+        });
+    }
     wallet
       .getAddress()
       .then((address) => {
