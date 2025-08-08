@@ -52,6 +52,40 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     storage.setItem("networkPassphrase", "");
   };
 
+  const updateNetwork = async () => {
+    try {
+      const n = await wallet.getNetwork();
+      if (n.network) {
+        storage.setItem("walletNetwork", n.network);
+        storage.setItem("networkPassphrase", n.networkPassphrase);
+        return n;
+      } else {
+        storage.setItem("walletId", "");
+        storage.setItem("walletNetwork", "");
+        storage.setItem("networkPassphrase", "");
+      }
+    } catch (err) {
+      console.error(err);
+      nullify();
+    }
+  };
+
+  const updateAddress = async () => {
+    try {
+      const a = await wallet.getAddress();
+      if (a.address) {
+        storage.setItem("walletAddress", a.address);
+        return a;
+      } else {
+        storage.setItem("walletId", "");
+        storage.setItem("walletAddress", "");
+      }
+    } catch (err) {
+      console.error(err);
+      nullify();
+    }
+  };
+
   const updateCurrentWalletState = async () => {
     // There is no way, with StellarWalletsKit, to check if the wallet is
     // installed/connected/authorized. We need to manage that on our side by
@@ -66,21 +100,32 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         popupLock.current = true;
         wallet.setWallet(walletId);
-        if (walletId !== "freighter") return;
-        const [a, n] = await Promise.all([
-          wallet.getAddress(),
-          wallet.getNetwork(),
-        ]);
-        if (!a.address) storage.setItem("walletId", "");
-        if (
-          a.address !== stateRef.current.address ||
-          n.network !== stateRef.current.network ||
-          n.networkPassphrase !== stateRef.current.networkPassphrase
-        ) {
-          storage.setItem("walletAddress", a.address);
-          storage.setItem("walletNetwork", n.network);
-          storage.setItem("networkPassphrase", n.networkPassphrase);
-          setState({ ...a, ...n });
+        if (walletId !== "freighter" && walletId !== "hana") return;
+        let n;
+        if (walletId == "freighter") {
+          n = await updateNetwork();
+        }
+        const a = await updateAddress();
+
+        if (a) {
+          if (!a.address) storage.setItem("walletId", "");
+          if (n) {
+            if (
+              a.address !== stateRef.current.address ||
+              n.network !== stateRef.current.network ||
+              n.networkPassphrase !== stateRef.current.networkPassphrase
+            ) {
+              setState({ ...a, ...n });
+            }
+          } else {
+            if (a.address !== stateRef.current.address) {
+              setState({
+                address: a.address,
+                network: "",
+                networkPassphrase: "",
+              });
+            }
+          }
         }
       } catch (e) {
         // If `getNetwork` or `getAddress` throw errors... sign the user out???
@@ -106,38 +151,15 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     if (walletId !== null && walletId) {
       wallet.setWallet(walletId);
     } else return;
-    if (walletId == "freighter") return;
+    if (walletId == "freighter" || walletId == "hana") return;
     if (walletId == "hot-wallet") {
-      wallet
-        .getNetwork()
-        .then((n) => {
-          if (n.network) {
-            storage.setItem("walletNetwork", n.network);
-            storage.setItem("networkPassphrase", n.networkPassphrase);
-          } else {
-            storage.setItem("walletId", "");
-            storage.setItem("walletNetwork", "");
-            storage.setItem("networkPassphrase", "");
-          }
-        })
-        .catch((err) => {
-          console.error(err);
-          nullify();
-        });
+      updateNetwork().catch((err) => {
+        console.error(err);
+      });
     }
-    wallet
-      .getAddress()
-      .then((address) => {
-        if (address.address) {
-          storage.setItem("walletAddress", address.address);
-        } else {
-          storage.setItem("walletId", "");
-          storage.setItem("walletAddress", "");
-        }
-      })
+    updateAddress()
       .catch((err) => {
         console.error(err);
-        nullify();
       })
       .finally(() => {
         popupLock2.current = false;
