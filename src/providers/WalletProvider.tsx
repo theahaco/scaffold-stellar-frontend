@@ -34,10 +34,6 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   const [isPending, startTransition] = useTransition();
   const popupLock = useRef(false);
   const signTransaction = wallet.signTransaction.bind(wallet);
-  const stateRef = useRef(state);
-  useEffect(() => {
-    stateRef.current = state;
-  }, [state]);
 
   const nullify = () => {
     setState(initialState);
@@ -57,7 +53,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     const passphrase = storage.getItem("networkPassphrase");
 
     if (
-      !stateRef.current.address &&
+      !state.address &&
       walletAddr !== null &&
       walletNetwork !== null &&
       passphrase !== null
