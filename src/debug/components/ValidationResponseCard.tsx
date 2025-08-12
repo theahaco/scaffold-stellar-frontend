@@ -68,10 +68,13 @@ export const ValidationResponseCard = ({
 }: ValidationResponseCard) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   const txHash =
-    typeof summary === "object"
-      ? (summary?._owner?.memoizedProps?.response?.hash as string)
+    typeof summary === "object" && summary !== null && "_owner" in summary
+      ? ((
+          summary as {
+            _owner?: { memoizedProps?: { response?: { hash?: string } } };
+          }
+        )._owner?.memoizedProps?.response?.hash ?? "")
       : "";
 
   const renderSummary = () => {
