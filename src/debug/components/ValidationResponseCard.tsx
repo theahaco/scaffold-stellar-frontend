@@ -68,6 +68,12 @@ export const ValidationResponseCard = ({
 }: ValidationResponseCard) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  const txHash =
+    typeof summary === "object"
+      ? (summary?._owner?.memoizedProps?.response?.hash as string)
+      : "";
+
   const renderSummary = () => {
     if (summary) {
       return (
@@ -109,22 +115,37 @@ export const ValidationResponseCard = ({
             style={{ display: "flex", flexDirection: "column", gap: "2 rem" }}
           >
             {renderSummary()}
-
-            <Button
-              title="Expand"
-              variant="tertiary"
-              size="sm"
-              onClick={() => setIsExpanded(!isExpanded)}
-              style={
-                {
-                  // ...styles.responsiveButtons,
-                  alignSelf: "flex-end",
-                  marginBottom: "1rem",
-                } as React.CSSProperties
-              }
+            <Box
+              gap="xs"
+              direction="row"
+              style={{ alignSelf: "flex-end", marginBottom: "1rem" }}
             >
-              {isExpanded ? "Hide " : "Show "} Details
-            </Button>
+              <Button
+                title="Expand"
+                variant="tertiary"
+                size="sm"
+                onClick={() => setIsExpanded(!isExpanded)}
+              >
+                {isExpanded ? "Hide " : "Show "} Details
+              </Button>
+              {txHash ? (
+                <Button
+                  title="Expand"
+                  variant="tertiary"
+                  size="sm"
+                  onClick={() =>
+                    window.open(
+                      `http://localhost:8000/lab/transaction-dashboard?$=txDashboard$transactionHash=${txHash};;`,
+                      "_blank",
+                    )
+                  }
+                >
+                  See on lab
+                </Button>
+              ) : (
+                <></>
+              )}
+            </Box>
             {isExpanded && (
               <Card variant="secondary" noPadding>
                 <div style={styles.content}>
