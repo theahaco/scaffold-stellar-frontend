@@ -37,13 +37,6 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signTransaction = wallet.signTransaction.bind(wallet);
 
-  // The state is not updated in updateCurrentWalletState() so we need
-  // to create a ref and to keep it up to date with the useEffect.
-  const stateRef = useRef(state);
-  useEffect(() => {
-    if (state.address !== stateRef.current.address) stateRef.current = state;
-  }, [state]);
-
   const nullify = () => {
     setState(initialState);
     storage.setItem("walletId", "");
@@ -111,14 +104,14 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
           if (!a.address) storage.setItem("walletId", "");
           if (n) {
             if (
-              a.address !== stateRef.current.address ||
-              n.network !== stateRef.current.network ||
-              n.networkPassphrase !== stateRef.current.networkPassphrase
+              a.address !== state.address ||
+              n.network !== state.network ||
+              n.networkPassphrase !== state.networkPassphrase
             ) {
               setState({ ...a, ...n });
             }
           } else {
-            if (a.address !== stateRef.current.address) {
+            if (a.address !== state.address) {
               setState({
                 address: a.address,
                 network: "",
@@ -179,7 +172,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       const passphrase = storage.getItem("networkPassphrase");
 
       if (
-        !stateRef.current.address &&
+        !state.address &&
         walletAddr !== null &&
         walletNetwork !== null &&
         passphrase !== null
@@ -212,7 +205,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       isMounted = false;
       if (timer) clearTimeout(timer);
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps -- it SHOULD only run once per component mount
+  }, [state]); // eslint-disable-line react-hooks/exhaustive-deps -- it SHOULD only run once per component mount
 
   const contextValue = useMemo(
     () => ({
