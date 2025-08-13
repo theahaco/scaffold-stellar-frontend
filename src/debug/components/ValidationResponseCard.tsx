@@ -1,6 +1,7 @@
-import { Button, Card, Text } from "@stellar/design-system";
+import { Button, Card, Link, Text } from "@stellar/design-system";
 import { Box } from "../../components/layout/Box";
 import { useState } from "react";
+import { stellarNetwork } from "../../contracts/util";
 
 type ValidationResponseCard = {
   variant: "primary" | "success" | "error";
@@ -77,6 +78,17 @@ export const ValidationResponseCard = ({
         )._owner?.memoizedProps?.response?.hash ?? "")
       : "";
 
+  const labPrefix =
+    stellarNetwork == "PUBLIC"
+      ? "https://lab.stellar.org/transaction-dashboard?$=network$id=mainnet&label=Mainnet"
+      : stellarNetwork == "TESTNET"
+        ? "https://lab.stellar.org/transaction-dashboard?$=network$id=testnet&label=Testnet"
+        : stellarNetwork == "FUTURENET"
+          ? "https://lab.stellar.org/transaction-dashboard?$=network$id=futurenet&label=Futurenet"
+          : stellarNetwork == "LOCAL"
+            ? "http://localhost:8000/lab/transaction-dashboard"
+            : "";
+
   const renderSummary = () => {
     if (summary) {
       return (
@@ -132,19 +144,12 @@ export const ValidationResponseCard = ({
                 {isExpanded ? "Hide " : "Show "} Details
               </Button>
               {txHash ? (
-                <Button
-                  title="Expand"
-                  variant="tertiary"
-                  size="sm"
-                  onClick={() =>
-                    window.open(
-                      `http://localhost:8000/lab/transaction-dashboard?$=txDashboard$transactionHash=${txHash};;`,
-                      "_blank",
-                    )
-                  }
+                <Link
+                  href={`${labPrefix}?$=txDashboard$transactionHash=${txHash};;`}
+                  size="xs"
                 >
                   See on lab
-                </Button>
+                </Link>
               ) : (
                 <></>
               )}
