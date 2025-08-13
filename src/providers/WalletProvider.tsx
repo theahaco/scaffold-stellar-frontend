@@ -36,11 +36,24 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   const signTransaction = wallet.signTransaction.bind(wallet);
 
   const nullify = () => {
-    setState(initialState);
+    updateState(initialState);
     storage.setItem("walletId", "");
     storage.setItem("walletAddress", "");
     storage.setItem("walletNetwork", "");
     storage.setItem("networkPassphrase", "");
+  };
+
+  const updateState = (newState: Omit<WalletContextType, "isPending">) => {
+    setState((prev: Omit<WalletContextType, "isPending">) => {
+      if (
+        prev.address !== newState.address ||
+        prev.network !== newState.network ||
+        prev.networkPassphrase !== newState.networkPassphrase
+      ) {
+        return newState;
+      }
+      return prev;
+    });
   };
 
   const updateCurrentWalletState = async () => {
@@ -58,7 +71,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       walletNetwork !== null &&
       passphrase !== null
     ) {
-      setState({
+      updateState({
         address: walletAddr,
         network: walletNetwork,
         networkPassphrase: passphrase,
@@ -88,7 +101,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
           n.networkPassphrase !== state.networkPassphrase
         ) {
           storage.setItem("walletAddress", a.address);
-          setState({ ...a, ...n });
+          updateState({ ...a, ...n });
         }
       } catch (e) {
         // If `getNetwork` or `getAddress` throw errors... sign the user out???
