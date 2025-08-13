@@ -38,11 +38,24 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   const signTransaction = wallet.signTransaction.bind(wallet);
 
   const nullify = () => {
-    setState(initialState);
+    updateState(initialState);
     storage.setItem("walletId", "");
     storage.setItem("walletAddress", "");
     storage.setItem("walletNetwork", "");
     storage.setItem("networkPassphrase", "");
+  };
+
+  const updateState = (newState: Omit<WalletContextType, "isPending">) => {
+    setState((prev: Omit<WalletContextType, "isPending">) => {
+      if (
+        prev.address !== newState.address ||
+        prev.network !== newState.network ||
+        prev.networkPassphrase !== newState.networkPassphrase
+      ) {
+        return newState;
+      }
+      return prev;
+    });
   };
 
   const updateNetwork = async () => {
@@ -108,11 +121,11 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
               n.network !== state.network ||
               n.networkPassphrase !== state.networkPassphrase
             ) {
-              setState({ ...a, ...n });
+              updateState({ ...a, ...n });
             }
           } else {
             if (a.address !== state.address) {
-              setState({
+              updateState({
                 address: a.address,
                 network: "",
                 networkPassphrase: "",
@@ -177,7 +190,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
         walletNetwork !== null &&
         passphrase !== null
       ) {
-        setState({
+        updateState({
           address: walletAddr,
           network: walletNetwork,
           networkPassphrase: passphrase,
