@@ -43,7 +43,7 @@ export const labPrefix = () => {
     case "FUTURENET":
       return `https://lab.stellar.org/transaction-dashboard?$=network$id=futurenet&label=Futurenet&horizonUrl=${horizonUrl}&rpcUrl=${rpcUrl}&passphrase=${networkPassphrase};`;
     default:
-      return "";
+      return `https://lab.stellar.org/transaction-dashboard?$=network$id=testnet&label=Testnet&horizonUrl=${horizonUrl}&rpcUrl=${rpcUrl}&passphrase=${networkPassphrase};`;
   }
 };
 
