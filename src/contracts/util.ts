@@ -32,6 +32,21 @@ export const stellarNetwork =
     : env.PUBLIC_STELLAR_NETWORK;
 export const networkPassphrase = env.PUBLIC_STELLAR_NETWORK_PASSPHRASE;
 
+export const labPrefix = () => {
+  switch (stellarNetwork) {
+    case "LOCAL":
+      return "http://localhost:8000/lab/transaction-dashboard?$=network$id=custom&label=Custom";
+    case "PUBLIC":
+      return `https://lab.stellar.org/transaction-dashboard?$=network$id=mainnet&label=Mainnet&horizonUrl=${horizonUrl}&rpcUrl=${rpcUrl}&passphrase=${networkPassphrase};`;
+    case "TESTNET":
+      return `https://lab.stellar.org/transaction-dashboard?$=network$id=testnet&label=Testnet&horizonUrl=${horizonUrl}&rpcUrl=${rpcUrl}&passphrase=${networkPassphrase};`;
+    case "FUTURENET":
+      return `https://lab.stellar.org/transaction-dashboard?$=network$id=futurenet&label=Futurenet&horizonUrl=${horizonUrl}&rpcUrl=${rpcUrl}&passphrase=${networkPassphrase};`;
+    default:
+      return "";
+  }
+};
+
 // NOTE: needs to be exported for contract files in this directory
 export const rpcUrl = env.PUBLIC_STELLAR_RPC_URL;
 
