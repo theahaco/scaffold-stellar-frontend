@@ -134,7 +134,7 @@ export const ValidationResponseCard = ({
               </Button>
               {txHash ? (
                 <Link
-                  href={`${labPrefix()}&txDashboard$transactionHash=${txHash};;`}
+                  href={`${labPrefix()}&txDashboard$transactionHash=${txHash}`}
                   size="xs"
                 >
                   See on lab
