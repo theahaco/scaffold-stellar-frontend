@@ -33,12 +33,27 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     useState<Omit<WalletContextType, "isPending">>(initialState);
   const [isPending, startTransition] = useTransition();
   const popupLock = useRef(false);
-
   const signTransaction = wallet.signTransaction.bind(wallet);
 
   const nullify = () => {
-    setState(initialState);
+    updateState(initialState);
     storage.setItem("walletId", "");
+    storage.setItem("walletAddress", "");
+    storage.setItem("walletNetwork", "");
+    storage.setItem("networkPassphrase", "");
+  };
+
+  const updateState = (newState: Omit<WalletContextType, "isPending">) => {
+    setState((prev: Omit<WalletContextType, "isPending">) => {
+      if (
+        prev.address !== newState.address ||
+        prev.network !== newState.network ||
+        prev.networkPassphrase !== newState.networkPassphrase
+      ) {
+        return newState;
+      }
+      return prev;
+    });
   };
 
   const updateCurrentWalletState = async () => {
@@ -46,6 +61,23 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     // installed/connected/authorized. We need to manage that on our side by
     // checking our storage item.
     const walletId = storage.getItem("walletId");
+    const walletNetwork = storage.getItem("walletNetwork");
+    const walletAddr = storage.getItem("walletAddress");
+    const passphrase = storage.getItem("networkPassphrase");
+
+    if (
+      !state.address &&
+      walletAddr !== null &&
+      walletNetwork !== null &&
+      passphrase !== null
+    ) {
+      updateState({
+        address: walletAddr,
+        network: walletNetwork,
+        networkPassphrase: passphrase,
+      });
+    }
+
     if (!walletId) {
       nullify();
     } else {
@@ -56,17 +88,20 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         popupLock.current = true;
         wallet.setWallet(walletId);
+        if (walletId !== "freighter" && walletAddr !== null) return;
         const [a, n] = await Promise.all([
           wallet.getAddress(),
           wallet.getNetwork(),
         ]);
+
         if (!a.address) storage.setItem("walletId", "");
         if (
           a.address !== state.address ||
           n.network !== state.network ||
           n.networkPassphrase !== state.networkPassphrase
         ) {
-          setState({ ...a, ...n });
+          storage.setItem("walletAddress", a.address);
+          updateState({ ...a, ...n });
         }
       } catch (e) {
         // If `getNetwork` or `getAddress` throw errors... sign the user out???
@@ -100,6 +135,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     startTransition(async () => {
       await updateCurrentWalletState();
       // Start polling after initial state is loaded
+
       if (isMounted) {
         timer = setTimeout(() => void pollWalletState(), POLL_INTERVAL);
       }
@@ -110,7 +146,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       isMounted = false;
       if (timer) clearTimeout(timer);
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps -- it SHOULD only run once per component mount
+  }, [state]); // eslint-disable-line react-hooks/exhaustive-deps -- it SHOULD only run once per component mount
 
   const contextValue = useMemo(
     () => ({
