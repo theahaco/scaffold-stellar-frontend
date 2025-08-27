@@ -65,7 +65,7 @@ export const useWalletBalance = () => {
 
   useEffect(() => {
     void updateBalance();
-  }, [updateBalance]);
+  }, [address, updateBalance]);
 
   return {
     ...state,
