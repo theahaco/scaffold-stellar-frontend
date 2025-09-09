@@ -27,7 +27,8 @@ impl GuessTheNumber {
     }
 
     /// Guess a number between 1 and 10
-    pub fn guess(env: &Env, a_number: u64) -> bool {
+    pub fn guess(env: &Env, guesser: Address, a_number: u64) -> bool {
+        guesser.require_auth();
         a_number == env.storage().instance().get::<_, u64>(&THE_NUMBER).unwrap()
     }
 }
