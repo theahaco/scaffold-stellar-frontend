@@ -26,9 +26,18 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - run: rustup target add wasm32v1-none
-      - uses: stellar/quickstart@main
+      - name: Start Stellar Quickstart
+        uses: stellar/quickstart@main
         with:
           tag: testing
+          network: local
+      # Debug step
+      - name: Debug Stellar container
+        run: |
+          docker ps
+          docker logs $(docker ps -q --filter ancestor=stellar/quickstart:testing)
+          curl -v http://localhost:8000/rpc || true
+
       - run: sudo apt-get update && sudo apt-get install -y libudev-dev libdbus-1-dev pkg-config
       - name: Check for stellar-scaffold binary
         run: |
@@ -38,12 +47,12 @@ jobs:
           else
             echo "stellar-scaffold already installed. Clear cache to force reinstall."
           fi
+      - run: npm run lint
+      - run: npx prettier . --check
       - name: Build clients before building the project
         run: STELLAR_SCAFFOLD_ENV=development stellar-scaffold build --build-clients
       - run: npm ci
       - run: npm run install:contracts
       - run: npm run build
-      - run: npm run lint
-      - run: npx prettier . --check
       - name: Run tests
         run: npm test --if-present
