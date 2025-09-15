@@ -19,10 +19,11 @@ export const GuessTheNumber = () => {
 
   const submitGuess = async () => {
     if (!theGuess) return;
-    const tx = await game.guess({
-      guesser: address,
-      a_number: BigInt(theGuess),
-    });
+    const tx = await game.guess(
+      { guesser: address, a_number: BigInt(theGuess) },
+      // @ts-expect-error stellar-sdk-js has bad typings: publickey is, in fact, allowed
+      { publicKey: address }
+    );
     const { result } = await tx.signAndSend({
       signTransaction: wallet.signTransaction.bind(game),
     });
