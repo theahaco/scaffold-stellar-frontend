@@ -28,6 +28,7 @@ fn one_guess_in_ten_returns_true() {
     let env = &Env::default();
 
     let admin = Address::generate(env);
+    let user = Address::generate(env);
 
     let client = generate_client(env, &admin);
 
@@ -35,7 +36,12 @@ fn one_guess_in_ten_returns_true() {
     set_caller(&client, "reset", &admin, ());
     client.reset();
 
-    let trues: std::vec::Vec<_> = (1u64..=10).filter(|number| client.guess(number)).collect();
+    let trues: std::vec::Vec<_> = (1u64..=10)
+        .filter(|number| {
+            set_caller(&client, "guess", &user, (&user, number));
+            client.guess(&user, number)
+        })
+        .collect();
     assert_eq!(trues.len(), 1);
 }
 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Code, Input, Text } from "@stellar/design-system";
 import { useWallet } from "../hooks/useWallet";
 import game from "../contracts/guess_the_number";
+import { wallet } from "../util/wallet";
 
 export const GuessTheNumber = () => {
   const [guessedIt, setGuessedIt] = useState<boolean>();
@@ -18,7 +19,14 @@ export const GuessTheNumber = () => {
 
   const submitGuess = async () => {
     if (!theGuess) return;
-    const { result } = await game.guess({ a_number: BigInt(theGuess) });
+    const tx = await game.guess(
+      { guesser: address, a_number: BigInt(theGuess) },
+      // @ts-expect-error stellar-sdk-js has bad typings: publickey is, in fact, allowed
+      { publicKey: address }
+    );
+    const { result } = await tx.signAndSend({
+      signTransaction: wallet.signTransaction.bind(game),
+    });
     setGuessedIt(result);
   };
 
