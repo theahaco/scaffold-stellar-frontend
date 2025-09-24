@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Code, Input, Text } from "@stellar/design-system";
+import { Button, Code, Input, Text } from "@stellar/design-system";
 import { useWallet } from "../hooks/useWallet";
 import game from "../contracts/guess_the_number";
+import { Box } from "../components/layout/Box";
 
 export const GuessTheNumber = () => {
   const [guessedIt, setGuessedIt] = useState<boolean>();
@@ -40,16 +41,27 @@ export const GuessTheNumber = () => {
           </Text>
         </>
       ) : (
-        <Input
-          label="Guess a number from 1 to 10!"
-          id="guess"
-          fieldSize="lg"
-          error={guessedIt === false && "Wrong! Guess again."}
-          onChange={(e) => {
-            setGuessedIt(undefined);
-            setTheGuess(Number(e.target.value));
-          }}
-        />
+        <Box gap="sm" direction="row" align="end" justify="end" wrap="wrap">
+          <Input
+            label="Guess a number from 1 to 10!"
+            id="guess"
+            fieldSize="lg"
+            error={guessedIt === false && "Wrong! Guess again."}
+            onChange={(e) => {
+              setGuessedIt(undefined);
+              setTheGuess(Number(e.target.value));
+            }}
+          />
+          <Button
+            type="submit"
+            disabled={!theGuess}
+            style={{ marginTop: 8 }}
+            variant="primary"
+            size="md"
+          >
+            Submit Guess
+          </Button>
+        </Box>
       )}
       <Text as="p" size="lg">
         &nbsp; {/* Not sure the SDS way to add consistent spacing at the end */}
