@@ -5,7 +5,7 @@ version = 4
 [[package]]
 name = "admin-sep"
 version = "0.0.0"
-source = "git+https://github.com/AhaLabs/admin-sep?rev=bf195f4d67cc96587974212f998680ccf9a61cd7#bf195f4d67cc96587974212f998680ccf9a61cd7"
+source = "git+https://github.com/AhaLabs/admin-sep?rev=4f1e3f942c7815d3e7fb4e379132ef8d19dfc54c#4f1e3f942c7815d3e7fb4e379132ef8d19dfc54c"
 dependencies = [
  "soroban-sdk 23.0.0-rc.2.4",
 ]
