@@ -8,8 +8,8 @@ const THE_NUMBER: Symbol = symbol_short!("n");
 
 #[contractimpl]
 impl GuessTheNumber {
-    pub fn __constructor(env: &Env, admin: &Address) {
-        Self::set_admin(env, admin);
+    pub fn __constructor(env: &Env, admin: Address) {
+        Self::set_admin(env, &admin);
     }
 
     /// Update the number. Only callable by admin.
