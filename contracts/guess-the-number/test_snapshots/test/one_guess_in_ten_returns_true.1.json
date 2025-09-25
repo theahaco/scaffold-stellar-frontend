@@ -1,8 +1,7 @@
 {
   "generators": {
     "address": 2,
-    "nonce": 1,
-    "mux_id": 0
+    "nonce": 1
   },
   "auth": [
     [],
@@ -34,7 +33,7 @@
     []
   ],
   "ledger": {
-    "protocol_version": 23,
+    "protocol_version": 22,
     "sequence_number": 0,
     "timestamp": 0,
     "network_id": "0000000000000000000000000000000000000000000000000000000000000000",
@@ -81,7 +80,7 @@
             "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM",
             "key": {
               "ledger_key_nonce": {
-                "nonce": "1"
+                "nonce": 1
               }
             },
             "durability": "temporary"
@@ -96,7 +95,7 @@
                 "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM",
                 "key": {
                   "ledger_key_nonce": {
-                    "nonce": "1"
+                    "nonce": 1
                   }
                 },
                 "durability": "temporary",
@@ -133,22 +132,18 @@
                     "storage": [
                       {
                         "key": {
-                          "symbol": "n"
+                          "symbol": "ADMIN"
                         },
                         "val": {
-                          "u64": "4"
+                          "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM"
                         }
                       },
                       {
                         "key": {
-                          "vec": [
-                            {
-                              "symbol": "Admin"
-                            }
-                          ]
+                          "symbol": "n"
                         },
                         "val": {
-                          "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM"
+                          "u64": 4
                         }
                       }
                     ]
