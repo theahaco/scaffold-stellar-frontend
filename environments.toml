@@ -22,7 +22,7 @@ default = true # Optional. Whether to use this account as the `--source` for com
 #     PROJECT_ROOT/contracts folder)
 #   - The specified name here ("stellar_hello_world_contract") must match the
 #     underscored-version of the `name` in the contract's Cargo.toml.
-#   - The environment is `development` or `test`
+#   - The environment is `development` or `testing`
 stellar_hello_world_contract = { client = true }
 
 # Rather than in one list, TOML allows specifying contracts in their own "sections"
@@ -32,7 +32,7 @@ client = true
 # If your contract has a `__constructor`, specify your arguments to it here.
 # These are the same arguments you could pass after the `--` in a call to
 # `stellar contract deploy`
-# Only available in `development` and `test` environments
+# Only available in `development` and `testing` environments
 constructor_args = """
 --owner me --initial_supply "1000000000000000000000000"
 """
@@ -58,7 +58,7 @@ constructor_args = """
 # To use another account as the `--source`, prefix the line with
 # `STELLAR_ACCOUNT=other-account`.
 #
-# Only supported in `development` and `test` environments.
+# Only supported in `development` and `testing` environments.
 # after_deploy = """
 # mint --amount 2000000 --to me"
 # """
