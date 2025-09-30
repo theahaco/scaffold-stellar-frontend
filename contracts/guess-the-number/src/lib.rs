@@ -23,11 +23,13 @@ impl GuessTheNumber {
     pub fn guess(env: &Env, a_number: u64) -> bool {
         a_number == env.storage().instance().get::<_, u64>(&THE_NUMBER).unwrap()
     }
-}
 
-pub const ADMIN_KEY: &Symbol = &symbol_short!("ADMIN");
+    /// Upgrade the contract to new wasm. Only callable by admin.
+    pub fn upgrade(env: &Env, new_wasm_hash: BytesN<32>) {
+        Self::require_admin(env);
+        env.deployer().update_current_contract_wasm(new_wasm_hash);
+    }
 
-pub trait Administratable {
     fn get_admin(env: &Env) -> Option<Address> {
         env.storage().instance().get(ADMIN_KEY)
     }
@@ -46,13 +48,6 @@ pub trait Administratable {
     }
 }
 
-impl Administratable for GuessTheNumber {}
-
-pub trait Upgradeable: Administratable {
-    fn upgrade(env: &Env, new_wasm_hash: BytesN<32>) {
-        Self::require_admin(env);
-        env.deployer().update_current_contract_wasm(new_wasm_hash);
-    }
-}
+pub const ADMIN_KEY: &Symbol = &symbol_short!("ADMIN");
 
 mod test;
