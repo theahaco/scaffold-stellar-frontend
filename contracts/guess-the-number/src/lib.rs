@@ -5,6 +5,7 @@ use soroban_sdk::{contract, contractimpl, symbol_short, Address, BytesN, Env, Sy
 pub struct GuessTheNumber;
 
 const THE_NUMBER: Symbol = symbol_short!("n");
+pub const ADMIN_KEY: &Symbol = &symbol_short!("ADMIN");
 
 #[contractimpl]
 impl GuessTheNumber {
@@ -30,7 +31,7 @@ impl GuessTheNumber {
         env.deployer().update_current_contract_wasm(new_wasm_hash);
     }
 
-    fn get_admin(env: &Env) -> Option<Address> {
+    fn admin(env: &Env) -> Option<Address> {
         env.storage().instance().get(ADMIN_KEY)
     }
 
@@ -43,11 +44,9 @@ impl GuessTheNumber {
     }
 
     fn require_admin(env: &Env) {
-        let admin = Self::get_admin(env).expect("admin not set");
+        let admin = Self::admin(env).expect("admin not set");
         admin.require_auth();
     }
 }
-
-pub const ADMIN_KEY: &Symbol = &symbol_short!("ADMIN");
 
 mod test;
