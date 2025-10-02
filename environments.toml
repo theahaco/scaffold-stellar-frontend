@@ -9,6 +9,11 @@ name = "me" # Required. Keys for this account will be saved to `./.stellar/ident
 default = true # Optional. Whether to use this account as the `--source` for commands that need one.
 
 [development.contracts]
+fungible_token_interface_example = { client = true, constructor_args = "--owner me --initial_supply 1000000000000000000000000" }
+nft_enumerable_example = { client = true, constructor_args = "--owner me" }
+
+# Rather than in one list, TOML allows specifying contracts in their own "sections"
+[development.contracts.guess_the_number]
 # Generate a contract client (NPM package) for this contract. This means:
 #   - compile (build) the contract source to Wasm
 #   - deploy the contract to the `network` specified above
@@ -20,13 +25,9 @@ default = true # Optional. Whether to use this account as the `--source` for com
 # You can only use `client = true` when:
 #   - the contract source must be part of the local Cargo workspace (in the
 #     PROJECT_ROOT/contracts folder)
-#   - The specified name here ("stellar_hello_world_contract") must match the
+#   - The specified name here ("guess_the_number") must match the
 #     underscored-version of the `name` in the contract's Cargo.toml.
 #   - The environment is `development` or `testing`
-stellar_hello_world_contract = { client = true }
-
-# Rather than in one list, TOML allows specifying contracts in their own "sections"
-[development.contracts.fungible_token_interface_example]
 client = true
 
 # If your contract has a `__constructor`, specify your arguments to it here.
@@ -34,13 +35,7 @@ client = true
 # `stellar contract deploy`
 # Only available in `development` and `testing` environments
 constructor_args = """
---owner me --initial_supply "1000000000000000000000000"
-"""
-
-[development.contracts.nft_enumerable_example]
-client = true
-constructor_args = """
---owner me
+--admin me
 """
 
 # Calls to the contract to make after it's deployed and initialized with
@@ -59,9 +54,9 @@ constructor_args = """
 # `STELLAR_ACCOUNT=other-account`.
 #
 # Only supported in `development` and `testing` environments.
-# after_deploy = """
-# mint --amount 2000000 --to me"
-# """
+after_deploy = """
+reset
+"""
 
 # Coming Soon: Specify live contracts to bind & import in this project using the given name.
 # During initialization, these contracts will also be "spooned" into the development network,

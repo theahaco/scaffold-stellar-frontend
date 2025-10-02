@@ -1,6 +1,6 @@
 [package]
-name = "stellar-hello-world-contract"
-description = "A simple hello world contract"
+name = "guess-the-number"
+description = "Admin sets up the pot, anyone can guess to win it"
 edition.workspace = true
 license.workspace = true
 repository.workspace = true

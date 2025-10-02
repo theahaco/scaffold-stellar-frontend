@@ -581,6 +581,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "guess-the-number"
+version = "0.0.1"
+dependencies = [
+ "soroban-sdk",
+]
+
+[[package]]
 name = "hashbrown"
 version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1314,13 +1321,6 @@ source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.3.0#659fc
 dependencies = [
  "soroban-sdk",
  "stellar-constants",
-]
-
-[[package]]
-name = "stellar-hello-world-contract"
-version = "0.0.1"
-dependencies = [
- "soroban-sdk",
 ]
 
 [[package]]
