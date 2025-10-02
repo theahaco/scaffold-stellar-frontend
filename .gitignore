@@ -2,6 +2,7 @@
 target
 .soroban
 .stellar
+test_snapshots
 
 # build output
 dist
