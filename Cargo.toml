@@ -6,7 +6,7 @@ resolver = "2"
 authors = ["AhaLabs"]
 edition = "2021"
 license = "Apache-2.0"
-repository = "https://github.com/AhaLabs/scaffold-stellar"
+repository = "https://github.com/theahaco/scaffold-stellar"
 version = "0.0.1"
 
 [workspace.dependencies.soroban-sdk]
