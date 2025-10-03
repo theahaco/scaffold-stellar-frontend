@@ -1,6 +1,7 @@
-import { Button, Card, Text } from "@stellar/design-system";
+import { Button, Card, Link, Text } from "@stellar/design-system";
 import { Box } from "../../components/layout/Box";
 import { useState } from "react";
+import { labPrefix } from "../../contracts/util";
 
 type ValidationResponseCard = {
   variant: "primary" | "success" | "error";
@@ -68,6 +69,15 @@ export const ValidationResponseCard = ({
 }: ValidationResponseCard) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
+  const txHash =
+    typeof summary === "object" && summary !== null && "_owner" in summary
+      ? ((
+          summary as {
+            _owner?: { memoizedProps?: { response?: { hash?: string } } };
+          }
+        )._owner?.memoizedProps?.response?.hash ?? "")
+      : "";
+
   const renderSummary = () => {
     if (summary) {
       return (
@@ -109,22 +119,30 @@ export const ValidationResponseCard = ({
             style={{ display: "flex", flexDirection: "column", gap: "2 rem" }}
           >
             {renderSummary()}
-
-            <Button
-              title="Expand"
-              variant="tertiary"
-              size="sm"
-              onClick={() => setIsExpanded(!isExpanded)}
-              style={
-                {
-                  // ...styles.responsiveButtons,
-                  alignSelf: "flex-end",
-                  marginBottom: "1rem",
-                } as React.CSSProperties
-              }
+            <Box
+              gap="xs"
+              direction="row"
+              style={{ alignSelf: "flex-end", marginBottom: "1rem" }}
             >
-              {isExpanded ? "Hide " : "Show "} Details
-            </Button>
+              <Button
+                title="Expand"
+                variant="tertiary"
+                size="sm"
+                onClick={() => setIsExpanded(!isExpanded)}
+              >
+                {isExpanded ? "Hide " : "Show "} Details
+              </Button>
+              {txHash ? (
+                <Link
+                  href={`${labPrefix()}&txDashboard$transactionHash=${txHash}`}
+                  size="xs"
+                >
+                  See on lab
+                </Link>
+              ) : (
+                <></>
+              )}
+            </Box>
             {isExpanded && (
               <Card variant="secondary" noPadding>
                 <div style={styles.content}>
