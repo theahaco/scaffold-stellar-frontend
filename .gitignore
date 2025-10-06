@@ -3,6 +3,9 @@ target
 .soroban
 .stellar
 
+# test snapshot folders from sample contracts
+test_snapshots
+
 # build output
 dist
 dist-ssr
