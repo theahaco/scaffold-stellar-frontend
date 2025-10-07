@@ -1,7 +1,9 @@
 # stellar/soroban/Rust output
 target
 .soroban
-.stellar
+
+# project identity and alias files will be in .config/stellar
+.config
 
 # test snapshot folders from sample contracts
 test_snapshots
