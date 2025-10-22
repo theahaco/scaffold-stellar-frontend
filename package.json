@@ -10,7 +10,7 @@
     "install:contracts": "npm install --workspace=packages && npm run build --workspace=packages",
     "preview": "npm run preview --workspace=app",
     "lint": "npm run lint --workspace=app",
-    "format": "prettier *.{md,json} --write && npm run format --workspace=app",
+    "format": "prettier --write . !app && npm run format --workspace=app",
     "prepare": "husky"
   },
   "workspaces": [
@@ -24,7 +24,7 @@
     "lint-staged": "^16.2.3"
   },
   "lint-staged": {
-    "**/*.{json,md,toml}": "prettier --write"
+    "!(app)": "prettier --write --ignore-unknown"
   },
   "prettier": "@aha-co/config/prettier"
 }

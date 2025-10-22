@@ -31,7 +31,9 @@ jobs:
         with:
           tag: testing
           network: local
-      - run: sudo apt-get update && sudo apt-get install -y libudev-dev libdbus-1-dev pkg-config
+      - run:
+          sudo apt-get update && sudo apt-get install -y libudev-dev
+          libdbus-1-dev pkg-config
       - name: Install cargo-binstall
         uses: cargo-bins/cargo-binstall@v1.15.6
       - name: Check for stellar-scaffold binary
@@ -46,7 +48,9 @@ jobs:
       - run: npm run lint
       - run: npx prettier . --check
       - name: Build clients before building the project
-        run: STELLAR_SCAFFOLD_ENV=development stellar-scaffold build --build-clients
+        run:
+          STELLAR_SCAFFOLD_ENV=development stellar-scaffold build
+          --build-clients
       - run: npm run install:contracts
       - run: npm run build
       - name: Run tests
