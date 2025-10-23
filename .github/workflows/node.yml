@@ -46,11 +46,6 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npx prettier . --check
-      - name: Start Stellar Quickstart
-        uses: stellar/quickstart@main
-        with:
-          tag: testing
-          network: local
       - name: Build clients before building the project
         run:
           STELLAR_SCAFFOLD_ENV=development stellar-scaffold build
