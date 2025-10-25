@@ -23,7 +23,11 @@ export const GuessTheNumber = () => {
       a_number: BigInt(theGuess),
       guesser: address,
     });
-    setGuessedIt(result);
+    if (result.isErr()) {
+      console.error(result.unwrapErr());
+    } else {
+      setGuessedIt(result.unwrap());
+    }
   };
 
   return (
