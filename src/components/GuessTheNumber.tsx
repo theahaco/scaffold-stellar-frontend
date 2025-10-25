@@ -18,8 +18,11 @@ export const GuessTheNumber = () => {
   }
 
   const submitGuess = async () => {
-    if (!theGuess) return;
-    const { result } = await game.guess({ a_number: BigInt(theGuess) });
+    if (!theGuess || !address) return;
+    const { result } = await game.guess({
+      a_number: BigInt(theGuess),
+      guesser: address,
+    });
     setGuessedIt(result);
   };
 
