@@ -18,11 +18,8 @@ impl GuessTheNumber {
     pub fn __constructor(env: &Env, admin: Address) {
         // Require auth from the admin to make the transfer
         admin.require_auth();
-        // This is for testing purposes only because XLM is not mintable in the test environment.
-        #[cfg(test)]
-        {
-            xlm::register(env, &admin);
-        }
+        // This is for testing purposes. Ensures that the XLM contract set up for unit testing and local network
+        xlm::register(env, &admin);
         // Send the contract an amount of XLM to play with
         xlm::token_client(env).transfer(
             &admin,
