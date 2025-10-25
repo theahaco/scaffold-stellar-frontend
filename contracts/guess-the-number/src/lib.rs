@@ -9,7 +9,7 @@ use error::Error;
 #[contract]
 pub struct GuessTheNumber;
 
-const THE_NUMBER: Symbol = symbol_short!("n");
+const THE_NUMBER: &Symbol = &symbol_short!("n");
 pub const ADMIN_KEY: &Symbol = &symbol_short!("ADMIN");
 
 #[contractimpl]
@@ -32,27 +32,27 @@ impl GuessTheNumber {
         // Set the admin in storage
         Self::set_admin(env, admin);
         // Set a random number between 1 and 10
-        Self::reset_guess(env);
+        Self::reset_number(env);
     }
 
     /// Update the number. Only callable by admin.
     pub fn reset(env: &Env) {
         Self::require_admin(env);
-        Self::reset_guess(env);
+        Self::reset_number(env);
     }
 
     // Private function to reset the number to a new random value
     // which doesn't require auth from the admin
-    fn reset_guess(env: &Env) {
+    fn reset_number(env: &Env) {
         let new_number: u64 = env.prng().gen_range(1..=10);
-        env.storage().instance().set(&THE_NUMBER, &new_number);
+        env.storage().instance().set(THE_NUMBER, &new_number);
     }
 
     /// Guess a number between 1 and 10
     pub fn guess(env: &Env, a_number: u64, guesser: Address) -> Result<bool, Error> {
         let xlm_client = xlm::token_client(env);
         let contract_address = env.current_contract_address();
-        let guessed_it = a_number == env.storage().instance().get::<_, u64>(&THE_NUMBER).unwrap();
+        let guessed_it = a_number == Self::number(env).unwrap();
         if guessed_it {
             let balance = xlm_client.balance(&contract_address);
             if balance == 0 {
@@ -88,6 +88,11 @@ impl GuessTheNumber {
     }
 
     /// readonly function to get the current number
+    pub fn number(env: &Env) -> Option<u64> {
+        env.storage().instance().get(THE_NUMBER)
+    }
+
+    /// readonly function to get the current admin
     pub fn admin(env: &Env) -> Option<Address> {
         env.storage().instance().get(ADMIN_KEY)
     }
