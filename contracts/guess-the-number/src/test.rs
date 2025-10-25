@@ -9,7 +9,6 @@ use soroban_sdk::{
     Address, Env, IntoVal, Val, Vec,
 };
 
-
 fn init_test<'a>(env: &'a Env) -> (Address, StellarAssetClient<'a>, GuessTheNumberClient<'a>) {
     let admin = Address::generate(env);
     let client = generate_client(env, &admin);
@@ -27,7 +26,10 @@ fn constructed_correctly() {
     assert_eq!(client.admin(), Some(admin.clone()));
     // Check that the contract has a balance of 1 XLM
     assert_eq!(sac.balance(&client.address), xlm::to_stroops(1));
-
+    // Need to use `as_contract` to call a function in the context of the contract
+    // Since the method `number` is not in the client, but is visibile in the crate
+    let number = env.as_contract(&client.address, || GuessTheNumber::number(env));
+    assert_eq!(number, 4);
 }
 
 #[test]
@@ -117,11 +119,10 @@ fn reset_and_guess() {
     let alice = Address::generate(env);
     // Mint tokens to the user. On testnet you use friendbot to fund the account.
     sac.mint(&alice, &xlm::to_stroops(2));
-    
-    
+
     // Reset the number
     client.reset();
-    
+
     // Guess again, this should be correct now
     assert!(client.guess(&10, &alice));
 }
@@ -133,7 +134,6 @@ fn generate_client<'a>(env: &Env, admin: &Address) -> GuessTheNumberClient<'a> {
     env.set_auths(&[]); // clear auths
     GuessTheNumberClient::new(env, &contract_id)
 }
-
 
 // This lets you mock the auth context for a function call
 fn set_caller<T>(client: &GuessTheNumberClient, fn_name: &str, caller: &Address, args: T)

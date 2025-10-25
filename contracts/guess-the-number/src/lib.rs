@@ -52,7 +52,7 @@ impl GuessTheNumber {
     pub fn guess(env: &Env, a_number: u64, guesser: Address) -> Result<bool, Error> {
         let xlm_client = xlm::token_client(env);
         let contract_address = env.current_contract_address();
-        let guessed_it = a_number == Self::number(env).unwrap();
+        let guessed_it = a_number == Self::number(env);
         if guessed_it {
             let balance = xlm_client.balance(&contract_address);
             if balance == 0 {
@@ -88,8 +88,11 @@ impl GuessTheNumber {
     }
 
     /// readonly function to get the current number
-    pub fn number(env: &Env) -> Option<u64> {
-        env.storage().instance().get(THE_NUMBER)
+    /// `pub(crate)` makes it accessible in the same crate, but not outside of it
+    pub(crate) fn number(env: &Env) -> u64 {
+        // We can unwrap because the number is set in the constructor
+        // and then only reset by the admin
+        unsafe { env.storage().instance().get(THE_NUMBER).unwrap_unchecked() }
     }
 
     /// readonly function to get the current admin
