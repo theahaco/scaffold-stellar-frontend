@@ -1,0 +1,49 @@
+// stellar_registry::import_asset!("xlm");
+
+#[cfg(test)]
+const XLM_KEY: &soroban_sdk::Symbol = &soroban_sdk::symbol_short!("XLM");
+
+#[cfg(test)]
+pub fn contract_id(env: &soroban_sdk::Env) -> soroban_sdk::Address {
+    env.storage()
+        .instance()
+        .get::<_, soroban_sdk::Address>(XLM_KEY)
+        .expect("XLM contract not initialized. Please deploy the XLM contract first.")
+}
+
+#[cfg(test)]
+pub fn register(
+    env: &soroban_sdk::Env,
+    admin: &soroban_sdk::Address,
+) -> soroban_sdk::testutils::StellarAssetContract {
+    let sac = env.register_stellar_asset_contract_v2(admin.clone());
+    env.storage().instance().set(XLM_KEY, &sac.address());
+    stellar_asset_client(env).mint(admin, &to_stroops(10_000));
+    sac
+}
+#[cfg(not(test))]
+pub fn contract_id(env: &soroban_sdk::Env) -> soroban_sdk::Address {
+    env.deployer()
+        .with_stellar_asset(SERIALIZED_ASSET)
+        .deployed_address()
+}
+#[cfg(not(test))]
+pub const SERIALIZED_ASSET: [u8; 4] = [0, 0, 0, 0];
+/// Contract id for the Stellar Asset Contract
+/// Create a Stellar Asset Client for the asset which provides an admin interface
+#[allow(unused)]
+pub fn stellar_asset_client<'a>(
+    env: &soroban_sdk::Env,
+) -> soroban_sdk::token::StellarAssetClient<'a> {
+    soroban_sdk::token::StellarAssetClient::new(&env, &contract_id(env))
+}
+/// Create a Stellar Asset Client for the asset which provides an admin interface
+pub fn token_client<'a>(env: &soroban_sdk::Env) -> soroban_sdk::token::TokenClient<'a> {
+    soroban_sdk::token::TokenClient::new(&env, &contract_id(env))
+}
+
+const ONE_XLM: i128 = 1_000_000_0; // 1 XLM in stroops;
+
+pub const fn to_stroops(num: u64) -> i128 {
+    (num as i128) * ONE_XLM
+}
