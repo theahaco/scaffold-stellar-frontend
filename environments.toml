@@ -9,7 +9,7 @@ name = "me" # Required. Keys for this account will be saved to `./.stellar/ident
 default = true # Optional. Whether to use this account as the `--source` for commands that need one.
 
 [development.contracts]
-fungible_token_interface_example = { client = true, constructor_args = "--owner me --initial_supply 1000000000000000000000000" }
+fungible_allowlist_example = { client = true, constructor_args = "--admin me --manager me --initial_supply 1000000000000000000000000" }
 nft_enumerable_example = { client = true, constructor_args = "--owner me" }
 
 # Rather than in one list, TOML allows specifying contracts in their own "sections"
