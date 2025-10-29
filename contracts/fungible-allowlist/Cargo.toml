@@ -1,5 +1,5 @@
 [package]
-name = "fungible-token-interface-example"
+name = "fungible-allowlist-example"
 edition.workspace = true
 license.workspace = true
 repository.workspace = true
@@ -12,9 +12,9 @@ doctest = false
 
 [dependencies]
 soroban-sdk = { workspace = true }
-stellar-pausable = { workspace = true }
-stellar-pausable-macros = { workspace = true }
-stellar-fungible = { workspace = true }
+stellar-access = { workspace = true }
+stellar-macros = { workspace = true }
+stellar-tokens = { workspace = true }
 
 [dev-dependencies]
 soroban-sdk = { workspace = true, features = ["testutils"] }
