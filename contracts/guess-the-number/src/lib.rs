@@ -92,12 +92,12 @@ impl GuessTheNumber {
         unsafe { env.storage().instance().get(THE_NUMBER).unwrap_unchecked() }
     }
 
-    /// readonly function to get the current admin
+    /// Get current admin
     pub fn admin(env: &Env) -> Option<Address> {
         env.storage().instance().get(ADMIN_KEY)
     }
 
-    /// Set a new admin address. This is only callable by the admin.
+    /// Set a new admin. Only callable by admin.
     pub fn set_admin(env: &Env, admin: Address) {
         // Check if admin is already set
         if env.storage().instance().has(ADMIN_KEY) {
@@ -106,7 +106,7 @@ impl GuessTheNumber {
         env.storage().instance().set(ADMIN_KEY, &admin);
     }
 
-    // Private helper function to require auth from the admin
+    /// Private helper function to require auth from the admin
     fn require_admin(env: &Env) {
         let admin = Self::admin(env).expect("admin not set");
         admin.require_auth();
