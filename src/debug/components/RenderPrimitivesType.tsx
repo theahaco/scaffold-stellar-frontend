@@ -69,7 +69,6 @@ export const renderPrimitivesType = ({
       </div>
     ),
     value:
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- Contract argument types are dynamically typed
       ((get(parsedSorobanOperation.args, path.join(".")) as AnyObject)
         ?.value as string) || "",
     error: (formError?.[formErrorKey] as string) || undefined,

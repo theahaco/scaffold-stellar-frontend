@@ -28,7 +28,6 @@ export const renderTupleType = ({
   formError: AnyObject;
   setFormError: (error: AnyObject) => void;
 }) => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call -- Contract argument types are dynamically typed
   const getKeyName = get(parsedSorobanOperation.args, path.join("."));
 
   if (!(getKeyName as AnyObject)?.tag || !schema.properties?.values) {
