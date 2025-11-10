@@ -1,5 +1,5 @@
 // This is a stub file for the GuessTheNumber contract client.
-// The actual contract client is generated at runtime by stellar scaffold.
+// The actual contract client is generated at runtime by the Scaffold Stellar CLI.
 // This stub allows the build to succeed when the contract hasn't been generated yet.
 
 type Result<T, E> = {
