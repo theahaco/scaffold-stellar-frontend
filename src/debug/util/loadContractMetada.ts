@@ -90,7 +90,7 @@ const loadWasmBinary = async (wasmHash: string) => {
 
 export const getWasmContractData = async (wasmBytes: Buffer) => {
   try {
-    const mod = await WebAssembly.compile(wasmBytes);
+    const mod = await WebAssembly.compile(wasmBytes as BufferSource);
     const result: Record<ContractSectionName, ContractData> = {
       contractmetav0: {},
       contractenvmetav0: {},

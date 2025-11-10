@@ -279,6 +279,7 @@ export const PrettyJson = ({
                           if (v === null) {
                             return (
                               <div
+                                // eslint-disable-next-line react-x/no-array-index-key -- No stable ID available for JSON values
                                 key={`${keyProp}-${index}`}
                                 style={styles.nested}
                               >
@@ -293,6 +294,7 @@ export const PrettyJson = ({
                           if (Array.isArray(v)) {
                             return (
                               <Collapsible
+                                // eslint-disable-next-line react-x/no-array-index-key -- No stable ID available for JSON values
                                 key={`${keyProp}-${index}`}
                                 itemList={Object.keys(v)}
                                 char="["
@@ -305,6 +307,7 @@ export const PrettyJson = ({
                           }
                           return (
                             <Collapsible
+                              // eslint-disable-next-line react-x/no-array-index-key -- No stable ID available for JSON values
                               key={`${keyProp}-${index}`}
                               itemList={Object.keys(v as AnyObject)}
                               char="{"
