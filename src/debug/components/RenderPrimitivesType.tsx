@@ -1,4 +1,3 @@
-/* eslint-disable react-x/jsx-key-before-spread */
 import React from "react";
 import { Badge, Icon, Input, Select, Text } from "@stellar/design-system";
 import type { JSONSchema7 } from "json-schema";
@@ -70,6 +69,7 @@ export const renderPrimitivesType = ({
       </div>
     ),
     value:
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- Contract argument types are dynamically typed
       ((get(parsedSorobanOperation.args, path.join(".")) as AnyObject)
         ?.value as string) || "",
     error: (formError?.[formErrorKey] as string) || undefined,

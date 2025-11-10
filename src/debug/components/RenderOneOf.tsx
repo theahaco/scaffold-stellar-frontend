@@ -50,6 +50,7 @@ export const renderOneOf = ({
   let tagName;
 
   if (path.length > 1) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- Contract argument types are dynamically typed
     tagName = get(parsedSorobanOperation.args[keyName], path.join("."))?.tag;
   } else {
     tagName = (parsedSorobanOperation.args[keyName] as AnyObject)?.tag;
@@ -109,6 +110,7 @@ export const renderOneOf = ({
         fieldSize="md"
         label={name}
         value={
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- Contract argument types are dynamically typed
           (get(parsedSorobanOperation.args, path.join(".")) as AnyObject)
             ?.tag as string
         }
@@ -124,6 +126,7 @@ export const renderOneOf = ({
             <option
               id={oneOf?.title}
               value={oneOf?.title}
+              // eslint-disable-next-line react-x/no-array-index-key -- Schema items may have duplicate titles
               key={`${oneOf?.title}-${index}`}
             >
               {oneOf?.title}

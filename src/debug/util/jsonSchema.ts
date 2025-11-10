@@ -28,6 +28,7 @@ const setDeepValue = (
 ): AnyObject => {
   if (!obj) return {};
   const newObj = JSON.parse(JSON.stringify(obj));
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- Dynamic JSON object manipulation
   return set(newObj, path, val);
 };
 

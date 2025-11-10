@@ -40,6 +40,7 @@ export const renderArrayType = ({
 
   const schemaItems = jsonSchema.getSchemaItems(schema);
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call -- Contract argument types are dynamically typed
   const nestedArgsItems = get(parsedSorobanOperation.args, name);
 
   const disableAddButton =
@@ -137,6 +138,7 @@ export const renderArrayType = ({
                       type="button"
                       onClick={() => {
                         const updatedList = arrayItem.delete(
+                          // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- Contract argument types are dynamically typed
                           get(
                             parsedSorobanOperation.args,
                             path.join("."),
@@ -172,6 +174,7 @@ export const renderArrayType = ({
               const template = getTemplate({ schema });
 
               const args =
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- Contract argument types are dynamically typed
                 (get(
                   parsedSorobanOperation.args,
                   path.join("."),

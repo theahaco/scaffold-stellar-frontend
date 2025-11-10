@@ -78,6 +78,7 @@ export function useSubscription(
                 error,
               );
             } finally {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Event types from Stellar SDK are dynamically typed
               paging[id].pagingToken = event.pagingToken;
             }
           });

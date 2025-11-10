@@ -19,13 +19,17 @@ export const GuessTheNumber = () => {
 
   const submitGuess = async () => {
     if (!theGuess || !address) return;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access -- Contract result types are dynamically typed
     const { result } = await game.guess({
       a_number: BigInt(theGuess),
       guesser: address,
     });
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access -- Contract result types are dynamically typed
     if (result.isErr()) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access -- Contract result types are dynamically typed
       console.error(result.unwrapErr());
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access -- Contract result types are dynamically typed
       setGuessedIt(result.unwrap());
     }
   };
