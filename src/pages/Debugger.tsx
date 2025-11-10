@@ -37,7 +37,7 @@ const Debugger: React.FC = () => {
         setSelectedContract(contractName);
       } else if (!contractName) {
         // Redirect to the first contract if no contractName in URL
-        navigate(`/debug/${contractKeys[0]}`, { replace: true });
+        void navigate(`/debug/${contractKeys[0]}`, { replace: true });
       } else {
         setSelectedContract(contractKeys[0]);
       }
