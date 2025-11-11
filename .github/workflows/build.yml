@@ -57,7 +57,7 @@ jobs:
           fi
           if [ "$FAILED" -gt 0 ]; then
             echo "Client generation summary check failed: Failed: $FAILED"
-            cat build_clients.log
+            echo "Check the \"Build with Scaffold\" step logs."
             exit 1
           fi
       - run: npm run install:contracts
