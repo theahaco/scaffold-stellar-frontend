@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { Button, Code, Input, Text } from "@stellar/design-system";
 import { useWallet } from "../hooks/useWallet";
+import { useWalletBalance } from "../hooks/useWalletBalance";
 import game from "../contracts/guess_the_number";
 import { Box } from "../components/layout/Box";
+import { wallet } from "../util/wallet";
 
 export const GuessTheNumber = () => {
   const [guessedIt, setGuessedIt] = useState<boolean>();
   const [theGuess, setTheGuess] = useState<number>();
   const { address } = useWallet();
+  const { updateBalance } = useWalletBalance();
 
   if (!address) {
     return (
@@ -19,14 +22,19 @@ export const GuessTheNumber = () => {
 
   const submitGuess = async () => {
     if (!theGuess || !address) return;
-    const { result } = await game.guess({
-      a_number: BigInt(theGuess),
-      guesser: address,
+    const tx = await game.guess(
+      { a_number: BigInt(theGuess), guesser: address },
+      // @ts-expect-error js-stellar-sdk has bad typings; publicKey is, in fact, allowed
+      { publicKey: address },
+    );
+    const { result } = await tx.signAndSend({
+      signTransaction: wallet.signTransaction.bind(wallet),
     });
     if (result.isErr()) {
       console.error(result.unwrapErr());
     } else {
       setGuessedIt(result.unwrap());
+      await updateBalance();
     }
   };
 
