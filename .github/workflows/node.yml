@@ -45,8 +45,17 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npx prettier . --check
-      - name: Build clients before building the project
-        run: STELLAR_SCAFFOLD_ENV=development stellar-scaffold build --build-clients
+      - name: Build with Scaffold and build client packages
+        run: STELLAR_SCAFFOLD_ENV=development stellar-scaffold build --build-clients | tee build_clients.log
+      - name: Check client generation summary
+        run: |
+          if ! grep -q "ℹ️ Client Generation Summary:" build_clients.log || \
+              ! grep -q "Successfully processed: 3" build_clients.log || \
+              ! grep -q "Failed: 0" build_clients.log; then
+            echo "Client generation summary check failed."
+            cat build_clients.log
+            exit 1
+          fi
       - run: npm run install:contracts
       - run: npm run build
       - name: Run tests
