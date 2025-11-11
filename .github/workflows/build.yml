@@ -1,4 +1,4 @@
-name: Build and Test
+name: Build Project and Run Tests
 
 on:
   push:
@@ -25,15 +25,19 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      # Add the wasm32v1-none target for building contracts
       - run: rustup target add wasm32v1-none
+      # Start Stellar Quickstart for a local Stellar network to build against
       - name: Start Stellar Quickstart
         uses: stellar/quickstart@main
         with:
           tag: testing
           network: local
       - run: sudo apt-get update && sudo apt-get install -y libudev-dev libdbus-1-dev pkg-config
+      # Install binstall to quickly install stellar-scaffold-cli
       - name: Install cargo-binstall
         uses: cargo-bins/cargo-binstall@v1.15.6
+      # Check for stellar-scaffold-cli binary and install if not present
       - name: Check for stellar-scaffold binary
         run: |
           if ! command -v stellar-scaffold &> /dev/null; then
