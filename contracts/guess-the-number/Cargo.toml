@@ -1,0 +1,24 @@
+[package]
+name = "guess-the-number"
+description = "Admin sets up the pot, anyone can guess to win it"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+version.workspace = true
+
+[package.metadata.stellar]
+# Set contract metadata for authors, homepage, and version based on the Cargo.toml package values
+cargo_inherit = true 
+
+[lib]
+crate-type = ["cdylib"]
+doctest = false
+
+[dependencies]
+soroban-sdk = "23.0.3"
+stellar-registry = "0.0.4"
+
+[dev-dependencies]
+stellar-xdr = { version = "23.0.0", features = ["curr", "serde"] }
+soroban-sdk = { version = "23.0.3", features = ["testutils"] }

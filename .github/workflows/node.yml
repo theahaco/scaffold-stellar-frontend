@@ -26,24 +26,28 @@ jobs:
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - run: rustup target add wasm32v1-none
-      - uses: stellar/quickstart@main
+      - name: Start Stellar Quickstart
+        uses: stellar/quickstart@main
         with:
           tag: testing
+          network: local
       - run: sudo apt-get update && sudo apt-get install -y libudev-dev libdbus-1-dev pkg-config
+      - name: Install cargo-binstall
+        uses: cargo-bins/cargo-binstall@v1.15.6
       - name: Check for stellar-scaffold binary
         run: |
           if ! command -v stellar-scaffold &> /dev/null; then
             echo "stellar-scaffold not found, installing..."
-            cargo install --git https://github.com/ahalabs/scaffold-stellar --branch main stellar-scaffold-cli
+            cargo binstall stellar-scaffold-cli
           else
             echo "stellar-scaffold already installed. Clear cache to force reinstall."
           fi
-      - name: Build clients before building the project
-        run: STELLAR_SCAFFOLD_ENV=development stellar-scaffold build --build-clients
       - run: npm ci
-      - run: npm run install:contracts
-      - run: npm run build
       - run: npm run lint
       - run: npx prettier . --check
+      - name: Build clients before building the project
+        run: STELLAR_SCAFFOLD_ENV=development stellar-scaffold build --build-clients
+      - run: npm run install:contracts
+      - run: npm run build
       - name: Run tests
         run: npm test --if-present

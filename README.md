@@ -40,12 +40,14 @@ cd my-project
 2. Set up your development environment:
 
 ```bash
-# Copy and configure environment variables
+# Copy and configure environment variables like network and STELLAR_SCAFFOLD_ENV
 cp .env.example .env
 
 # Install frontend dependencies
 npm install
 ```
+
+Have a look at `environments.toml` for more fined-grained control.
 
 3. Start development environment:
 
@@ -53,16 +55,16 @@ npm install
 npm run dev
 ```
 
-4. For local development and deployment, start a [local quickstart container](https://github.com/stellar/quickstart) with the Stellar CLI:
+Open the server URL in your web browser. 
+
+4. For testnet/mainnet deployment:
+
+When you are ready for testnet, you need to deploy your contract using
+`stellar registry`. Some commands to get you started.
 
 ```bash
-# starts a container running a Stellar node, RPC, API, and friendbot (faucet)
-stellar container start
-```
+#  Note --source-account argument is omitted for clarity
 
-For testnet/mainnet deployment:
-
-```bash
 # First publish your contract to the registry
 stellar registry publish
 
@@ -81,7 +83,7 @@ stellar registry deploy \
   --help
 
 # Install the deployed contract locally
-stellar registry install my-contract
+stellar registry create-alias my-contract
 ```
 
 ## Scaffold Initial Project Structure
