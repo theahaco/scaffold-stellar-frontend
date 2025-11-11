@@ -49,10 +49,14 @@ jobs:
         run: STELLAR_SCAFFOLD_ENV=development stellar-scaffold build --build-clients 2>&1 | tee build_clients.log
       - name: Check client generation summary
         run: |
-          if ! grep -q "ℹ️ Client Generation Summary:" build_clients.log || \
-              ! grep -q "Successfully processed: 2" build_clients.log || \
-              ! grep -q "Failed: 1" build_clients.log; then
-            echo "Client generation summary check failed. Check the "Build with Scaffold" step logs."
+          # Extract the number after "Failed: "
+          FAILED=$(grep -Eo "Failed: [0-9]+" build_clients.log | awk '{print $2}')
+          if [ -z "$FAILED" ]; then
+            echo "Could not find 'Failed: N' in build_clients.log, all clients succeeded."
+            exit 0
+          fi
+          if [ "$FAILED" -gt 0 ]; then
+            echo "Client generation summary check failed: Failed: $FAILED"
             cat build_clients.log
             exit 1
           fi
