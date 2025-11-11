@@ -46,7 +46,7 @@ jobs:
       - run: npm run lint
       - run: npx prettier . --check
       - name: Build with Scaffold and build client packages
-        run: STELLAR_SCAFFOLD_ENV=development stellar-scaffold build --build-clients | tee build_clients.log
+        run: STELLAR_SCAFFOLD_ENV=development stellar-scaffold build --build-clients 2>&1 | tee build_clients.log
       - name: Check client generation summary
         run: |
           if ! grep -q "ℹ️ Client Generation Summary:" build_clients.log || \
