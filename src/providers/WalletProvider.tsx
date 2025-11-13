@@ -1,5 +1,6 @@
 import {
   createContext,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -8,53 +9,88 @@ import {
 } from "react";
 import { wallet } from "../util/wallet";
 import storage from "../util/storage";
+import { fetchBalances } from "../util/wallet";
+import type { MappedBalances } from "../util/wallet";
+
+const signTransaction = wallet.signTransaction.bind(wallet);
+
+/**
+ * A good-enough implementation of deepEqual.
+ *
+ * Used in this file to compare MappedBalances.
+ *
+ * Should maybe add & use a new dependency instead, if needed elsewhere.
+ */
+function deepEqual<T>(a: T, b: T): boolean {
+  if (a === b) {
+    return true;
+  }
+
+  const bothAreObjects =
+    a && b && typeof a === "object" && typeof b === "object";
+
+  return Boolean(
+    bothAreObjects &&
+      Object.keys(a).length === Object.keys(b).length &&
+      Object.entries(a).every(([k, v]) => deepEqual(v, b[k as keyof T])),
+  );
+}
 
 export interface WalletContextType {
   address?: string;
+  balances: MappedBalances;
+  isPending: boolean;
   network?: string;
   networkPassphrase?: string;
-  isPending: boolean;
-  signTransaction?: typeof wallet.signTransaction;
+  signTransaction: typeof wallet.signTransaction;
+  updateBalances: () => Promise<void>;
 }
-
-const initialState = {
-  address: undefined,
-  network: undefined,
-  networkPassphrase: undefined,
-};
 
 const POLL_INTERVAL = 1000;
 
 export const WalletContext = // eslint-disable-line react-refresh/only-export-components
-  createContext<WalletContextType>({ isPending: true });
+  createContext<WalletContextType>({
+    isPending: true,
+    balances: {},
+    updateBalances: async () => {},
+    signTransaction,
+  });
 
 export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
-  const [state, setState] =
-    useState<Omit<WalletContextType, "isPending">>(initialState);
+  const [balances, setBalances] = useState<MappedBalances>({});
+  const [address, setAddress] = useState<string>();
+  const [network, setNetwork] = useState<string>();
+  const [networkPassphrase, setNetworkPassphrase] = useState<string>();
   const [isPending, startTransition] = useTransition();
   const popupLock = useRef(false);
-  const signTransaction = wallet.signTransaction.bind(wallet);
 
   const nullify = () => {
-    updateState(initialState);
+    setAddress(undefined);
+    setNetwork(undefined);
+    setNetworkPassphrase(undefined);
+    setBalances({});
     storage.setItem("walletId", "");
     storage.setItem("walletAddress", "");
     storage.setItem("walletNetwork", "");
     storage.setItem("networkPassphrase", "");
   };
 
-  const updateState = (newState: Omit<WalletContextType, "isPending">) => {
-    setState((prev: Omit<WalletContextType, "isPending">) => {
-      if (
-        prev.address !== newState.address ||
-        prev.network !== newState.network ||
-        prev.networkPassphrase !== newState.networkPassphrase
-      ) {
-        return newState;
-      }
-      return prev;
+  const updateBalances = useCallback(async () => {
+    if (!address) {
+      setBalances({});
+      return;
+    }
+
+    const newBalances = await fetchBalances(address);
+    setBalances((prev) => {
+      if (deepEqual(newBalances, prev)) return prev;
+      return newBalances;
     });
-  };
+  }, [address]);
+
+  useEffect(() => {
+    void updateBalances();
+  }, [updateBalances]);
 
   const updateCurrentWalletState = async () => {
     // There is no way, with StellarWalletsKit, to check if the wallet is
@@ -66,16 +102,14 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     const passphrase = storage.getItem("networkPassphrase");
 
     if (
-      !state.address &&
+      !address &&
       walletAddr !== null &&
       walletNetwork !== null &&
       passphrase !== null
     ) {
-      updateState({
-        address: walletAddr,
-        network: walletNetwork,
-        networkPassphrase: passphrase,
-      });
+      setAddress(walletAddr);
+      setNetwork(walletNetwork);
+      setNetworkPassphrase(passphrase);
     }
 
     if (!walletId) {
@@ -96,12 +130,14 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
 
         if (!a.address) storage.setItem("walletId", "");
         if (
-          a.address !== state.address ||
-          n.network !== state.network ||
-          n.networkPassphrase !== state.networkPassphrase
+          a.address !== address ||
+          n.network !== network ||
+          n.networkPassphrase !== networkPassphrase
         ) {
           storage.setItem("walletAddress", a.address);
-          updateState({ ...a, ...n });
+          setAddress(a.address);
+          setNetwork(n.network);
+          setNetworkPassphrase(n.networkPassphrase);
         }
       } catch (e) {
         // If `getNetwork` or `getAddress` throw errors... sign the user out???
@@ -146,15 +182,19 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       isMounted = false;
       if (timer) clearTimeout(timer);
     };
-  }, [state]); // eslint-disable-line react-hooks/exhaustive-deps -- it SHOULD only run once per component mount
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps -- it SHOULD only run once per component mount
 
   const contextValue = useMemo(
     () => ({
-      ...state,
+      address,
+      network,
+      networkPassphrase,
+      balances,
+      updateBalances,
       isPending,
       signTransaction,
     }),
-    [state, isPending, signTransaction],
+    [address, network, networkPassphrase, balances, updateBalances, isPending],
   );
 
   return <WalletContext value={contextValue}>{children}</WalletContext>;
