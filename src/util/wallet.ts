@@ -68,15 +68,39 @@ function getHorizonHost(mode: string) {
   }
 }
 
-export const fetchBalance = async (address: string) => {
-  const horizon = new Horizon.Server(getHorizonHost(stellarNetwork), {
-    allowHttp: stellarNetwork === "LOCAL",
-  });
+const horizon = new Horizon.Server(getHorizonHost(stellarNetwork), {
+  allowHttp: stellarNetwork === "LOCAL",
+});
 
-  const { balances } = await horizon.accounts().accountId(address).call();
-  return balances;
+const formatter = new Intl.NumberFormat();
+
+export type MappedBalances = Record<string, Horizon.HorizonApi.BalanceLine>;
+
+export const fetchBalances = async (address: string) => {
+  try {
+    const { balances } = await horizon.accounts().accountId(address).call();
+    const mapped = balances.reduce((acc, b) => {
+      b.balance = formatter.format(Number(b.balance));
+      const key =
+        b.asset_type === "native"
+          ? "xlm"
+          : b.asset_type === "liquidity_pool_shares"
+            ? b.liquidity_pool_id
+            : `${b.asset_code}:${b.asset_issuer}`;
+      acc[key] = b;
+      return acc;
+    }, {} as MappedBalances);
+    return mapped;
+  } catch (err) {
+    // `not found` is sort of expected, indicating an unfunded wallet, which
+    // the consumer of `balances` can understand via the lack of `xlm` key.
+    // If the error does NOT match 'not found', log the error.
+    // We should also possibly not return `{}` in this case?
+    if (!(err instanceof Error && err.message.match(/not found/i))) {
+      console.error(err);
+    }
+    return {};
+  }
 };
-
-export type Balance = Awaited<ReturnType<typeof fetchBalance>>[number];
 
 export const wallet = kit;
