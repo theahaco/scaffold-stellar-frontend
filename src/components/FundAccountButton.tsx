@@ -3,12 +3,10 @@ import { useNotification } from "../hooks/useNotification.ts";
 import { useWallet } from "../hooks/useWallet.ts";
 import { Button, Tooltip } from "@stellar/design-system";
 import { getFriendbotUrl } from "../util/friendbot";
-import { useWalletBalance } from "../hooks/useWalletBalance.ts";
 
 const FundAccountButton: React.FC = () => {
   const { addNotification } = useNotification();
   const [isPending, startTransition] = useTransition();
-  const { isFunded, isLoading } = useWalletBalance();
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
   const { address } = useWallet();
 
@@ -52,7 +50,7 @@ const FundAccountButton: React.FC = () => {
         placement="bottom"
         triggerEl={
           <Button
-            disabled={isPending || isLoading || isFunded}
+            disabled={isPending}
             onClick={handleFundAccount}
             variant="primary"
             size="md"
@@ -61,11 +59,7 @@ const FundAccountButton: React.FC = () => {
           </Button>
         }
       >
-        <div style={{ width: "13em" }}>
-          {isFunded
-            ? "Account is already funded"
-            : "Fund your account using the Stellar Friendbot"}
-        </div>
+        <div style={{ width: "13em" }}>Account is already funded</div>
       </Tooltip>
     </div>
   );

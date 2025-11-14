@@ -7,7 +7,7 @@ import { Box } from "../components/layout/Box";
 export const GuessTheNumber = () => {
   const [guessedIt, setGuessedIt] = useState<boolean>();
   const [theGuess, setTheGuess] = useState<number>();
-  const { address } = useWallet();
+  const { address, updateBalances, signTransaction } = useWallet();
 
   if (!address) {
     return (
@@ -19,14 +19,17 @@ export const GuessTheNumber = () => {
 
   const submitGuess = async () => {
     if (!theGuess || !address) return;
-    const { result } = await game.guess({
-      a_number: BigInt(theGuess),
-      guesser: address,
-    });
+    const tx = await game.guess(
+      { a_number: BigInt(theGuess), guesser: address },
+      // @ts-expect-error js-stellar-sdk has bad typings; publicKey is, in fact, allowed
+      { publicKey: address },
+    );
+    const { result } = await tx.signAndSend({ signTransaction });
     if (result.isErr()) {
       console.error(result.unwrapErr());
     } else {
       setGuessedIt(result.unwrap());
+      await updateBalances();
     }
   };
 
