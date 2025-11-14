@@ -1,9 +1,9 @@
-import * as Client from 'guess_the_number';
+import * as Client from 'fungible_allowlist_example';
 import { rpcUrl } from './util';
 
 export default new Client.Client({
   networkPassphrase: 'Standalone Network ; February 2017',
-  contractId: 'CA5ZWOBCPFWCJ5F4KTHYQSO6H2TSD2PG236HR3QG3XN2B5ITBI4OIGPM',
+  contractId: 'CBZ42SGH6E4P5CX7NYC6NNVJ4IABJZNGGN4FKO5FGHLH54OU5XR56NYN',
   rpcUrl,
   allowHttp: true,
   publicKey: undefined,
