@@ -30,7 +30,7 @@ jobs:
       - run: sudo apt-get update && sudo apt-get install -y libudev-dev libdbus-1-dev pkg-config
       # Install binstall to quickly install stellar-scaffold-cli
       - name: Install cargo-binstall
-        uses: cargo-bins/cargo-binstall@v1.15.6
+        uses: cargo-bins/cargo-binstall@main
       # Check for stellar-scaffold-cli binary and install if not present
       - name: Check for stellar-scaffold binary
         run: |
