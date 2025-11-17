@@ -1,5 +1,5 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, symbol_short, Address, BytesN, Env, Symbol};
+use soroban_sdk::{Address, BytesN, Env, Symbol, contract, contractimpl, symbol_short};
 
 mod error;
 mod xlm;
@@ -16,8 +16,8 @@ pub const ADMIN_KEY: &Symbol = &symbol_short!("ADMIN");
 impl GuessTheNumber {
     /// Constructor to initialize the contract with an admin and a random number
     pub fn __constructor(env: &Env, admin: Address) {
-        // Require auth from the admin to make the transfer
-        admin.require_auth();
+        // Set the admin in storage
+        Self::set_admin(env, &admin);
         // This is for testing purposes. Ensures that the XLM contract set up for unit testing and local network
         xlm::register(env, &admin);
         // Send the contract an amount of XLM to play with
@@ -26,8 +26,6 @@ impl GuessTheNumber {
             env.current_contract_address(),
             &xlm::to_stroops(1),
         );
-        // Set the admin in storage
-        Self::set_admin(env, admin);
         // Set a random number between 1 and 10
         Self::reset_number(env);
     }
@@ -98,12 +96,12 @@ impl GuessTheNumber {
     }
 
     /// Set a new admin. Only callable by admin.
-    pub fn set_admin(env: &Env, admin: Address) {
+    pub fn set_admin(env: &Env, admin: &Address) {
         // Check if admin is already set
         if env.storage().instance().has(ADMIN_KEY) {
             panic!("admin already set");
         }
-        env.storage().instance().set(ADMIN_KEY, &admin);
+        env.storage().instance().set(ADMIN_KEY, admin);
     }
 
     /// Private helper function to require auth from the admin
