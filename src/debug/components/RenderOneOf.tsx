@@ -124,6 +124,7 @@ export const renderOneOf = ({
             <option
               id={oneOf?.title}
               value={oneOf?.title}
+              // eslint-disable-next-line react-x/no-array-index-key -- Schema items may have duplicate titles
               key={`${oneOf?.title}-${index}`}
             >
               {oneOf?.title}

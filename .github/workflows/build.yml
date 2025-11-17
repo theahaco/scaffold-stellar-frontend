@@ -1,4 +1,4 @@
-name: Build and Test
+name: Build Project and Run Tests
 
 on:
   push:
@@ -25,10 +25,13 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      # Add the wasm32v1-none target for building contracts
       - run: rustup target add wasm32v1-none
       - run: sudo apt-get update && sudo apt-get install -y libudev-dev libdbus-1-dev pkg-config
+      # Install binstall to quickly install stellar-scaffold-cli
       - name: Install cargo-binstall
         uses: cargo-bins/cargo-binstall@v1.15.6
+      # Check for stellar-scaffold-cli binary and install if not present
       - name: Check for stellar-scaffold binary
         run: |
           if ! command -v stellar-scaffold &> /dev/null; then
@@ -40,8 +43,21 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npx prettier . --check
-      - name: Build clients before building the project
-        run: STELLAR_SCAFFOLD_ENV=development stellar-scaffold build --build-clients
+      - name: Build with Scaffold and build client packages
+        run: STELLAR_SCAFFOLD_ENV=development stellar-scaffold build --build-clients 2>&1 | tee build_clients.log
+      - name: Check client generation summary
+        run: |
+          # Extract the number after "Failed: "
+          FAILED=$(grep -Eo "Failed: [0-9]+" build_clients.log | awk '{print $2}')
+          if [ -z "$FAILED" ]; then
+            echo "Could not find 'Failed: N' in build_clients.log, all clients succeeded."
+            exit 0
+          fi
+          if [ "$FAILED" -gt 0 ]; then
+            echo "Client generation summary check failed: Failed: $FAILED"
+            echo "Check the \"Build with Scaffold\" step logs."
+            exit 1
+          fi
       - run: npm run install:contracts
       - run: npm run build
       - name: Run tests

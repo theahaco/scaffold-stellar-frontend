@@ -49,26 +49,41 @@ export function useSubscription(
           paging[id].lastLedgerStart = latestLedgerState.sequence;
         }
 
-        const response = await server.getEvents({
-          startLedger: !paging[id].pagingToken
-            ? paging[id].lastLedgerStart
-            : undefined,
-          cursor: paging[id].pagingToken,
-          filters: [
-            {
-              contractIds: [contractId],
-              topics: [[xdr.ScVal.scvSymbol(topic).toXDR("base64")]],
-              type: "contract",
-            },
-          ],
-          limit: 10,
-        });
+        // lastLedgerStart is now guaranteed to be a number
+        const lastLedger = paging[id].lastLedgerStart;
+
+        const response = await server.getEvents(
+          paging[id].pagingToken
+            ? {
+                cursor: paging[id].pagingToken,
+                filters: [
+                  {
+                    contractIds: [contractId],
+                    topics: [[xdr.ScVal.scvSymbol(topic).toXDR("base64")]],
+                    type: "contract",
+                  },
+                ],
+                limit: 10,
+              }
+            : {
+                startLedger: lastLedger,
+                endLedger: lastLedger + 100,
+                filters: [
+                  {
+                    contractIds: [contractId],
+                    topics: [[xdr.ScVal.scvSymbol(topic).toXDR("base64")]],
+                    type: "contract",
+                  },
+                ],
+                limit: 10,
+              },
+        );
 
         paging[id].pagingToken = undefined;
         if (response.latestLedger) {
           paging[id].lastLedgerStart = response.latestLedger;
         }
-        if (response.events) {
+        if (response.events && response.events.length > 0) {
           response.events.forEach((event) => {
             try {
               onEvent(event);
@@ -77,10 +92,12 @@ export function useSubscription(
                 "Poll Events: subscription callback had error: ",
                 error,
               );
-            } finally {
-              paging[id].pagingToken = event.pagingToken;
             }
           });
+          // Store the cursor from the response for pagination
+          if (response.cursor) {
+            paging[id].pagingToken = response.cursor;
+          }
         }
       } catch (error) {
         console.error("Poll Events: error: ", error);

@@ -3,37 +3,26 @@ members = ["contracts/*"]
 resolver = "2"
 
 [workspace.package]
-authors = ["AhaLabs"]
-edition = "2021"
+authors = ["The Aha Company"]
+edition = "2024"
 license = "Apache-2.0"
 repository = "https://github.com/theahaco/scaffold-stellar"
 version = "0.0.1"
 
 [workspace.dependencies.soroban-sdk]
-version = "22.0.8"
+version = "23.1.0"
 
-[workspace.dependencies.soroban-token-sdk]
-version = "22.0.8"
-
-[workspace.dependencies.stellar-default-impl-macro]
+[workspace.dependencies.stellar-access]
 git = "https://github.com/OpenZeppelin/stellar-contracts"
-tag = "v0.3.0"
+tag = "v0.5.1"
 
-[workspace.dependencies.stellar-fungible]
+[workspace.dependencies.stellar-macros]
 git = "https://github.com/OpenZeppelin/stellar-contracts"
-tag = "v0.3.0"
+tag = "v0.5.1"
 
-[workspace.dependencies.stellar-non-fungible]
+[workspace.dependencies.stellar-tokens]
 git = "https://github.com/OpenZeppelin/stellar-contracts"
-tag = "v0.3.0"
-
-[workspace.dependencies.stellar-pausable]
-git = "https://github.com/OpenZeppelin/stellar-contracts"
-tag = "v0.3.0"
-
-[workspace.dependencies.stellar-pausable-macros]
-git = "https://github.com/OpenZeppelin/stellar-contracts"
-tag = "v0.3.0"
+tag = "v0.5.1"
 
 [profile.release]
 opt-level = "z"

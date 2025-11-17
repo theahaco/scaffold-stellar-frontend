@@ -1,4 +1,3 @@
-/* eslint-disable react-x/jsx-key-before-spread */
 import React from "react";
 import { Badge, Icon, Input, Select, Text } from "@stellar/design-system";
 import type { JSONSchema7 } from "json-schema";
