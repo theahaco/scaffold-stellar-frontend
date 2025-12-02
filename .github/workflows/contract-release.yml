@@ -3,11 +3,11 @@ name: Publish contracts
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 permissions: # required permissions for the workflow
   id-token: write
-  contents: write  # in order to create releases
+  contents: write # in order to create releases
   attestations: write
 
 concurrency:
@@ -21,8 +21,8 @@ jobs:
     with:
       release_name: ${{ github.ref_name }}
       release_description: "Scaffold contract release"
-      home_domain: 'your-domain.dev'
-      relative_path: 'contracts/...'
-      package: '...'
+      home_domain: "your-domain.dev"
+      relative_path: "contracts/..."
+      package: "..."
     secrets:
       release_token: ${{ secrets.GITHUB_TOKEN }}

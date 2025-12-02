@@ -5,7 +5,7 @@ permissions:
 
 on:
   push:
-    branches: [ dapp_production ]
+    branches: [dapp_production]
 
   workflow_dispatch:
 
