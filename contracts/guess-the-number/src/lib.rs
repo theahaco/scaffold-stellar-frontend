@@ -24,17 +24,13 @@ impl GuessTheNumber {
 
     /// Guess a number between 1 and 10
     pub fn guess(env: &Env, a_number: u64) -> bool {
-        a_number == Self::number(env)
+        a_number == env.storage().instance().get::<_, u64>(NUMBER_KEY).expect("no number set")
     }
 
     /// Upgrade the contract to new wasm. Only callable by admin.
     pub fn upgrade(env: &Env, new_wasm_hash: BytesN<32>) {
         Self::require_admin(env);
         env.deployer().update_current_contract_wasm(new_wasm_hash);
-    }
-
-    pub(crate) fn number(env: &Env) -> u64 {
-        env.storage().instance().get::<_, u64>(NUMBER_KEY).unwrap()
     }
 
     /// Get current admin
