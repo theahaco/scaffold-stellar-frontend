@@ -56,4 +56,3 @@ impl GuessTheNumber {
 
 mod error;
 mod test;
-mod xlm;
