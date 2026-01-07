@@ -55,7 +55,7 @@ Have a look at `environments.toml` for more fined-grained control.
 npm run dev
 ```
 
-Open the server URL in your web browser. 
+Open the server URL in your web browser.
 
 4. For testnet/mainnet deployment:
 
