@@ -4,8 +4,8 @@ use soroban_sdk::{contract, contractimpl, symbol_short, Address, BytesN, Env, Sy
 #[contract]
 pub struct GuessTheNumber;
 
-pub const NUMBER_KEY: &Symbol = &symbol_short!("NUMBER");
-pub const ADMIN_KEY: &Symbol = &symbol_short!("ADMIN");
+const THE_NUMBER: &Symbol = &symbol_short!("n");
+const ADMIN_KEY: &Symbol = &symbol_short!("ADMIN");
 
 #[contractimpl]
 impl GuessTheNumber {
@@ -19,22 +19,18 @@ impl GuessTheNumber {
     pub fn reset(env: &Env) {
         Self::require_admin(env);
         let new_number: u64 = env.prng().gen_range(1..=10);
-        env.storage().instance().set(NUMBER_KEY, &new_number);
+        env.storage().instance().set(THE_NUMBER, &new_number);
     }
 
     /// Guess a number between 1 and 10
     pub fn guess(env: &Env, a_number: u64) -> bool {
-        a_number == Self::number(env)
+        a_number == env.storage().instance().get::<_, u64>(THE_NUMBER).expect("no number set")
     }
 
     /// Upgrade the contract to new wasm. Only callable by admin.
     pub fn upgrade(env: &Env, new_wasm_hash: BytesN<32>) {
         Self::require_admin(env);
         env.deployer().update_current_contract_wasm(new_wasm_hash);
-    }
-
-    pub(crate) fn number(env: &Env) -> u64 {
-        env.storage().instance().get::<_, u64>(NUMBER_KEY).unwrap()
     }
 
     /// Get current admin
@@ -60,4 +56,3 @@ impl GuessTheNumber {
 
 mod error;
 mod test;
-mod xlm;
