@@ -1,15 +1,15 @@
-import { Text } from "@stellar/design-system";
+import { Text } from "@stellar/design-system"
 
 export const ErrorText = ({
-  errorMessage,
-  size,
+	errorMessage,
+	size,
 }: {
-  errorMessage: string;
-  size: "sm" | "md" | "lg";
+	errorMessage: string
+	size: "sm" | "md" | "lg"
 }) => {
-  return (
-    <Text as="div" size={size} addlClassName="FieldNote--error">
-      {errorMessage}
-    </Text>
-  );
-};
+	return (
+		<Text as="div" size={size} addlClassName="FieldNote--error">
+			{errorMessage}
+		</Text>
+	)
+}

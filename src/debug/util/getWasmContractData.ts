@@ -1,81 +1,81 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import * as StellarXdr from "./StellarXdr";
-import { prettifyJsonString } from "./prettifyJsonString";
 import {
-  CONTRACT_SECTIONS,
-  ContractData,
-  ContractSectionName,
-} from "../types/types";
+	CONTRACT_SECTIONS,
+	type ContractData,
+	type ContractSectionName,
+} from "../types/types"
+import { prettifyJsonString } from "./prettifyJsonString"
+import * as StellarXdr from "./StellarXdr"
 
 export const getWasmContractData = async (wasmBytes: Buffer) => {
-  try {
-    const mod = await WebAssembly.compile(wasmBytes as BufferSource);
+	try {
+		const mod = await WebAssembly.compile(wasmBytes as BufferSource)
 
-    const result: Record<ContractSectionName, ContractData> = {
-      contractmetav0: {},
-      contractenvmetav0: {},
-      contractspecv0: {},
-    };
+		const result: Record<ContractSectionName, ContractData> = {
+			contractmetav0: {},
+			contractenvmetav0: {},
+			contractspecv0: {},
+		}
 
-    // Make sure the StellarXdr is available
-    await StellarXdr.initialize();
+		// Make sure the StellarXdr is available
+		await StellarXdr.initialize()
 
-    for (const sectionName of CONTRACT_SECTIONS) {
-      const sections = WebAssembly.Module.customSections(mod, sectionName);
+		for (const sectionName of CONTRACT_SECTIONS) {
+			const sections = WebAssembly.Module.customSections(mod, sectionName)
 
-      if (sections.length > 0) {
-        for (let i = 0; i < sections.length; i++) {
-          const sectionData = sectionResult(sectionName, sections[i]);
+			if (sections.length > 0) {
+				for (let i = 0; i < sections.length; i++) {
+					const sectionData = sectionResult(sectionName, sections[i])
 
-          if (sectionData) {
-            result[sectionName] = sectionData;
-          }
-        }
-      }
-    }
+					if (sectionData) {
+						result[sectionName] = sectionData
+					}
+				}
+			}
+		}
 
-    return result;
-  } catch (e) {
-    console.error("Error getting wasm contract data:", e);
-    return null;
-  }
-};
+		return result
+	} catch (e) {
+		console.error("Error getting wasm contract data:", e)
+		return null
+	}
+}
 
 const sectionResult = (
-  sectionName: ContractSectionName,
-  section: ArrayBuffer,
+	sectionName: ContractSectionName,
+	section: ArrayBuffer,
 ) => {
-  const sectionData = new Uint8Array(section);
-  const sectionXdr = Buffer.from(sectionData).toString("base64");
-  const { json, xdr } = getJsonAndXdr(sectionName, sectionXdr);
+	const sectionData = new Uint8Array(section)
+	const sectionXdr = Buffer.from(sectionData).toString("base64")
+	const { json, xdr } = getJsonAndXdr(sectionName, sectionXdr)
 
-  return {
-    xdr,
-    json,
-    // TODO: add text format
-  };
-};
+	return {
+		xdr,
+		json,
+		// TODO: add text format
+	}
+}
 
 const TYPE_VARIANT: Record<ContractSectionName, string> = {
-  contractenvmetav0: "ScEnvMetaEntry",
-  contractmetav0: "ScMetaEntry",
-  contractspecv0: "ScSpecEntry",
-};
+	contractenvmetav0: "ScEnvMetaEntry",
+	contractmetav0: "ScMetaEntry",
+	contractspecv0: "ScSpecEntry",
+}
 
 const getJsonAndXdr = (sectionName: ContractSectionName, xdr: string) => {
-  try {
-    const jsonStringArray = StellarXdr.decode_stream(
-      TYPE_VARIANT[sectionName],
-      xdr,
-    );
+	try {
+		const jsonStringArray = StellarXdr.decode_stream(
+			TYPE_VARIANT[sectionName],
+			xdr,
+		)
 
-    return {
-      json: jsonStringArray.map((s: string) => prettifyJsonString(s)),
-      xdr: jsonStringArray.map((s: string) =>
-        StellarXdr.encode(TYPE_VARIANT[sectionName], s),
-      ),
-    };
-  } catch (e) {
-    return { json: [], xdr: [] };
-  }
-};
+		return {
+			json: jsonStringArray.map((s: string) => prettifyJsonString(s)),
+			xdr: jsonStringArray.map((s: string) =>
+				StellarXdr.encode(TYPE_VARIANT[sectionName], s),
+			),
+		}
+	} catch (e) {
+		return { json: [], xdr: [] }
+	}
+}
