@@ -148,40 +148,6 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const updateNetwork = async () => {
-    try {
-      const n = await wallet.getNetwork();
-      if (n.network) {
-        storage.setItem("walletNetwork", n.network);
-        storage.setItem("networkPassphrase", n.networkPassphrase);
-        return n;
-      } else {
-        storage.setItem("walletId", "");
-        storage.setItem("walletNetwork", "");
-        storage.setItem("networkPassphrase", "");
-      }
-    } catch (err) {
-      console.error(err);
-      nullify();
-    }
-  };
-
-  const updateAddress = async () => {
-    try {
-      const a = await wallet.getAddress();
-      if (a.address) {
-        storage.setItem("walletAddress", a.address);
-        return a;
-      } else {
-        storage.setItem("walletId", "");
-        storage.setItem("walletAddress", "");
-      }
-    } catch (err) {
-      console.error(err);
-      nullify();
-    }
-  };
-
   const updateCurrentWalletState = async () => {
     // There is no way, with StellarWalletsKit, to check if the wallet is
     // installed/connected/authorized. We need to manage that on our side by
@@ -196,11 +162,11 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         popupLock.current = true;
         wallet.setWallet(walletId);
-        //if (walletId !== "freighter" && walletId !== "hana") return;
-        const n = await updateNetwork();
-        // if (walletId == "freighter") {
-        //   n = await updateNetwork();
-        // }
+        if (walletId !== "freighter" && walletId !== "hana") return;
+        let n;
+        if (walletId == "freighter") {
+          n = await updateNetwork();
+        }
         const a = await updateAddress();
 
         if (a) {
