@@ -38,13 +38,23 @@ function deepEqual<T>(a: T, b: T): boolean {
 
 export interface WalletContextType {
   address?: string;
-  balances: MappedBalances;
-  isPending: boolean;
+  balances?: MappedBalances;
+  isPending?: boolean;
   network?: string;
   networkPassphrase?: string;
-  signTransaction: typeof wallet.signTransaction;
-  updateBalances: () => Promise<void>;
+  signTransaction?: typeof wallet.signTransaction;
+  updateBalances?: () => Promise<void>;
 }
+
+const initialState = {
+  address: undefined,
+  network: undefined,
+  networkPassphrase: undefined,
+  balances: undefined,
+  isPending: undefined,
+  signTransaction: undefined,
+  updateBalances: undefined,
+};
 
 const POLL_INTERVAL = 1000;
 
@@ -58,9 +68,8 @@ export const WalletContext = // eslint-disable-line react-refresh/only-export-co
 
 export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   const [balances, setBalances] = useState<MappedBalances>({});
-  const [address, setAddress] = useState<string>();
-  const [network, setNetwork] = useState<string>();
-  const [networkPassphrase, setNetworkPassphrase] = useState<string>();
+  const [state, setState] =
+    useState<Omit<WalletContextType, "isPending">>(initialState);
   const [isPending, startTransition] = useTransition();
   const popupLock = useRef(false);
   const popupLock2 = useRef(false);
@@ -77,17 +86,17 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const updateBalances = useCallback(async () => {
-    if (!address) {
+    if (!state.address) {
       setBalances({});
       return;
     }
 
-    const newBalances = await fetchBalances(address);
+    const newBalances = await fetchBalances(state.address);
     setBalances((prev) => {
       if (deepEqual(newBalances, prev)) return prev;
       return newBalances;
     });
-  }, [address]);
+  }, [state.address]);
 
   useEffect(() => {
     void updateBalances();
@@ -187,11 +196,11 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         popupLock.current = true;
         wallet.setWallet(walletId);
-        if (walletId !== "freighter" && walletId !== "hana") return;
-        let n;
-        if (walletId == "freighter") {
-          n = await updateNetwork();
-        }
+        //if (walletId !== "freighter" && walletId !== "hana") return;
+        const n = await updateNetwork();
+        // if (walletId == "freighter") {
+        //   n = await updateNetwork();
+        // }
         const a = await updateAddress();
 
         if (a) {
@@ -303,15 +312,13 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
 
   const contextValue = useMemo(
     () => ({
-      address,
-      network,
-      networkPassphrase,
+      ...state,
       balances,
       updateBalances,
       isPending,
       signTransaction,
     }),
-    [address, network, networkPassphrase, balances, updateBalances, isPending],
+    [state, isPending, signTransaction],
   );
 
   return <WalletContext value={contextValue}>{children}</WalletContext>;
