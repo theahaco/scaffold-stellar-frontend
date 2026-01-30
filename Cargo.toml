@@ -24,6 +24,10 @@ tag = "v0.6.0"
 git = "https://github.com/OpenZeppelin/stellar-contracts"
 tag = "v0.6.0"
 
+[workspace.dependencies.stellar-contract-utils]
+git = "https://github.com/OpenZeppelin/stellar-contract-utils"
+tag = "v0.6.0"
+
 [profile.release]
 opt-level = "z"
 debug = false
