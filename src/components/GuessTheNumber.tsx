@@ -1,4 +1,4 @@
-import { Button, Card, Code, Icon, Input, Text } from "@stellar/design-system"
+import { Button, Card, Code, Icon, Input } from "@stellar/design-system"
 import { useState } from "react"
 import game from "../contracts/guess_the_number"
 import { useWallet } from "../hooks/useWallet"
