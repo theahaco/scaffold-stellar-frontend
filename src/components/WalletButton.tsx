@@ -1,4 +1,4 @@
-import { Button, Text, Modal, Profile } from "@stellar/design-system"
+import { Button, Icon, Text, Modal, Profile } from "@stellar/design-system"
 import { useState } from "react"
 import { useWallet } from "../hooks/useWallet"
 import { connectWallet, disconnectWallet } from "../util/wallet"
@@ -6,11 +6,16 @@ import { connectWallet, disconnectWallet } from "../util/wallet"
 export const WalletButton = () => {
 	const [showDisconnectModal, setShowDisconnectModal] = useState(false)
 	const { address, isPending, balances } = useWallet()
-	const buttonLabel = isPending ? "Loading..." : "Connect"
+	const buttonLabel = isPending ? "Loading..." : "Connect Wallet"
 
 	if (!address) {
 		return (
-			<Button variant="primary" size="md" onClick={() => void connectWallet()}>
+			<Button
+				variant="secondary"
+				size="md"
+				onClick={() => void connectWallet()}
+			>
+				<Icon.Wallet02 />
 				{buttonLabel}
 			</Button>
 		)
