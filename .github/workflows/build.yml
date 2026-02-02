@@ -37,6 +37,7 @@ jobs:
           if ! command -v stellar-scaffold &> /dev/null; then
             echo "stellar-scaffold not found, installing..."
             cargo binstall stellar-scaffold-cli
+            stellar-scaffold version
           else
             echo "stellar-scaffold already installed. Clear cache to force reinstall."
           fi
