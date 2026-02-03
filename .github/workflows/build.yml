@@ -36,7 +36,7 @@ jobs:
         run: |
           if ! command -v stellar-scaffold &> /dev/null; then
             echo "stellar-scaffold not found, installing..."
-            cargo binstall stellar-scaffold-cli
+            cargo install --git https://github.com/theahaco/scaffold-stellar stellar-scaffold-cli --rev 89d9ce83e95dd0cd1675e54f330e64f19440d05d
           else
             echo "stellar-scaffold already installed. Clear cache to force reinstall."
           fi
