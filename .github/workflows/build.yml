@@ -40,6 +40,8 @@ jobs:
           else
             echo "stellar-scaffold already installed. Clear cache to force reinstall."
           fi
+          echo "Scaffold Version:"
+          stellar-scaffold version
       - run: npm ci
       - run: npm run lint
       - run: npx prettier . --check
