@@ -8,6 +8,7 @@
     "start": "concurrently --kill-others-on-fail --names stellar,vite -c gray,green --pad-prefix \"stellar scaffold watch --build-clients\" \"vite\"",
     "build": "tsc -b && vite build",
     "install:contracts": "npm install --workspace=packages && npm run build --workspace=packages",
+    "build:contracts": "npm run build --workspace=packages",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier . --write",

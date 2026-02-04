@@ -60,7 +60,7 @@ jobs:
             echo "Check the \"Build with Scaffold\" step logs."
             exit 1
           fi
-      - run: npm run install:contracts
+      - run: npm run build:contracts
       - run: npm run build
       - name: Run tests
         run: npm test --if-present
