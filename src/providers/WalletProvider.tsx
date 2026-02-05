@@ -15,6 +15,52 @@ import type { MappedBalances } from "../util/wallet";
 const signTransaction = wallet.signTransaction.bind(wallet);
 
 /**
+ * Each wallet can have different behaviors for `getAddress` and `getNetwork`.
+ *
+ * - `getAddressBehavior`:
+ *   - "standard": getAddress only triggers popup when not connected (ideal behavior)
+ *   - "popup-always": getAddress triggers a popup yo sign every time it's called, even when connected
+ *
+ * - `supportsGetNetwork`:
+ *   - true: wallet supports the getNetwork method
+ *   - false: wallet does NOT support getNetwork, will use fallback/cached values
+ */
+interface WalletBehavior {
+  getAddressBehavior: "standard" | "popup-always";
+  supportsGetNetwork: boolean;
+}
+
+/**
+ * Default behavior for unknown wallets
+ * Assumes popup-always to avoid unwanted popups, and assumes getNetwork is not supported
+ */
+const DEFAULT_WALLET_BEHAVIOR: WalletBehavior = {
+  getAddressBehavior: "popup-always",
+  supportsGetNetwork: false,
+};
+
+const WALLET_BEHAVIORS: Record<string, WalletBehavior> = {
+  freighter: { getAddressBehavior: "standard", supportsGetNetwork: true },
+  "hot-wallet": {
+    getAddressBehavior: "popup-always",
+    supportsGetNetwork: true,
+  },
+  hana: { getAddressBehavior: "standard", supportsGetNetwork: false },
+  lobstr: { getAddressBehavior: "popup-always", supportsGetNetwork: false },
+  albedo: { getAddressBehavior: "popup-always", supportsGetNetwork: false },
+  xbull: { getAddressBehavior: "standard", supportsGetNetwork: false },
+  rabbet: { getAddressBehavior: "standard", supportsGetNetwork: false },
+  klever: { getAddressBehavior: "popup-always", supportsGetNetwork: true },
+};
+
+/**
+ * Get the behavior configuration for a specific wallet
+ */
+function getWalletBehavior(walletId: string): WalletBehavior {
+  return WALLET_BEHAVIORS[walletId] ?? DEFAULT_WALLET_BEHAVIOR;
+}
+
+/**
  * A good-enough implementation of deepEqual.
  *
  * Used in this file to compare MappedBalances.
@@ -92,38 +138,45 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     void updateBalances();
   }, [updateBalances]);
 
-  const updateNetwork = async () => {
-    try {
-      const n = await wallet.getNetwork();
-      if (n.network) {
-        storage.setItem("walletNetwork", n.network);
-        storage.setItem("networkPassphrase", n.networkPassphrase);
-        return n;
-      } else {
-        storage.setItem("walletId", "");
-        storage.setItem("walletNetwork", "");
-        storage.setItem("networkPassphrase", "");
+  /**
+   * Fetches the address from the wallet, respecting wallet-specific behaviors.
+   * For "popup-always" wallets: Never calls getAddress more than once.
+   */
+  const fetchAddress = async (
+    walletId: string,
+    cachedAddress: string | null,
+  ): Promise<{ address: string }> => {
+    const behavior = getWalletBehavior(walletId);
+
+    if (behavior.getAddressBehavior === "popup-always") {
+      if (cachedAddress) {
+        return { address: cachedAddress };
       }
-    } catch (err) {
-      console.error(err);
-      nullify();
     }
+
+    return wallet.getAddress();
   };
 
-  const updateAddress = async () => {
-    try {
-      const a = await wallet.getAddress();
-      if (a.address) {
-        storage.setItem("walletAddress", a.address);
-        return a;
-      } else {
-        storage.setItem("walletId", "");
-        storage.setItem("walletAddress", "");
-      }
-    } catch (err) {
-      console.error(err);
-      nullify();
+  /**
+   * Fetches the network from the wallet, respecting wallet-specific behaviors.
+   * For wallets that don't support getNetwork, returns cached values or defaults.
+   */
+  const fetchNetwork = async (
+    walletId: string,
+    cachedNetwork: string | null,
+    cachedPassphrase: string | null,
+  ): Promise<{ network: string; networkPassphrase: string }> => {
+    const behavior = getWalletBehavior(walletId);
+
+    if (!behavior.supportsGetNetwork) {
+      return {
+        network: cachedNetwork ?? "testnet",
+        networkPassphrase:
+          cachedPassphrase ?? "Test SDF Network ; September 2015",
+      };
     }
+
+    return wallet.getNetwork();
   };
 
   const updateCurrentWalletState = async () => {
@@ -150,34 +203,39 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       nullify();
     } else {
       if (popupLock.current) return;
-      // If our storage item is there, then we try to get the user's address &
-      // network from their wallet.
+
       try {
         popupLock.current = true;
         wallet.setWallet(walletId);
-        if (walletId !== "freighter" && walletAddr !== null) return;
-        const [a, n] = await Promise.all([
-          wallet.getAddress(),
-          wallet.getNetwork(),
+
+        const [addressResult, networkResult] = await Promise.all([
+          fetchAddress(walletId, walletAddr),
+          fetchNetwork(walletId, walletNetwork, passphrase),
         ]);
 
-        if (!a.address) storage.setItem("walletId", "");
+        if (!addressResult.address) {
+          storage.setItem("walletId", "");
+          return;
+        }
+
         if (
-          a.address !== address ||
-          n.network !== network ||
-          n.networkPassphrase !== networkPassphrase
+          addressResult.address !== address ||
+          networkResult.network !== network ||
+          networkResult.networkPassphrase !== networkPassphrase
         ) {
-          storage.setItem("walletAddress", a.address);
-          setAddress(a.address);
-          setNetwork(n.network);
-          setNetworkPassphrase(n.networkPassphrase);
+          storage.setItem("walletAddress", addressResult.address);
+          storage.setItem("walletNetwork", networkResult.network);
+          storage.setItem("networkPassphrase", networkResult.networkPassphrase);
+          setAddress(addressResult.address);
+          setNetwork(networkResult.network);
+          setNetworkPassphrase(networkResult.networkPassphrase);
         }
       } catch (e) {
         // If `getNetwork` or `getAddress` throw errors... sign the user out???
         nullify();
         // then log the error (instead of throwing) so we have visibility
         // into the error while working on Scaffold Stellar but we do not
-        // crash the app process.
+        // crash the app process
         console.error(e);
       } finally {
         popupLock.current = false;
@@ -185,56 +243,14 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // Every time the page is refreshed this method asks the user to
-  // reconnect if they are using a wallet that triggers a popup
-  // when calling getAddress()
-  const refreshConnection = () => {
-    // Avoid being triggered by strict mode
-    if (popupLock2.current) return;
-    popupLock2.current = true;
-    const walletId = storage.getItem("walletId");
-    if (walletId !== null && walletId) {
-      wallet.setWallet(walletId);
-    } else return;
-    if (walletId == "freighter" || walletId == "hana") return;
-    if (walletId == "hot-wallet") {
-      updateNetwork().catch((err) => {
-        console.error(err);
-      });
-    }
-    updateAddress()
-      .catch((err) => {
-        console.error(err);
-      })
-      .finally(() => {
-        popupLock2.current = false;
-      });
-  };
-
   useEffect(() => {
     let timer: NodeJS.Timeout;
     let isMounted = true;
-    refreshConnection();
 
     // Create recursive polling function to check wallet state continuously
     const pollWalletState = async () => {
       if (!isMounted) return;
-      const walletNetwork = storage.getItem("walletNetwork");
-      const walletAddr = storage.getItem("walletAddress");
-      const passphrase = storage.getItem("networkPassphrase");
 
-      if (
-        !state.address &&
-        walletAddr !== null &&
-        walletNetwork !== null &&
-        passphrase !== null
-      ) {
-        updateState({
-          address: walletAddr,
-          network: walletNetwork,
-          networkPassphrase: passphrase,
-        });
-      }
       await updateCurrentWalletState();
 
       if (isMounted) {
