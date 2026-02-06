@@ -24,10 +24,14 @@ const signTransaction = wallet.signTransaction.bind(wallet);
  * - `supportsGetNetwork`:
  *   - true: wallet supports the getNetwork method
  *   - false: wallet does NOT support getNetwork, will use fallback/cached values
+ *
+ * - `helpUrl` (optional):
+ *   - URL to documentation or help page for this wallet's limitations
  */
 interface WalletBehavior {
   getAddressBehavior: "standard" | "popup-always";
   supportsGetNetwork: boolean;
+  helpUrl?: string;
 }
 
 /**
@@ -44,12 +48,25 @@ const WALLET_BEHAVIORS: Record<string, WalletBehavior> = {
   "hot-wallet": {
     getAddressBehavior: "popup-always",
     supportsGetNetwork: true,
+    helpUrl: "https://github.com/hot-dao/hot-sdk-js/issues/6",
   },
   hana: { getAddressBehavior: "standard", supportsGetNetwork: false },
-  lobstr: { getAddressBehavior: "popup-always", supportsGetNetwork: false },
-  albedo: { getAddressBehavior: "popup-always", supportsGetNetwork: false },
-  xbull: { getAddressBehavior: "standard", supportsGetNetwork: false },
-  rabbet: { getAddressBehavior: "standard", supportsGetNetwork: false },
+  lobstr: {
+    getAddressBehavior: "popup-always",
+    supportsGetNetwork: false,
+    helpUrl: "https://github.com/Lobstrco/lobstr-browser-extension/issues/2",
+  },
+  albedo: {
+    getAddressBehavior: "popup-always",
+    supportsGetNetwork: false,
+    helpUrl: "https://github.com/stellar-expert/albedo/issues/104",
+  },
+  xbull: {
+    getAddressBehavior: "standard",
+    supportsGetNetwork: false,
+    helpUrl: "https://github.com/Creit-Tech/xBull-Wallet-Connect/issues/4",
+  },
+  rabet: { getAddressBehavior: "standard", supportsGetNetwork: false },
   klever: { getAddressBehavior: "popup-always", supportsGetNetwork: true },
 };
 
@@ -58,6 +75,40 @@ const WALLET_BEHAVIORS: Record<string, WalletBehavior> = {
  */
 function getWalletBehavior(walletId: string): WalletBehavior {
   return WALLET_BEHAVIORS[walletId] ?? DEFAULT_WALLET_BEHAVIOR;
+}
+
+/**
+ * Wallet warning information exposed to components
+ */
+export interface WalletWarnings {
+  hasWarnings: boolean;
+  popupAlways: boolean;
+  noGetNetworkSupport: boolean;
+  helpUrl?: string;
+}
+
+/**
+ * Get warnings for a specific wallet
+ */
+function getWalletWarnings(walletId: string | null): WalletWarnings {
+  if (!walletId) {
+    return {
+      hasWarnings: false,
+      popupAlways: false,
+      noGetNetworkSupport: false,
+    };
+  }
+
+  const behavior = getWalletBehavior(walletId);
+  const popupAlways = behavior.getAddressBehavior === "popup-always";
+  const noGetNetworkSupport = !behavior.supportsGetNetwork;
+
+  return {
+    hasWarnings: popupAlways || noGetNetworkSupport,
+    popupAlways,
+    noGetNetworkSupport,
+    helpUrl: behavior.helpUrl,
+  };
 }
 
 /**
@@ -90,6 +141,7 @@ export interface WalletContextType {
   networkPassphrase?: string;
   signTransaction: typeof wallet.signTransaction;
   updateBalances: () => Promise<void>;
+  walletWarnings: WalletWarnings;
 }
 
 const POLL_INTERVAL = 1000;
@@ -100,6 +152,11 @@ export const WalletContext = // eslint-disable-line react-refresh/only-export-co
     balances: {},
     updateBalances: async () => {},
     signTransaction,
+    walletWarnings: {
+      hasWarnings: false,
+      popupAlways: false,
+      noGetNetworkSupport: false,
+    },
   });
 
 export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
@@ -107,6 +164,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
   const [address, setAddress] = useState<string>();
   const [network, setNetwork] = useState<string>();
   const [networkPassphrase, setNetworkPassphrase] = useState<string>();
+  const [walletId, setWalletId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const popupLock = useRef(false);
 
@@ -115,6 +173,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     setNetwork(undefined);
     setNetworkPassphrase(undefined);
     setBalances({});
+    setWalletId(null);
     storage.setItem("walletId", "");
     storage.setItem("walletAddress", "");
     storage.setItem("walletNetwork", "");
@@ -183,10 +242,13 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     // There is no way, with StellarWalletsKit, to check if the wallet is
     // installed/connected/authorized. We need to manage that on our side by
     // checking our storage item.
-    const walletId = storage.getItem("walletId");
+    const storedWalletId = storage.getItem("walletId");
     const walletNetwork = storage.getItem("walletNetwork");
     const walletAddr = storage.getItem("walletAddress");
     const passphrase = storage.getItem("networkPassphrase");
+
+    // Update walletId state for warnings
+    setWalletId(storedWalletId);
 
     if (
       !address &&
@@ -199,18 +261,18 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       setNetworkPassphrase(passphrase);
     }
 
-    if (!walletId) {
+    if (!storedWalletId) {
       nullify();
     } else {
       if (popupLock.current) return;
 
       try {
         popupLock.current = true;
-        wallet.setWallet(walletId);
+        wallet.setWallet(storedWalletId);
 
         const [addressResult, networkResult] = await Promise.all([
-          fetchAddress(walletId, walletAddr),
-          fetchNetwork(walletId, walletNetwork, passphrase),
+          fetchAddress(storedWalletId, walletAddr),
+          fetchNetwork(storedWalletId, walletNetwork, passphrase),
         ]);
 
         if (!addressResult.address) {
@@ -275,6 +337,9 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps -- it SHOULD only run once per component mount
 
+  // Get wallet warnings based on current wallet
+  const walletWarnings = useMemo(() => getWalletWarnings(walletId), [walletId]);
+
   const contextValue = useMemo(
     () => ({
       address,
@@ -284,8 +349,17 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
       updateBalances,
       isPending,
       signTransaction,
+      walletWarnings,
     }),
-    [address, network, networkPassphrase, balances, updateBalances, isPending],
+    [
+      address,
+      network,
+      networkPassphrase,
+      balances,
+      updateBalances,
+      isPending,
+      walletWarnings,
+    ],
   );
 
   return <WalletContext value={contextValue}>{children}</WalletContext>;
