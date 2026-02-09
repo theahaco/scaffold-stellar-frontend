@@ -66,7 +66,11 @@ const WALLET_BEHAVIORS: Record<string, WalletBehavior> = {
     supportsGetNetwork: false,
     helpUrl: "https://github.com/Creit-Tech/xBull-Wallet-Connect/issues/4",
   },
-  rabet: { getAddressBehavior: "standard", supportsGetNetwork: false },
+  rabet: {
+    getAddressBehavior: "standard",
+    supportsGetNetwork: false,
+    helpUrl: "https://github.com/rabetofficial/rabet-extension/issues/14",
+  },
   klever: { getAddressBehavior: "popup-always", supportsGetNetwork: true },
 };
 
