@@ -25,6 +25,10 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          cache: "npm"
       # Add the wasm32v1-none target for building contracts
       - run: rustup target add wasm32v1-none
       - run:
@@ -38,10 +42,12 @@ jobs:
         run: |
           if ! command -v stellar-scaffold &> /dev/null; then
             echo "stellar-scaffold not found, installing..."
-            cargo binstall stellar-scaffold-cli
+            cargo install --git https://github.com/theahaco/scaffold-stellar stellar-scaffold-cli --rev cde0d2588492a4cc37c6c90b2570c07e8032b4b6 --locked
           else
             echo "stellar-scaffold already installed. Clear cache to force reinstall."
           fi
+          echo "Scaffold Version:"
+          stellar-scaffold version
       - run: npm ci
       - run: npm run lint
       - run: npx prettier . --check
