@@ -83,6 +83,7 @@ default = true
 # soroban-increment-contract = { id = "C567..." }
 # soroban-token-contract = { id = "C678..." }
 # eurc = { id = "C789..." }
+guess_the_number = { client = true, constructor_args = "--admin me", after_deploy = "reset" }
 
 ### Production environment configuration
 [production.network]

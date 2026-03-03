@@ -27,7 +27,9 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       # Add the wasm32v1-none target for building contracts
       - run: rustup target add wasm32v1-none
-      - run: sudo apt-get update && sudo apt-get install -y libudev-dev libdbus-1-dev pkg-config
+      - run:
+          sudo apt-get update && sudo apt-get install -y libudev-dev
+          libdbus-1-dev pkg-config
       # Install binstall to quickly install stellar-scaffold-cli
       - name: Install cargo-binstall
         uses: cargo-bins/cargo-binstall@main
@@ -44,7 +46,9 @@ jobs:
       - run: npm run lint
       - run: npx prettier . --check
       - name: Build with Scaffold and build client packages
-        run: STELLAR_SCAFFOLD_ENV=development stellar-scaffold build --build-clients 2>&1 | tee build_clients.log
+        run:
+          STELLAR_SCAFFOLD_ENV=development stellar-scaffold build
+          --build-clients 2>&1 | tee build_clients.log
       - name: Check client generation summary
         run: |
           # Extract the number after "Failed: "
