@@ -1325,9 +1325,9 @@ dependencies = [
 
 [[package]]
 name = "soroban-ledger-snapshot"
-version = "23.1.0"
+version = "23.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "004e0cdfd01c073e23d28813625bd77b9a6a0dc35c65920323e75450f1bfe400"
+checksum = "ba2424e0acf73a465a2a178ffbc70166fc65afdcd8318537ddd89c8d70e8e281"
 dependencies = [
  "serde",
  "serde_json",
@@ -1339,9 +1339,9 @@ dependencies = [
 
 [[package]]
 name = "soroban-sdk"
-version = "23.1.0"
+version = "23.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d605064e7c7c08474a750496b256d051ac568aa072254e3b77e080fab99e3fb7"
+checksum = "c98b52fc08da8e0edf29233f8c195c5500404139ba68026d4e717931bd354987"
 dependencies = [
  "arbitrary",
  "bytes-lit",
@@ -1358,13 +1358,14 @@ dependencies = [
  "soroban-ledger-snapshot",
  "soroban-sdk-macros",
  "stellar-strkey",
+ "visibility",
 ]
 
 [[package]]
 name = "soroban-sdk-macros"
-version = "23.1.0"
+version = "23.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "611c1b3118d118852cb0b7c0e702b63dbb54de213d0ef9da354650786656b499"
+checksum = "6534066bc1a4cac83e536456d66def2299594879dacc1b71f0133dde3fa742bf"
 dependencies = [
  "darling",
  "heck",
@@ -1382,9 +1383,9 @@ dependencies = [
 
 [[package]]
 name = "soroban-spec"
-version = "23.1.0"
+version = "23.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "829e617c2a6e7293f31a9d8f74f543f102f57510fe13a1da38e37a0481fc2e88"
+checksum = "12864bda598c4941907cf24efe33c361e712a333749a4afd5b37b56fbf2e3a30"
 dependencies = [
  "base64",
  "stellar-xdr",
@@ -1394,9 +1395,9 @@ dependencies = [
 
 [[package]]
 name = "soroban-spec-rust"
-version = "23.1.0"
+version = "23.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "23a7f15c7e8fc5216df7e431d134e5298886d125b842fb0861b8f42095992a5c"
+checksum = "cef78773373ade35a667ea1e36df634de674e97c0ec5f2cd7e94c3fc524ee0de"
 dependencies = [
  "prettyplease",
  "proc-macro2",
@@ -1445,8 +1446,8 @@ checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 
 [[package]]
 name = "stellar-access"
-version = "0.5.1"
-source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.5.1#372a162a6df8aed108befa5573d30a8ca49cb271"
+version = "0.6.0"
+source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.6.0#82f97111f9568d32653dd5b3563baf5b73509c89"
 dependencies = [
  "soroban-sdk",
 ]
@@ -1465,16 +1466,16 @@ dependencies = [
 
 [[package]]
 name = "stellar-contract-utils"
-version = "0.5.1"
-source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.5.1#372a162a6df8aed108befa5573d30a8ca49cb271"
+version = "0.6.0"
+source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.6.0#82f97111f9568d32653dd5b3563baf5b73509c89"
 dependencies = [
  "soroban-sdk",
 ]
 
 [[package]]
 name = "stellar-macros"
-version = "0.5.1"
-source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.5.1#372a162a6df8aed108befa5573d30a8ca49cb271"
+version = "0.6.0"
+source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.6.0#82f97111f9568d32653dd5b3563baf5b73509c89"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1518,8 +1519,8 @@ dependencies = [
 
 [[package]]
 name = "stellar-tokens"
-version = "0.5.1"
-source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.5.1#372a162a6df8aed108befa5573d30a8ca49cb271"
+version = "0.6.0"
+source = "git+https://github.com/OpenZeppelin/stellar-contracts?tag=v0.6.0#82f97111f9568d32653dd5b3563baf5b73509c89"
 dependencies = [
  "soroban-sdk",
  "stellar-contract-utils",
@@ -1652,6 +1653,17 @@ name = "version_check"
 version = "0.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
+
+[[package]]
+name = "visibility"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d674d135b4a8c1d7e813e2f8d1c9a58308aee4a680323066025e53132218bd91"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.101",
+]
 
 [[package]]
 name = "wasi"
