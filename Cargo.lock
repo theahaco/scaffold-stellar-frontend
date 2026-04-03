@@ -245,7 +245,7 @@ dependencies = [
  "semver",
  "serde",
  "serde_json",
- "thiserror",
+ "thiserror 1.0.69",
 ]
 
 [[package]]
@@ -1334,7 +1334,7 @@ dependencies = [
  "serde_with",
  "soroban-env-common",
  "soroban-env-host",
- "thiserror",
+ "thiserror 1.0.69",
 ]
 
 [[package]]
@@ -1388,7 +1388,7 @@ checksum = "829e617c2a6e7293f31a9d8f74f543f102f57510fe13a1da38e37a0481fc2e88"
 dependencies = [
  "base64",
  "stellar-xdr",
- "thiserror",
+ "thiserror 1.0.69",
  "wasmparser",
 ]
 
@@ -1405,7 +1405,7 @@ dependencies = [
  "soroban-spec",
  "stellar-xdr",
  "syn 2.0.101",
- "thiserror",
+ "thiserror 1.0.69",
 ]
 
 [[package]]
@@ -1453,13 +1453,13 @@ dependencies = [
 
 [[package]]
 name = "stellar-build"
-version = "0.0.4"
+version = "0.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d1b7fde59777ba338f1ab386597e722b88d784ecaa244f75b96a2333643b240c"
+checksum = "97fd5e3be902a9658fb9f642d4eef7837ab1d51e52dde9be1d9b218326499d97"
 dependencies = [
  "cargo_metadata",
  "sha2",
- "thiserror",
+ "thiserror 2.0.18",
  "topological-sort",
 ]
 
@@ -1483,18 +1483,18 @@ dependencies = [
 
 [[package]]
 name = "stellar-registry"
-version = "0.0.4"
+version = "0.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0fcacbce7779ca20863e3f980bc7d3b09865c8ece4bcb7b1b75ed22ca357c4b0"
+checksum = "c68c86e442e9648df9eb9ea286efa4ce86044e0ca902e70169a741757f0e0d38"
 dependencies = [
  "stellar-scaffold-macro",
 ]
 
 [[package]]
 name = "stellar-scaffold-macro"
-version = "0.8.9"
+version = "0.8.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7645bc7241862c2384c9346ffd203150ff1329bdf8b64ed6865064bd5eb70a37"
+checksum = "e10db244165d775a521e6e73ee793cc7daafe5ad605b6550d8909b85b8b1745d"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1584,7 +1584,16 @@ version = "1.0.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b6aaf5339b578ea85b50e080feb250a3e8ae8cfcdff9a461c9ec2904bc923f52"
 dependencies = [
- "thiserror-impl",
+ "thiserror-impl 1.0.69",
+]
+
+[[package]]
+name = "thiserror"
+version = "2.0.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4288b5bcbc7920c07a1149a35cf9590a2aa808e0bc1eafaade0b80947865fbc4"
+dependencies = [
+ "thiserror-impl 2.0.18",
 ]
 
 [[package]]
@@ -1592,6 +1601,17 @@ name = "thiserror-impl"
 version = "1.0.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4fee6c4efc90059e10f81e6d42c60a18f76588c3d74cb83a0b242a2b6c7504c1"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.101",
+]
+
+[[package]]
+name = "thiserror-impl"
+version = "2.0.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ebc4ee7f67670e9b64d05fa4253e753e016c6c95ff35b89b7941d6b856dec1d5"
 dependencies = [
  "proc-macro2",
  "quote",

@@ -1,10 +1,12 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, symbol_short, Address, BytesN, Env, Symbol};
+use soroban_sdk::{self, Address, BytesN, Env, Symbol, contract, contractimpl, symbol_short};
 
 mod error;
 mod xlm;
 
 use error::Error;
+
+stellar_registry::import_contract_client!("registry");
 
 #[contract]
 pub struct GuessTheNumber;
@@ -16,6 +18,12 @@ pub const ADMIN_KEY: &Symbol = &symbol_short!("ADMIN");
 impl GuessTheNumber {
     /// Constructor to initialize the contract with an admin and a random number
     pub fn __constructor(env: &Env, admin: Address) {
+        let addr = &Address::from_str(
+            env,
+            "CCA256DWBJJEEYXAWQHP5N4ZAJ2NW4P5T52LZCGC766Q5XHFVNQBMFZV",
+        );
+        let client = registry::Client::new(env, addr);
+        let result = client.fetch_contract_id(&soroban_sdk::String::from_str(&env, "lol"));
         // Require auth from the admin to make the transfer
         admin.require_auth();
         // This is for testing purposes. Ensures that the XLM contract set up for unit testing and local network
