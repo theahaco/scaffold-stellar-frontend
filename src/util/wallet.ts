@@ -1,16 +1,17 @@
 import {
-  ISupportedWallet,
-  StellarWalletsKit,
-  WalletNetwork,
-  allowAllModules,
-} from "@creit.tech/stellar-wallets-kit";
-import { Horizon } from "@stellar/stellar-sdk";
-import { networkPassphrase, stellarNetwork } from "../contracts/util";
+	type ISupportedWallet,
+	StellarWalletsKit,
+	type WalletNetwork,
+	allowAllModules,
+} from "@creit.tech/stellar-wallets-kit"
+import { Horizon } from "@stellar/stellar-sdk"
+import { networkPassphrase, stellarNetwork } from "../contracts/util"
+import storage from "./storage"
 
 const kit: StellarWalletsKit = new StellarWalletsKit({
-  network: networkPassphrase as WalletNetwork,
-  modules: allowAllModules(),
-});
+	network: networkPassphrase as WalletNetwork,
+	modules: allowAllModules(),
+})
 
 export const connectWallet = async () => {
 	await kit.openModal({
@@ -48,12 +49,12 @@ export const connectWallet = async () => {
 }
 
 export const disconnectWallet = async () => {
-  await kit.disconnect();
-  storage.removeItem("walletId");
-  storage.removeItem("walletAddress");
-  storage.removeItem("walletNetwork");
-  storage.removeItem("networkPassphrase");
-};
+	await kit.disconnect()
+	storage.removeItem("walletId")
+	storage.removeItem("walletAddress")
+	storage.removeItem("walletNetwork")
+	storage.removeItem("networkPassphrase")
+}
 
 function getHorizonHost(mode: string) {
 	switch (mode) {
