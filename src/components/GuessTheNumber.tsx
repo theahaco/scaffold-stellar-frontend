@@ -1,81 +1,92 @@
-import { useState } from "react";
-import { Button, Code, Input, Text } from "@stellar/design-system";
-import { useWallet } from "../hooks/useWallet";
-import game from "../contracts/guess_the_number";
-import { Box } from "../components/layout/Box";
+import { Button, Card, Code, Icon, Input } from "@stellar/design-system"
+import { useState } from "react"
+import game from "../contracts/guess_the_number"
+import { useWallet } from "../hooks/useWallet"
+import styles from "./GuessTheNumber.module.css"
 
 export const GuessTheNumber = () => {
-  const [guessedIt, setGuessedIt] = useState<boolean>();
-  const [theGuess, setTheGuess] = useState<number>();
-  const { address, updateBalances, signTransaction } = useWallet();
+	const { address, updateBalances, signTransaction } = useWallet()
+	const [result, setResult] = useState<
+		"idle" | "loading" | "success" | "failure"
+	>("idle")
 
-  if (!address) {
-    return (
-      <Text as="p" size="md">
-        Connect wallet to play the guessing game
-      </Text>
-    );
-  }
+	const submitGuess = async (formData: FormData) => {
+		if (!address) {
+			setResult("failure")
+			return
+		}
 
-  const submitGuess = async () => {
-    if (!theGuess || !address) return;
-    const tx = await game.guess(
-      { a_number: BigInt(theGuess), guesser: address },
-      // @ts-expect-error js-stellar-sdk has bad typings; publicKey is, in fact, allowed
-      { publicKey: address },
-    );
-    const { result } = await tx.signAndSend({ signTransaction });
-    if (result.isErr()) {
-      console.error(result.unwrapErr());
-    } else {
-      setGuessedIt(result.unwrap());
-      await updateBalances();
-    }
-  };
+		// Get form data and validate
+		const guess = formData.get("guess")
+		if (typeof guess != "string" || !guess) {
+			setResult("failure")
+			return
+		}
 
-  return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        void submitGuess();
-      }}
-    >
-      {guessedIt ? (
-        <>
-          <Text as="p" size="lg">
-            You got it!
-          </Text>
-          <Text as="p" size="lg">
-            Set a new number by calling <Code size="md">reset</Code> from the
-            CLI as the admin.
-          </Text>
-        </>
-      ) : (
-        <Box gap="sm" direction="row" align="end" justify="end" wrap="wrap">
-          <Input
-            label="Guess a number from 1 to 10!"
-            id="guess"
-            fieldSize="lg"
-            error={guessedIt === false && "Wrong! Guess again."}
-            onChange={(e) => {
-              setGuessedIt(undefined);
-              setTheGuess(Number(e.target.value));
-            }}
-          />
-          <Button
-            type="submit"
-            disabled={!theGuess}
-            style={{ marginTop: 8 }}
-            variant="primary"
-            size="md"
-          >
-            Submit Guess
-          </Button>
-        </Box>
-      )}
-      <Text as="p" size="lg">
-        &nbsp; {/* Not sure the SDS way to add consistent spacing at the end */}
-      </Text>
-    </form>
-  );
-};
+		// Reset any previous success value
+		setResult("loading")
+
+		// Create a transaction using the contract client
+		const tx = await game.guess(
+			{ a_number: BigInt(guess), guesser: address },
+			// @ts-expect-error js-stellar-sdk has bad typings; publicKey is, in fact, allowed
+			{ publicKey: address },
+		)
+
+		// Send the transaction to the current network
+		const { result } = await tx.signAndSend({ signTransaction })
+
+		// Handle result and update wallet balance
+		if (result.isErr()) {
+			console.error(result.unwrapErr())
+		} else {
+			setResult(result.unwrap() ? "success" : "failure")
+			await updateBalances()
+		}
+	}
+
+	const reset = () => setResult("idle")
+
+	return (
+		<div className={styles.GuessTheNumber}>
+			<form action={submitGuess}>
+				<Input
+					placeholder="Guess a number from 1 to 10!"
+					id="guess"
+					fieldSize="lg"
+					error={result === "failure"}
+					onChange={reset}
+				/>
+
+				<Button
+					type="submit"
+					disabled={result === "loading"}
+					variant="primary"
+					size="lg"
+				>
+					Submit
+				</Button>
+			</form>
+
+			{result === "success" && (
+				<Card>
+					<Icon.CheckCircle className={styles.success} />
+					<p>
+						You got it! Play again by calling <Code size="md">reset</Code> in
+						the Contract Explorer.
+					</p>
+				</Card>
+			)}
+			{result == "failure" && (
+				<Card>
+					<Icon.XCircle className={styles.failure} />
+					{!address ? (
+						<p>Connect to your wallet in order to guess.</p>
+					) : (
+						<p>Incorrect guess. Try again!</p>
+					)}
+				</Card>
+			)}
+		</div>
+	)
+}

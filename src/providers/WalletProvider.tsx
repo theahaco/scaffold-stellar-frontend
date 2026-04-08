@@ -1,18 +1,16 @@
 import {
-  createContext,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  useTransition,
-} from "react";
-import { wallet } from "../util/wallet";
-import storage from "../util/storage";
-import { fetchBalances } from "../util/wallet";
-import type { MappedBalances } from "../util/wallet";
+	createContext,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+	useTransition,
+} from "react"
+import storage from "../util/storage"
+import { wallet, fetchBalances, type MappedBalances } from "../util/wallet"
 
-const signTransaction = wallet.signTransaction.bind(wallet);
+const signTransaction = wallet.signTransaction.bind(wallet)
 
 /**
  * Each wallet can have different behaviors for `getAddress` and `getNetwork`.
@@ -123,18 +121,18 @@ function getWalletWarnings(walletId: string | null): WalletWarnings {
  * Should maybe add & use a new dependency instead, if needed elsewhere.
  */
 function deepEqual<T>(a: T, b: T): boolean {
-  if (a === b) {
-    return true;
-  }
+	if (a === b) {
+		return true
+	}
 
-  const bothAreObjects =
-    a && b && typeof a === "object" && typeof b === "object";
+	const bothAreObjects =
+		a && b && typeof a === "object" && typeof b === "object"
 
-  return Boolean(
-    bothAreObjects &&
-      Object.keys(a).length === Object.keys(b).length &&
-      Object.entries(a).every(([k, v]) => deepEqual(v, b[k as keyof T])),
-  );
+	return Boolean(
+		bothAreObjects &&
+		Object.keys(a).length === Object.keys(b).length &&
+		Object.entries(a).every(([k, v]) => deepEqual(v, b[k as keyof T])),
+	)
 }
 
 export interface WalletContextType {
@@ -148,7 +146,7 @@ export interface WalletContextType {
   walletWarnings: WalletWarnings;
 }
 
-const POLL_INTERVAL = 1000;
+const POLL_INTERVAL = 1000
 
 export const WalletContext = // eslint-disable-line react-refresh/only-export-components
   createContext<WalletContextType>({
