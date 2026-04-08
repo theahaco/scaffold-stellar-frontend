@@ -29,7 +29,6 @@ export const GuessTheNumber = () => {
 		// Create a transaction using the contract client
 		const tx = await game.guess(
 			{ a_number: BigInt(guess), guesser: address },
-			// @ts-expect-error js-stellar-sdk has bad typings; publicKey is, in fact, allowed
 			{ publicKey: address },
 		)
 
