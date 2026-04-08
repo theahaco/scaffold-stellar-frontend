@@ -29,7 +29,6 @@ export const GuessTheNumber = () => {
 		// Create a transaction using the contract client
 		const tx = await game.guess(
 			{ a_number: BigInt(guess), guesser: address },
-			// @ts-ignore
 			{ publicKey: address },
 		)
 
