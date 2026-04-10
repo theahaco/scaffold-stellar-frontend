@@ -1,0 +1,6 @@
+/* Override the global a[target]::after external 
+link icon that appeared on the warning sign */
+a.warningIcon[target]::after {
+	content: none;
+	display: none;
+}

@@ -6,9 +6,10 @@ import {
 	Icon,
 	Tooltip,
 } from "@stellar/design-system"
-import { useState } from "react"
+import React, { useState } from "react"
 import { useWallet } from "../hooks/useWallet"
 import { connectWallet, disconnectWallet } from "../util/wallet"
+import cssStyles from "./WalletButton.module.css"
 
 export const WalletButton = () => {
 	const [showDisconnectModal, setShowDisconnectModal] = useState(false)
@@ -28,12 +29,19 @@ export const WalletButton = () => {
 		return warnings.join(". ")
 	}
 
-	// Handle click on warning icon - open help URL if available
-	const handleWarningClick = () => {
-		if (walletWarnings.helpUrl) {
-			window.open(walletWarnings.helpUrl, "_blank", "noopener,noreferrer")
-		}
-	}
+	const warningIconStyles = {
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
+		overflow: "hidden",
+		backgroundColor: "var(--color-gray-00, #fff)",
+		borderRadius: "50%",
+		padding: "3px",
+		border: "2px solid var(--color-yellow-60, #f0ad4e)",
+		boxShadow: "0 1px 3px rgba(0, 0, 0, 0.2)",
+		lineHeight: 0,
+		textDecoration: "none",
+	} as const
 
 	if (!address) {
 		return (
@@ -136,33 +144,28 @@ export const WalletButton = () => {
 							isVisible={isWarningTooltipVisible}
 							isContrast
 							placement="bottom"
-							triggerEl={
-								<div
-									onClick={handleWarningClick}
+							triggerEl={React.createElement(
+								walletWarnings.helpUrl ? "a" : "span",
+								walletWarnings.helpUrl
+									? {
+											href: walletWarnings.helpUrl,
+											target: "_blank",
+											className: cssStyles.warningIcon,
+											style: warningIconStyles,
+										}
+									: { style: warningIconStyles },
+								<Icon.AlertTriangle
 									style={{
-										display: "flex",
-										alignItems: "center",
-										justifyContent: "center",
-										cursor: "pointer",
-										backgroundColor: "var(--color-gray-00, #fff)",
-										borderRadius: "50%",
-										padding: "3px",
-										border: "2px solid var(--color-yellow-60, #f0ad4e)",
-										boxShadow: "0 1px 3px rgba(0, 0, 0, 0.2)",
+										color: "var(--color-yellow-60, #f0ad4e)",
+										width: "12px",
+										height: "12px",
 									}}
-								>
-									<Icon.AlertTriangle
-										style={{
-											color: "var(--color-yellow-60, #f0ad4e)",
-											width: "12px",
-											height: "12px",
-										}}
-									/>
-								</div>
-							}
+								/>,
+							)}
 						>
 							<div style={{ maxWidth: "15em" }}>
-								{getWarningMessage()}. Click to learn more about this issue.
+								{getWarningMessage()}
+								{walletWarnings.helpUrl ? ". Click to learn more." : ""}
 							</div>
 						</Tooltip>
 					</div>
