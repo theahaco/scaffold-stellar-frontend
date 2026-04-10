@@ -65,9 +65,27 @@ export const WalletButton = () => {
 				>
 					<Modal.Heading>Disconnect wallet?</Modal.Heading>
 					<Modal.Body>
-						<Text as="p" size="sm">
-							Connected as{" "}
-							<code>{`${address.slice(0, 6)}...${address.slice(-6)}`}</code>
+						<Text
+							as="div"
+							size="sm"
+							style={{
+								display: "flex",
+								alignItems: "baseline",
+								minWidth: 0,
+							}}
+						>
+							<span style={{ flexShrink: 0 }}>Connected as&nbsp;</span>
+							<code
+								style={{
+									overflow: "hidden",
+									textOverflow: "ellipsis",
+									whiteSpace: "nowrap",
+									fontSize: "0.85em",
+								}}
+								title={address}
+							>
+								{address}
+							</code>
 						</Text>
 					</Modal.Body>
 					<Modal.Footer itemAlignment="stack">
