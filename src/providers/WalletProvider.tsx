@@ -86,6 +86,7 @@ export interface WalletWarnings {
 	hasWarnings: boolean
 	popupAlways: boolean
 	noGetNetworkSupport: boolean
+	messages: string[]
 	helpUrl?: string
 }
 
@@ -98,6 +99,7 @@ function getWalletWarnings(walletId: string | null): WalletWarnings {
 			hasWarnings: false,
 			popupAlways: false,
 			noGetNetworkSupport: false,
+			messages: [],
 		}
 	}
 
@@ -105,10 +107,19 @@ function getWalletWarnings(walletId: string | null): WalletWarnings {
 	const popupAlways = behavior.getAddressBehavior === "popup-always"
 	const noGetNetworkSupport = !behavior.supportsGetNetwork
 
+	const messages: string[] = []
+	if (popupAlways) {
+		messages.push("This wallet triggers a popup on every interaction")
+	}
+	if (noGetNetworkSupport) {
+		messages.push("This wallet doesn't support network detection")
+	}
+
 	return {
 		hasWarnings: popupAlways || noGetNetworkSupport,
 		popupAlways,
 		noGetNetworkSupport,
+		messages,
 		helpUrl: behavior.helpUrl,
 	}
 }
@@ -158,6 +169,7 @@ export const WalletContext = // @ts-ignore
 			hasWarnings: false,
 			popupAlways: false,
 			noGetNetworkSupport: false,
+			messages: [],
 		},
 	})
 

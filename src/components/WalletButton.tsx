@@ -17,18 +17,6 @@ export const WalletButton = () => {
 	const { address, isPending, balances, walletWarnings } = useWallet()
 	const buttonLabel = isPending ? "Loading..." : "Connect"
 
-	// Build warning message based on wallet issues
-	const getWarningMessage = () => {
-		const warnings: string[] = []
-		if (walletWarnings.popupAlways) {
-			warnings.push("This wallet triggers a popup on every interaction")
-		}
-		if (walletWarnings.noGetNetworkSupport) {
-			warnings.push("This wallet doesn't support network detection")
-		}
-		return warnings.join(". ")
-	}
-
 	const warningIconStyles = {
 		display: "flex",
 		alignItems: "center",
@@ -164,7 +152,7 @@ export const WalletButton = () => {
 							)}
 						>
 							<div style={{ maxWidth: "15em" }}>
-								{getWarningMessage()}
+								{walletWarnings.messages.join(". ")}
 								{walletWarnings.helpUrl ? ". Click to learn more." : ""}
 							</div>
 						</Tooltip>
