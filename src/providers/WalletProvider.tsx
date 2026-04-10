@@ -109,10 +109,10 @@ function getWalletWarnings(walletId: string | null): WalletWarnings {
 
 	const messages: string[] = []
 	if (popupAlways) {
-		messages.push("This wallet triggers a popup on every interaction")
+		messages.push("This wallet triggers a popup on every interaction. ")
 	}
 	if (noGetNetworkSupport) {
-		messages.push("This wallet doesn't support network detection")
+		messages.push("This wallet doesn't support network detection. ")
 	}
 
 	return {
