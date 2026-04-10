@@ -13,6 +13,118 @@ import { wallet, fetchBalances, type MappedBalances } from "../util/wallet"
 const signTransaction = wallet.signTransaction.bind(wallet)
 
 /**
+ * Each wallet can have different behaviors for `getAddress` and `getNetwork`.
+ *
+ * - `getAddressBehavior`:
+ *   - "standard": getAddress only triggers popup when not connected (ideal behavior)
+ *   - "popup-always": getAddress triggers a popup you have to sign every time it's called, even when connected
+ *
+ * - `supportsGetNetwork`:
+ *   - true: wallet supports the getNetwork method
+ *   - false: wallet does NOT support getNetwork, will use fallback/cached values
+ *
+ * - `helpUrl` (optional):
+ *   - URL to documentation or help page for this wallet's limitations
+ */
+interface WalletBehavior {
+	getAddressBehavior: "standard" | "popup-always"
+	supportsGetNetwork: boolean
+	helpUrl?: string
+}
+
+/**
+ * Default behavior for unknown wallets
+ * Assumes popup-always to avoid unwanted popups, and assumes getNetwork is not supported
+ */
+const DEFAULT_WALLET_BEHAVIOR: WalletBehavior = {
+	getAddressBehavior: "popup-always",
+	supportsGetNetwork: false,
+}
+
+const WALLET_BEHAVIORS: Record<string, WalletBehavior> = {
+	freighter: { getAddressBehavior: "standard", supportsGetNetwork: true },
+	"hot-wallet": {
+		getAddressBehavior: "popup-always",
+		supportsGetNetwork: true,
+		helpUrl: "https://github.com/hot-dao/hot-sdk-js/issues/6",
+	},
+	hana: { getAddressBehavior: "standard", supportsGetNetwork: false },
+	lobstr: {
+		getAddressBehavior: "popup-always",
+		supportsGetNetwork: false,
+		helpUrl: "https://github.com/Lobstrco/lobstr-browser-extension/issues/2",
+	},
+	albedo: {
+		getAddressBehavior: "popup-always",
+		supportsGetNetwork: false,
+		helpUrl: "https://github.com/stellar-expert/albedo/issues/104",
+	},
+	xbull: {
+		getAddressBehavior: "standard",
+		supportsGetNetwork: false,
+		helpUrl: "https://github.com/Creit-Tech/xBull-Wallet-Connect/issues/4",
+	},
+	rabet: {
+		getAddressBehavior: "standard",
+		supportsGetNetwork: false,
+		helpUrl: "https://github.com/rabetofficial/rabet-extension/issues/14",
+	},
+	klever: { getAddressBehavior: "popup-always", supportsGetNetwork: true },
+}
+
+/**
+ * Get the behavior configuration for a specific wallet
+ */
+function getWalletBehavior(walletId: string): WalletBehavior {
+	return WALLET_BEHAVIORS[walletId] ?? DEFAULT_WALLET_BEHAVIOR
+}
+
+/**
+ * Wallet warning information exposed to components
+ */
+export interface WalletWarnings {
+	hasWarnings: boolean
+	popupAlways: boolean
+	noGetNetworkSupport: boolean
+	messages: string[]
+	helpUrl?: string
+}
+
+/**
+ * Get warnings for a specific wallet
+ */
+function getWalletWarnings(walletId: string | null): WalletWarnings {
+	if (!walletId) {
+		return {
+			hasWarnings: false,
+			popupAlways: false,
+			noGetNetworkSupport: false,
+			messages: [],
+		}
+	}
+
+	const behavior = getWalletBehavior(walletId)
+	const popupAlways = behavior.getAddressBehavior === "popup-always"
+	const noGetNetworkSupport = !behavior.supportsGetNetwork
+
+	const messages: string[] = []
+	if (popupAlways) {
+		messages.push("This wallet triggers a popup on every interaction. ")
+	}
+	if (noGetNetworkSupport) {
+		messages.push("This wallet doesn't support network detection. ")
+	}
+
+	return {
+		hasWarnings: popupAlways || noGetNetworkSupport,
+		popupAlways,
+		noGetNetworkSupport,
+		messages,
+		helpUrl: behavior.helpUrl,
+	}
+}
+
+/**
  * A good-enough implementation of deepEqual.
  *
  * Used in this file to compare MappedBalances.
@@ -42,22 +154,31 @@ export interface WalletContextType {
 	networkPassphrase?: string
 	signTransaction: typeof wallet.signTransaction
 	updateBalances: () => Promise<void>
+	walletWarnings: WalletWarnings
 }
 
 const POLL_INTERVAL = 1000
 
-export const WalletContext = createContext<WalletContextType>({
-	isPending: true,
-	balances: {},
-	updateBalances: async () => {},
-	signTransaction,
-})
+export const WalletContext = // @ts-ignore
+	createContext<WalletContextType>({
+		isPending: true,
+		balances: {},
+		updateBalances: async () => {},
+		signTransaction,
+		walletWarnings: {
+			hasWarnings: false,
+			popupAlways: false,
+			noGetNetworkSupport: false,
+			messages: [],
+		},
+	})
 
 export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
 	const [balances, setBalances] = useState<MappedBalances>({})
 	const [address, setAddress] = useState<string>()
 	const [network, setNetwork] = useState<string>()
 	const [networkPassphrase, setNetworkPassphrase] = useState<string>()
+	const [walletId, setWalletId] = useState<string | null>(null)
 	const [isPending, startTransition] = useTransition()
 	const popupLock = useRef(false)
 
@@ -66,6 +187,7 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
 		setNetwork(undefined)
 		setNetworkPassphrase(undefined)
 		setBalances({})
+		setWalletId(null)
 		storage.setItem("walletId", "")
 		storage.setItem("walletAddress", "")
 		storage.setItem("walletNetwork", "")
@@ -89,14 +211,58 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
 		void updateBalances()
 	}, [updateBalances])
 
+	/**
+	 * Fetches the address from the wallet, respecting wallet-specific behaviors.
+	 * For "popup-always" wallets: Never calls getAddress more than once.
+	 */
+	const fetchAddress = async (
+		walletId: string,
+		cachedAddress: string | null,
+	): Promise<{ address: string }> => {
+		const behavior = getWalletBehavior(walletId)
+
+		if (behavior.getAddressBehavior === "popup-always") {
+			if (cachedAddress) {
+				return { address: cachedAddress }
+			}
+		}
+
+		return wallet.getAddress()
+	}
+
+	/**
+	 * Fetches the network from the wallet, respecting wallet-specific behaviors.
+	 * For wallets that don't support getNetwork, returns cached values or defaults.
+	 */
+	const fetchNetwork = async (
+		walletId: string,
+		cachedNetwork: string | null,
+		cachedPassphrase: string | null,
+	): Promise<{ network: string; networkPassphrase: string }> => {
+		const behavior = getWalletBehavior(walletId)
+
+		if (!behavior.supportsGetNetwork) {
+			return {
+				network: cachedNetwork ?? "testnet",
+				networkPassphrase:
+					cachedPassphrase ?? "Test SDF Network ; September 2015",
+			}
+		}
+
+		return wallet.getNetwork()
+	}
+
 	const updateCurrentWalletState = async () => {
 		// There is no way, with StellarWalletsKit, to check if the wallet is
 		// installed/connected/authorized. We need to manage that on our side by
 		// checking our storage item.
-		const walletId = storage.getItem("walletId")
+		const storedWalletId = storage.getItem("walletId")
 		const walletNetwork = storage.getItem("walletNetwork")
 		const walletAddr = storage.getItem("walletAddress")
 		const passphrase = storage.getItem("networkPassphrase")
+
+		// Update walletId state for warnings
+		setWalletId(storedWalletId)
 
 		if (
 			!address &&
@@ -109,32 +275,36 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
 			setNetworkPassphrase(passphrase)
 		}
 
-		if (!walletId) {
+		if (!storedWalletId) {
 			nullify()
 		} else {
 			if (popupLock.current) return
-			// If our storage item is there, then we try to get the user's address &
-			// network from their wallet. Note: `getAddress` MAY open their wallet
-			// extension, depending on which wallet they select!
+
 			try {
 				popupLock.current = true
-				wallet.setWallet(walletId)
-				if (walletId !== "freighter" && walletAddr !== null) return
-				const [a, n] = await Promise.all([
-					wallet.getAddress(),
-					wallet.getNetwork(),
+				wallet.setWallet(storedWalletId)
+
+				const [addressResult, networkResult] = await Promise.all([
+					fetchAddress(storedWalletId, walletAddr),
+					fetchNetwork(storedWalletId, walletNetwork, passphrase),
 				])
 
-				if (!a.address) storage.setItem("walletId", "")
+				if (!addressResult.address) {
+					storage.setItem("walletId", "")
+					return
+				}
+
 				if (
-					a.address !== address ||
-					n.network !== network ||
-					n.networkPassphrase !== networkPassphrase
+					addressResult.address !== address ||
+					networkResult.network !== network ||
+					networkResult.networkPassphrase !== networkPassphrase
 				) {
-					storage.setItem("walletAddress", a.address)
-					setAddress(a.address)
-					setNetwork(n.network)
-					setNetworkPassphrase(n.networkPassphrase)
+					storage.setItem("walletAddress", addressResult.address)
+					storage.setItem("walletNetwork", networkResult.network)
+					storage.setItem("networkPassphrase", networkResult.networkPassphrase)
+					setAddress(addressResult.address)
+					setNetwork(networkResult.network)
+					setNetworkPassphrase(networkResult.networkPassphrase)
 				}
 			} catch (e) {
 				// If `getNetwork` or `getAddress` throw errors... sign the user out???
@@ -181,6 +351,9 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 	}, []) // eslint-disable-line react-hooks/exhaustive-deps -- it SHOULD only run once per component mount
 
+	// Get wallet warnings based on current wallet
+	const walletWarnings = useMemo(() => getWalletWarnings(walletId), [walletId])
+
 	const contextValue = useMemo(
 		() => ({
 			address,
@@ -190,8 +363,17 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
 			updateBalances,
 			isPending,
 			signTransaction,
+			walletWarnings,
 		}),
-		[address, network, networkPassphrase, balances, updateBalances, isPending],
+		[
+			address,
+			network,
+			networkPassphrase,
+			balances,
+			updateBalances,
+			isPending,
+			walletWarnings,
+		],
 	)
 
 	return <WalletContext value={contextValue}>{children}</WalletContext>

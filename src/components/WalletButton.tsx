@@ -1,21 +1,24 @@
-import { Button, Icon, Text, Modal, Profile } from "@stellar/design-system"
-import { useState } from "react"
+import {
+	Button,
+	Text,
+	Modal,
+	Profile,
+	Icon,
+	Tooltip,
+} from "@stellar/design-system"
+import React, { useState } from "react"
 import { useWallet } from "../hooks/useWallet"
 import { connectWallet, disconnectWallet } from "../util/wallet"
+import cssStyles from "./WalletButton.module.css"
 
 export const WalletButton = () => {
 	const [showDisconnectModal, setShowDisconnectModal] = useState(false)
-	const { address, isPending, balances } = useWallet()
-	const buttonLabel = isPending ? "Loading..." : "Connect Wallet"
+	const { address, isPending, balances, walletWarnings } = useWallet()
+	const buttonLabel = isPending ? "Loading..." : "Connect"
 
 	if (!address) {
 		return (
-			<Button
-				variant="secondary"
-				size="md"
-				onClick={() => void connectWallet()}
-			>
-				<Icon.Wallet02 />
+			<Button variant="primary" size="md" onClick={() => void connectWallet()}>
 				{buttonLabel}
 			</Button>
 		)
@@ -41,11 +44,31 @@ export const WalletButton = () => {
 					onClose={() => setShowDisconnectModal(false)}
 					parentId="modalContainer"
 				>
-					<Modal.Heading>
-						Connected as{" "}
-						<code style={{ lineBreak: "anywhere" }}>{address}</code>. Do you
-						want to disconnect?
-					</Modal.Heading>
+					<Modal.Heading>Disconnect wallet?</Modal.Heading>
+					<Modal.Body>
+						<Text
+							as="div"
+							size="sm"
+							style={{
+								display: "flex",
+								alignItems: "baseline",
+								minWidth: 0,
+							}}
+						>
+							<span style={{ flexShrink: 0 }}>Connected as&nbsp;</span>
+							<code
+								style={{
+									overflow: "hidden",
+									textOverflow: "ellipsis",
+									whiteSpace: "nowrap",
+									fontSize: "0.85em",
+								}}
+								title={address}
+							>
+								{address}
+							</code>
+						</Text>
+					</Modal.Body>
 					<Modal.Footer itemAlignment="stack">
 						<Button
 							size="md"
@@ -71,12 +94,34 @@ export const WalletButton = () => {
 				</Modal>
 			</div>
 
-			<Profile
-				publicAddress={address}
-				size="md"
-				isShort
-				onClick={() => setShowDisconnectModal(true)}
-			/>
+			<div className={cssStyles.profileWrap}>
+				<Profile
+					publicAddress={address}
+					size="md"
+					isShort
+					onClick={() => setShowDisconnectModal(true)}
+				/>
+
+				{walletWarnings.hasWarnings && (
+					<Tooltip
+						placement="bottom"
+						triggerEl={<Icon.AlertTriangle className={cssStyles.warningIcon} />}
+					>
+						<div style={{ maxWidth: "15em" }}>
+							{walletWarnings.messages.join("")}
+							{walletWarnings.helpUrl && (
+								<a
+									className={cssStyles.learnMore}
+									href={walletWarnings.helpUrl}
+									target="_blank"
+								>
+									Learn more
+								</a>
+							)}
+						</div>
+					</Tooltip>
+				)}
+			</div>
 		</div>
 	)
 }
